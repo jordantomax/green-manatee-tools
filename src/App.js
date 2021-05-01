@@ -12,6 +12,9 @@ export default function App () {
     <AuthProvider>
       <AuthConsumer>
         {({ isLoggedIn }) => {
+          if (isLoggedIn === null) {
+            return <div>Loading...</div>
+          }
           return isLoggedIn ? <Home /> : <Auth />
         }}
       </AuthConsumer>

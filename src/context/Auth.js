@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
     (async function () {
       const token = await getSavedToken()
       setTokens(token)
-      setIsLoggedIn(token)
+      setIsLoggedIn(!!token)
     })()
   }, [])
 
