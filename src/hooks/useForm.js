@@ -56,9 +56,10 @@ function useForm ({
 
   function handleChange (e) {
     const { name, value } = e.target
-    const updated = set(input, name, value)
-    setInput(updated)
-    afterChange && afterChange(updated)
+    const update = Object.assign({}, input)
+    set(update, name, value)
+    setInput(update)
+    afterChange && afterChange(update)
   }
 
   async function handleSubmit (e) {

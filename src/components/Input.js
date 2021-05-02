@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form } from 'react-bootstrap'
+import { Form, Row, Col } from 'react-bootstrap'
 
 function TextInput ({
   id,
@@ -10,19 +10,31 @@ function TextInput ({
   if (!inputProps) inputProps = {}
 
   return (
-    <Form.Group>
-      {label && <Form.Label htmlFor={id}>{label}</Form.Label>}
+    <Form.Group as={Row} className='mb-0'>
+      {label && (
+        <Form.Label
+          column
+          sm='3'
+          htmlFor={id}
+        >
+          {label}
+        </Form.Label>
+      )}
 
-      <Form.Control
-        id={id}
-        type='text'
-        isInvalid={!!error}
-        {...inputProps}
-      />
+      <Col sm='9'>
+        <Form.Control
+          name={id}
+          id={id}
+          type='text'
+          size='sm'
+          isInvalid={!!error}
+          {...inputProps}
+        />
 
-      <Form.Control.Feedback type='invalid'>
-        {error}
-      </Form.Control.Feedback>
+        <Form.Control.Feedback type='invalid'>
+          {error}
+        </Form.Control.Feedback>
+      </Col>
     </Form.Group>
   )
 }

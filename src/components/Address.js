@@ -5,22 +5,21 @@ import Input from './Input'
 
 function Address ({ address, name, handleChange }) {
   return (
-    <>
+    <div className='pb-4'>
       <h2>{capitalize(name)}</h2>
 
       {Object.entries(address).map(([key, value], i) => {
-        console.log(value)
         return (
           <Input
-            key={i}
-            onChange={handleChange}
-            name={`${name}.${key}`}
+            key={key}
+            id={`${name}.${key}`}
             label={capitalize(key)}
+            onChange={handleChange}
             defaultValue={value}
           />
         )
       })}
-    </>
+    </div>
   )
 }
 

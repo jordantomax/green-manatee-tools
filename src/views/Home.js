@@ -4,28 +4,16 @@ import {
   Button,
   Form,
   Row,
-  Col
+  Col,
+  Nav
 } from 'react-bootstrap'
 
 import { setLocalData, getLocalData } from '../utils/storage'
+import { addressFactory, parcelFactory } from '../factories'
 import useForm from '../hooks/useForm'
-import Nav from '../components/Nav'
+import HeaderNav from '../components/Nav'
 import Address from '../components/Address'
 import Parcels from '../components/Parcels'
-
-function addressFactory (prefix) {
-  return {
-    name: '',
-    company: '',
-    street1: '',
-    city: '',
-    state: '',
-    zip: '',
-    country: 'US',
-    phone: '',
-    email: ''
-  }
-}
 
 function Home () {
   const {
@@ -35,7 +23,8 @@ function Home () {
   } = useForm({
     defaultInput: {
       from: getLocalData('from') || addressFactory(),
-      to: getLocalData('to') || addressFactory()
+      to: getLocalData('to') || addressFactory(),
+      parcels: []
     },
     afterChange: (newInput) => {
       setLocalData('from', newInput.from)
@@ -43,13 +32,37 @@ function Home () {
     }
   })
 
+  function handleParcelChange (value) {
+    handleChange({
+      target: { name: 'parcels', value }
+    })
+  }
+
+  function handleParcelCreate () {
+    const parcels = input.parcels.slice()
+    parcels.push(parcelFactory())
+    handleParcelChange(parcels)
+  }
+
+  function handleParcelDelete (i) {
+    const parcels = input.parcels.slice()
+    parcels.splice(i, 1)
+    handleParcelChange(parcels)
+  }
+
+  function handleParcelUpdate (i, name, value) {
+    const parcels = input.parcels.slice()
+    parcels[i][name] = value
+    handleParcelChange(parcels)
+  }
+
   return (
     <>
-      <Nav />
+      <HeaderNav />
 
-      <Container>
-        <Row>
-          <Col xs='6'>
+      <Container fluid='sm'>
+        <Row className='pb-5'>
+          <Col xs={12} sm={6}>
             <Form onSubmit={handleSubmit}>
               <Address
                 address={input.from}
@@ -63,12 +76,26 @@ function Home () {
                 handleChange={handleChange}
               />
 
-              <Parcels />
+              <Parcels
+                parcels={input.parcels}
+                handleDelete={handleParcelDelete}
+                handleUpdate={handleParcelUpdate}
+              />
 
-              <Button type='submit'>
-                Something
+              <Button onClick={handleParcelCreate}>
+                new Parcel
               </Button>
             </Form>
+          </Col>
+
+          <Col xs={12} sm={6}>
+            <Nav className='justify-content-end'>
+              <Nav.Item>
+                <Button type='submit'>
+                  Get Rates
+                </Button>
+              </Nav.Item>
+            </Nav>
           </Col>
         </Row>
       </Container>
