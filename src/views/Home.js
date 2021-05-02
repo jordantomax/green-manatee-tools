@@ -97,8 +97,8 @@ function Home () {
           </ColWithBg>
 
           <Col xs={12} sm={6} className='pt-5'>
-            <RateParcels parcels={rateParcels} />
             <Rates rates={rates} />
+            <RateParcels parcels={rateParcels} />
           </Col>
         </Row>
       </Container>

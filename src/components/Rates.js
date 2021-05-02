@@ -6,8 +6,17 @@ import DataList from '../components/DataList'
 
 function Rates ({ rates }) {
   return (
-    <>
+    <div className='mb-4'>
       <h3>Rates</h3>
+
+      {rates.length === 0 && (
+        <Card>
+          <Card.Body>
+            No rates
+          </Card.Body>
+        </Card>
+      )}
+
       {rates.map((rate, i) => {
         return (
           <Card
@@ -23,7 +32,7 @@ function Rates ({ rates }) {
           </Card>
         )
       })}
-    </>
+    </div>
   )
 }
 

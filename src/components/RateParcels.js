@@ -7,7 +7,16 @@ import DataList from '../components/DataList'
 function RateParcels ({ parcels }) {
   return (
     <>
-      <h3>Rate Parcels</h3>
+      <h3>Parcels in this Shipment </h3>
+
+      {parcels.length === 0 && (
+        <Card>
+          <Card.Body>
+            No parcels in this shipment
+          </Card.Body>
+        </Card>
+      )}
+
       {parcels.map((parcel, i) => {
         return (
           <Card
