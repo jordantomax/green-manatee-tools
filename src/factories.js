@@ -20,6 +20,7 @@ export function parcelFactory () {
     height: '',
     distance_unit: 'in',
     weight: '',
-    mass_unit: 'lb'
+    mass_unit: 'lb',
+    quantity: 1
   }
 }

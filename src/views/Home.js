@@ -1,11 +1,9 @@
 import React from 'react'
 import {
   Container,
-  Button,
   Form,
   Row,
-  Col,
-  Nav
+  Col
 } from 'react-bootstrap'
 
 import { setLocalData, getLocalData } from '../utils/storage'
@@ -24,22 +22,23 @@ function Home () {
     defaultInput: {
       from: getLocalData('from') || addressFactory(),
       to: getLocalData('to') || addressFactory(),
-      parcels: []
+      parcels: getLocalData('parcels') || []
     },
     afterChange: (newInput) => {
       setLocalData('from', newInput.from)
       setLocalData('to', newInput.to)
+      setLocalData('parcels', newInput.parcels)
     }
   })
 
   return (
     <>
-      <HeaderNav />
+      <HeaderNav handleSubmit={handleSubmit} />
 
-      <Container fluid='sm'>
-        <Row className='pb-5'>
+      <Container fluid='sm' className='pt-5'>
+        <Row className='pb-5 pt-5'>
           <Col xs={12} sm={6}>
-            <Form onSubmit={handleSubmit}>
+            <Form>
               <Address
                 address={input.from}
                 name='from'
@@ -56,19 +55,9 @@ function Home () {
                 parcels={input.parcels}
                 handleChange={handleChange}
               />
-
             </Form>
           </Col>
 
-          <Col xs={12} sm={6}>
-            <Nav className='justify-content-end'>
-              <Nav.Item>
-                <Button type='submit'>
-                  Get Rates
-                </Button>
-              </Nav.Item>
-            </Nav>
-          </Col>
         </Row>
       </Container>
     </>

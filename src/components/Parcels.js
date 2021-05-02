@@ -34,11 +34,13 @@ function Parcels ({
 
   return (
     <>
-      <h3>Parcels</h3>
+      <h3 className='d-flex justify-content-between align-items-center'>
+        Parcels
 
-      <Button onClick={handleCreate}>
-        new Parcel
-      </Button>
+        <Button onClick={handleCreate}>
+          Add Parcel
+        </Button>
+      </h3>
 
       {parcels.map((parcel, parcelIndex) => {
         console.log(parcel)
