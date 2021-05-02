@@ -9,7 +9,7 @@ import {
 } from 'react-bootstrap'
 
 import { setLocalData, getLocalData } from '../utils/storage'
-import { addressFactory, parcelFactory } from '../factories'
+import { addressFactory } from '../factories'
 import useForm from '../hooks/useForm'
 import HeaderNav from '../components/Nav'
 import Address from '../components/Address'
@@ -31,30 +31,6 @@ function Home () {
       setLocalData('to', newInput.to)
     }
   })
-
-  function handleParcelChange (value) {
-    handleChange({
-      target: { name: 'parcels', value }
-    })
-  }
-
-  function handleParcelCreate () {
-    const parcels = input.parcels.slice()
-    parcels.push(parcelFactory())
-    handleParcelChange(parcels)
-  }
-
-  function handleParcelDelete (i) {
-    const parcels = input.parcels.slice()
-    parcels.splice(i, 1)
-    handleParcelChange(parcels)
-  }
-
-  function handleParcelUpdate (i, name, value) {
-    const parcels = input.parcels.slice()
-    parcels[i][name] = value
-    handleParcelChange(parcels)
-  }
 
   return (
     <>
@@ -78,13 +54,9 @@ function Home () {
 
               <Parcels
                 parcels={input.parcels}
-                handleDelete={handleParcelDelete}
-                handleUpdate={handleParcelUpdate}
+                handleChange={handleChange}
               />
 
-              <Button onClick={handleParcelCreate}>
-                new Parcel
-              </Button>
             </Form>
           </Col>
 

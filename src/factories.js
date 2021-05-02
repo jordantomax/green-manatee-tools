@@ -14,6 +14,7 @@ export function addressFactory () {
 
 export function parcelFactory () {
   return {
+    id: Math.random().toString(36).substring(7),
     length: '',
     width: '',
     height: '',

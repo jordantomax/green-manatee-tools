@@ -1,20 +1,49 @@
 import React from 'react'
 import { Button } from 'react-bootstrap'
 
+import { parcelFactory } from '../factories'
 import Input from './Input'
 
 function Parcels ({
   parcels,
-  handleDelete,
-  handleUpdate
+  handleChange
 }) {
+  function handleParcelChange (value) {
+    handleChange({
+      target: { name: 'parcels', value }
+    })
+  }
+
+  function handleCreate () {
+    const update = parcels.slice()
+    update.push(parcelFactory())
+    handleParcelChange(update)
+  }
+
+  function handleDelete (i) {
+    const update = parcels.slice()
+    update.splice(i, 1)
+    handleParcelChange(update)
+  }
+
+  function handleUpdate (i, name, value) {
+    const update = parcels.slice()
+    update[i][name] = value
+    handleParcelChange(update)
+  }
+
   return (
     <>
       <h3>Parcels</h3>
 
+      <Button onClick={handleCreate}>
+        new Parcel
+      </Button>
+
       {parcels.map((parcel, parcelIndex) => {
+        console.log(parcel)
         return (
-          <div className='mb-3' key={parcelIndex}>
+          <div className='mb-3' key={parcel.id}>
             <h5 className='d-flex justify-content-between align-items-center'>
               Parcel {parcelIndex}
               <Button
@@ -27,9 +56,11 @@ function Parcels ({
             </h5>
 
             {Object.entries(parcel).map(([key, value], i) => {
+              if (key === 'id') return false
+
               return (
                 <Input
-                  key={key}
+                  key={`${parcel.id}-${key}`}
                   id={key}
                   label={key}
                   defaultValue={value}
