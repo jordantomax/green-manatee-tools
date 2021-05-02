@@ -1,15 +1,32 @@
 import React from 'react'
-import { Card, Button } from 'react-bootstrap'
+import { Form, Card, Button, Spinner } from 'react-bootstrap'
 
+import useForm from '../hooks/useForm'
 import { rateMask, rateImageMask } from '../utils/dataMasks'
 import DataList from '../components/DataList'
 
-function Rates ({ rates }) {
-  function handleClick () {
+function Rates ({ rates, setPurchasedRate }) {
+  const {
+    input,
+    isLoading,
+    handleChange,
+    handleSubmit
+  } = useForm({
+    resource: 'transaction',
+    action: 'create',
+    defaultInput: {
+      rate: null,
+      labelFileType: 'PDF'
+    },
+    afterSubmit: setPurchasedRate
+  })
+
+  function handleSelect (value) {
+    handleChange({ target: { name: 'rate', value } })
   }
 
   return (
-    <div className='mb-4'>
+    <Form className='mb-4' onSubmit={handleSubmit}>
       <h3>Rates</h3>
 
       {rates.length === 0 && (
@@ -32,18 +49,39 @@ function Rates ({ rates }) {
                 mask={rateMask}
                 imageMask={rateImageMask}
               />
-              <Button
-                className='mt-2'
-                variant='primary'
-                onClick={handleClick}
-              >
-                Get This Rate
-              </Button>
+              <div className='mt-2'>
+                <Button
+                  variant='secondary'
+                  className='mr-2'
+                  onClick={() => handleSelect(rate.objectId)}
+                >
+                  Select This Rate
+                </Button>
+
+                {input.rate === rate.objectId && (
+                  <Button
+                    disabled={isLoading}
+                    type='submit'
+                  >
+                    {isLoading && (
+                      <Spinner
+                        as='span'
+                        animation='border'
+                        size='sm'
+                        role='status'
+                        aria-hidden='true'
+                        className='mr-2'
+                      />
+                    )}
+                    Purchase This Rate
+                  </Button>
+                )}
+              </div>
             </Card.Body>
           </Card>
         )
       })}
-    </div>
+    </Form>
   )
 }
 

@@ -16,10 +16,12 @@ import Address from '../components/Address'
 import Parcels from '../components/Parcels'
 import RateParcels from '../components/RateParcels'
 import Rates from '../components/Rates'
+import PurchasedRate from '../components/PurchasedRate'
 
 function Home () {
   const [rateParcels, setRateParcels] = React.useState(getLocalData('rateParcels') || [])
   const [rates, setRates] = React.useState(getLocalData('rates') || [])
+  const [purchasedRate, setPurchasedRate] = React.useState(getLocalData('purchasedRate') || null)
   const {
     input,
     isLoading,
@@ -65,11 +67,17 @@ function Home () {
     setRates(data.rates)
   }
 
+  function _setPurchasedRate (rate) {
+    setLocalData('purchasedRate', rate)
+    setPurchasedRate(rate)
+  }
+
   return (
     <>
       <HeaderNav
         isLoading={isLoading}
         setRateData={setRateData}
+        setPurchasedRate={_setPurchasedRate}
         handleSubmit={handleSubmit}
       />
 
@@ -97,7 +105,11 @@ function Home () {
           </ColWithBg>
 
           <Col xs={12} sm={6} className='pt-5'>
-            <Rates rates={rates} />
+            <PurchasedRate rate={purchasedRate} />
+            <Rates
+              rates={rates}
+              setPurchasedRate={_setPurchasedRate}
+            />
             <RateParcels parcels={rateParcels} />
           </Col>
         </Row>
