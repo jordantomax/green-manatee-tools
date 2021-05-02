@@ -7,18 +7,27 @@ import {
 
 import camelToSentenceCase from '../utils/camelToSentenceCase'
 
-function DataList ({ obj, mask }) {
+function DataList ({ obj, mask, imageMask }) {
   return Object.entries(obj).map(([key, value], j) => {
-    if (mask && !mask.includes(key)) return false
+    let isVisible = false
+    if (
+      (mask && mask.includes(key)) ||
+      (imageMask && imageMask.includes(key))
+    ) isVisible = true
+    if (!isVisible) return false
 
     return (
       <Row className='mb-1' key={j}>
-        <Col xs={4}>
+        <Col xs={5}>
           <span className='font-weight-bold'>
             {camelToSentenceCase(key)}
           </span>
         </Col>
-        <Col xs={8}>{!isObject(value) && value}</Col>
+        <Col xs={7}>
+          {(imageMask && imageMask.includes(key))
+            ? <img src={value} alt={key} />
+            : !isObject(value) && value}
+        </Col>
       </Row>
     )
   })

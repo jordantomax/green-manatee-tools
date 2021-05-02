@@ -74,8 +74,8 @@ function Home () {
       />
 
       <Container fluid>
-        <Row className='pb-5 pt-5'>
-          <ColWithBg xs={12} sm={6} className='pt-5'>
+        <Row className='pt-5'>
+          <ColWithBg xs={12} sm={6} className='pb-5 pt-5'>
             <Form>
               <Address
                 address={input.addressFrom}

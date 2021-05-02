@@ -1,10 +1,13 @@
 import React from 'react'
-import { Card } from 'react-bootstrap'
+import { Card, Button } from 'react-bootstrap'
 
-import { rateMask } from '../utils/dataMasks'
+import { rateMask, rateImageMask } from '../utils/dataMasks'
 import DataList from '../components/DataList'
 
 function Rates ({ rates }) {
+  function handleClick () {
+  }
+
   return (
     <div className='mb-4'>
       <h3>Rates</h3>
@@ -27,7 +30,15 @@ function Rates ({ rates }) {
               <DataList
                 obj={rate}
                 mask={rateMask}
+                imageMask={rateImageMask}
               />
+              <Button
+                className='mt-2'
+                variant='primary'
+                onClick={handleClick}
+              >
+                Get This Rate
+              </Button>
             </Card.Body>
           </Card>
         )

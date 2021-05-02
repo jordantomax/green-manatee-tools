@@ -15,3 +15,7 @@ export const rateMask = [
   'carrierAccount',
   'durationDays'
 ]
+
+export const rateImageMask = [
+  'providerImage75'
+]
