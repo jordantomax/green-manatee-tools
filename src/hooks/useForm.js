@@ -5,6 +5,7 @@ import camelToSentenceCase from '../utils/camelToSentenceCase'
 import shippo from 'shippo'
 
 import { getSavedToken } from '../utils/auth'
+import { deepToSnakeCase } from '../utils/deepMap'
 import validate from '../utils/validation'
 
 function _validateInput (input, required, setErrors) {
@@ -71,8 +72,9 @@ function useForm ({
       const finalInput = massageInput ? massageInput(input) : input
       const token = await getSavedToken()
       const session = shippo(token)
-      console.log(finalInput)
-      console.log(session)
+
+      const res = await session[resource][action](deepToSnakeCase(finalInput))
+      console.log(res)
       // afterSubmit && afterSubmit(response)
     } catch (serverErrors) {
       handleServerError(serverErrors, setErrors)

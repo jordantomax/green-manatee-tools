@@ -19,9 +19,11 @@ function Home () {
     handleChange,
     handleSubmit
   } = useForm({
+    resource: 'shipment',
+    action: 'create',
     defaultInput: {
-      from: getLocalData('from') || addressFactory(),
-      to: getLocalData('to') || addressFactory(),
+      addressFrom: getLocalData('from') || addressFactory(),
+      addressTo: getLocalData('to') || addressFactory(),
       parcels: getLocalData('parcels') || []
     },
     afterChange: (newInput) => {
@@ -40,14 +42,14 @@ function Home () {
           <Col xs={12} sm={6}>
             <Form>
               <Address
-                address={input.from}
-                name='from'
+                address={input.addressFrom}
+                name='addressFrom'
                 handleChange={handleChange}
               />
 
               <Address
-                address={input.to}
-                name='to'
+                address={input.addressTo}
+                name='addressTo'
                 handleChange={handleChange}
               />
 
@@ -57,7 +59,6 @@ function Home () {
               />
             </Form>
           </Col>
-
         </Row>
       </Container>
     </>

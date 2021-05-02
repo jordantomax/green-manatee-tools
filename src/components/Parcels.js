@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from 'react-bootstrap'
 
+import camelToSentenceCase from '../utils/camelToSentenceCase'
 import { parcelFactory } from '../factories'
 import Input from './Input'
 
@@ -43,7 +44,6 @@ function Parcels ({
       </h3>
 
       {parcels.map((parcel, parcelIndex) => {
-        console.log(parcel)
         return (
           <div className='mb-3' key={parcel.id}>
             <h5 className='d-flex justify-content-between align-items-center'>
@@ -64,7 +64,7 @@ function Parcels ({
                 <Input
                   key={`${parcel.id}-${key}`}
                   id={key}
-                  label={key}
+                  label={camelToSentenceCase(key)}
                   defaultValue={value}
                   onChange={(e) => {
                     const { name, value } = e.target

@@ -41,7 +41,7 @@ const Wrap = styled(Container)`
   flex-direction: column;
   justify-content: center;
   margin: 0 auto;
-  max-width: 400px;
+  max-width: 600px;
 `
 
 export default Auth
