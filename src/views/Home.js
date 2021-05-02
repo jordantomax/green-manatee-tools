@@ -1,4 +1,5 @@
 import React from 'react'
+import cloneDeep from 'lodash/cloneDeep'
 import {
   Container,
   Form,
@@ -22,13 +23,30 @@ function Home () {
     resource: 'shipment',
     action: 'create',
     defaultInput: {
-      addressFrom: getLocalData('from') || addressFactory(),
-      addressTo: getLocalData('to') || addressFactory(),
+      addressFrom: getLocalData('addressFrom') || addressFactory(),
+      addressTo: getLocalData('addressTo') || addressFactory(),
       parcels: getLocalData('parcels') || []
     },
+    massageInput: (input) => {
+      const massaged = cloneDeep(input)
+      massaged.parcels.forEach((parcel, i) => {
+        const qty = parcel.quantity
+        delete parcel.id
+        delete parcel.quantity
+
+        if (qty > 1) {
+          const copies = []
+          for (let j = 1; j < qty; j++) {
+            copies.push(Object.assign({}, parcel))
+          }
+          massaged.parcels.splice(i, 0, ...copies)
+        }
+      })
+      return massaged
+    },
     afterChange: (newInput) => {
-      setLocalData('from', newInput.from)
-      setLocalData('to', newInput.to)
+      setLocalData('addressFrom', newInput.addressFrom)
+      setLocalData('addressTo', newInput.addressTo)
       setLocalData('parcels', newInput.parcels)
     }
   })

@@ -75,7 +75,7 @@ function useForm ({
 
       const res = await session[resource][action](deepToSnakeCase(finalInput))
       console.log(res)
-      // afterSubmit && afterSubmit(response)
+      afterSubmit && afterSubmit(res)
     } catch (serverErrors) {
       handleServerError(serverErrors, setErrors)
     } finally {
