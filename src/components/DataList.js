@@ -1,4 +1,5 @@
 import React from 'react'
+import styled from 'styled-components'
 import isObject from 'lodash/isObject'
 import {
   Row,
@@ -7,12 +8,13 @@ import {
 
 import camelToSentenceCase from '../utils/camelToSentenceCase'
 
-function DataList ({ obj, mask, imageMask }) {
+function DataList ({ obj, mask, imageMask, linkMask }) {
   return Object.entries(obj).map(([key, value], j) => {
     let isVisible = false
     if (
       (mask && mask.includes(key)) ||
-      (imageMask && imageMask.includes(key))
+      (imageMask && imageMask.includes(key)) ||
+      (linkMask && linkMask.includes(key))
     ) isVisible = true
     if (!isVisible) return false
 
@@ -24,13 +26,26 @@ function DataList ({ obj, mask, imageMask }) {
           </span>
         </Col>
         <Col xs={7}>
-          {(imageMask && imageMask.includes(key))
-            ? <img src={value} alt={key} />
-            : !isObject(value) && value}
+          {mask && mask.includes(key) && !isObject(value) && value}
+          {imageMask && imageMask.includes(key) && (
+            <img src={value} alt={key} />
+          )}
+
+          {linkMask && linkMask.includes(key) && (
+            <Link target='_blank' rel='noreferrer' href={value}>{value}</Link>
+          )}
         </Col>
       </Row>
     )
   })
 }
+
+const Link = styled.a`
+  display: inline-block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
 
 export default DataList

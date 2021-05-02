@@ -19,3 +19,11 @@ export const rateMask = [
 export const rateImageMask = [
   'providerImage75'
 ]
+
+export const purchasedRateMask = [
+  'trackingNumber'
+]
+
+export const purchasedRateLinkMask = [
+  'labelUrl'
+]
