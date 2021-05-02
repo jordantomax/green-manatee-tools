@@ -13,10 +13,15 @@ import useForm from '../hooks/useForm'
 import HeaderNav from '../components/Nav'
 import Address from '../components/Address'
 import Parcels from '../components/Parcels'
+import RateParcels from '../components/RateParcels'
 
 function Home () {
+  const [rateParcels, setRateParcels] = React.useState(getLocalData('rateParcels') || [])
+  const [rates, setRates] = React.useState(getLocalData('rates') || [])
+
   const {
     input,
+    isLoading,
     handleChange,
     handleSubmit
   } = useForm({
@@ -48,12 +53,21 @@ function Home () {
       setLocalData('addressFrom', newInput.addressFrom)
       setLocalData('addressTo', newInput.addressTo)
       setLocalData('parcels', newInput.parcels)
+    },
+    afterSubmit: (res) => {
+      setLocalData('rateParcels', res.parcels)
+      setLocalData('rates', res.rates)
+      setRateParcels(res.parcels)
+      setRates(res.rates)
     }
   })
 
   return (
     <>
-      <HeaderNav handleSubmit={handleSubmit} />
+      <HeaderNav
+        isLoading={isLoading}
+        handleSubmit={handleSubmit}
+      />
 
       <Container fluid='sm' className='pt-5'>
         <Row className='pb-5 pt-5'>
@@ -76,6 +90,10 @@ function Home () {
                 handleChange={handleChange}
               />
             </Form>
+          </Col>
+
+          <Col xs={12} sm={6}>
+            <RateParcels parcels={rateParcels} />
           </Col>
         </Row>
       </Container>

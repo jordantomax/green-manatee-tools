@@ -3,6 +3,7 @@ import mapValues from 'lodash/mapValues'
 import isPlainObject from 'lodash/isPlainObject'
 import isArray from 'lodash/isArray'
 import snakeCase from 'lodash/snakeCase'
+import camelCase from 'lodash/camelCase'
 
 function deepMap (mapper) {
   return function (obj, fn) {
@@ -31,5 +32,11 @@ export function deepMapValues (obj, map) {
 export function deepToSnakeCase (obj) {
   return deepMapKeys(obj, (value, key) => {
     return snakeCase(key).replace(/_(\d+)/g, '$1')
+  })
+}
+
+export function deepToCamelCase (obj) {
+  return deepMapKeys(obj, (value, key) => {
+    return camelCase(key)
   })
 }

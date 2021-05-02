@@ -1,9 +1,9 @@
 import React from 'react'
-import { Navbar, Nav, Button } from 'react-bootstrap'
+import { Navbar, Nav, Button, Spinner } from 'react-bootstrap'
 
 import { AuthContext } from '../context/Auth'
 
-function AppNav ({ handleSubmit }) {
+function AppNav ({ handleSubmit, isLoading }) {
   const auth = React.useContext(AuthContext)
 
   function handleLogOut () {
@@ -20,7 +20,21 @@ function AppNav ({ handleSubmit }) {
 
       <Nav>
         <Nav.Item>
-          <Button onClick={handleSubmit}>
+          <Button
+            variant='primary'
+            disabled={isLoading}
+            onClick={handleSubmit}
+          >
+            {isLoading && (
+              <Spinner
+                as='span'
+                animation='border'
+                size='sm'
+                role='status'
+                aria-hidden='true'
+                className='mr-2'
+              />
+            )}
             Get Rates
           </Button>
         </Nav.Item>
