@@ -1,4 +1,5 @@
 import React from 'react'
+import styled from 'styled-components'
 import cloneDeep from 'lodash/cloneDeep'
 import {
   Container,
@@ -14,11 +15,11 @@ import HeaderNav from '../components/Nav'
 import Address from '../components/Address'
 import Parcels from '../components/Parcels'
 import RateParcels from '../components/RateParcels'
+import Rates from '../components/Rates'
 
 function Home () {
   const [rateParcels, setRateParcels] = React.useState(getLocalData('rateParcels') || [])
   const [rates, setRates] = React.useState(getLocalData('rates') || [])
-
   const {
     input,
     isLoading,
@@ -54,24 +55,27 @@ function Home () {
       setLocalData('addressTo', newInput.addressTo)
       setLocalData('parcels', newInput.parcels)
     },
-    afterSubmit: (res) => {
-      setLocalData('rateParcels', res.parcels)
-      setLocalData('rates', res.rates)
-      setRateParcels(res.parcels)
-      setRates(res.rates)
-    }
+    afterSubmit: setRateData
   })
+
+  function setRateData (data) {
+    setLocalData('rateParcels', data.parcels)
+    setLocalData('rates', data.rates)
+    setRateParcels(data.parcels)
+    setRates(data.rates)
+  }
 
   return (
     <>
       <HeaderNav
         isLoading={isLoading}
+        setRateData={setRateData}
         handleSubmit={handleSubmit}
       />
 
-      <Container fluid='sm' className='pt-5'>
+      <Container fluid>
         <Row className='pb-5 pt-5'>
-          <Col xs={12} sm={6}>
+          <ColWithBg xs={12} sm={6} className='pt-5'>
             <Form>
               <Address
                 address={input.addressFrom}
@@ -90,15 +94,21 @@ function Home () {
                 handleChange={handleChange}
               />
             </Form>
-          </Col>
+          </ColWithBg>
 
-          <Col xs={12} sm={6}>
+          <Col xs={12} sm={6} className='pt-5'>
             <RateParcels parcels={rateParcels} />
+            <Rates rates={rates} />
           </Col>
         </Row>
       </Container>
     </>
   )
 }
+
+const ColWithBg = styled(Col)`
+  background-color: #eaeaea;
+  border-right: 1px solid #d5d5d5;
+`
 
 export default Home

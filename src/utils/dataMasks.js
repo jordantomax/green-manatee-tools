@@ -6,3 +6,12 @@ export const rateParcelMask = [
   'massUnit',
   'distanceUnit'
 ]
+
+export const rateMask = [
+  'amount',
+  'currency',
+  'provider',
+  'estimatedDays',
+  'carrierAccount',
+  'durationDays'
+]

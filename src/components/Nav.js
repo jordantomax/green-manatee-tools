@@ -3,7 +3,11 @@ import { Navbar, Nav, Button, Spinner } from 'react-bootstrap'
 
 import { AuthContext } from '../context/Auth'
 
-function AppNav ({ handleSubmit, isLoading }) {
+function AppNav ({
+  setRateData,
+  handleSubmit,
+  isLoading
+}) {
   const auth = React.useContext(AuthContext)
 
   function handleLogOut () {
@@ -20,7 +24,16 @@ function AppNav ({ handleSubmit, isLoading }) {
 
       <Nav>
         <Nav.Item>
+          <Nav.Link
+            onClick={() => setRateData({ rates: [], parcels: [] })}
+          >
+            Reset Rates
+          </Nav.Link>
+        </Nav.Item>
+
+        <Nav.Item>
           <Button
+            className='ml-2'
             variant='primary'
             disabled={isLoading}
             onClick={handleSubmit}
