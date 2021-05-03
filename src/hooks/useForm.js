@@ -4,7 +4,6 @@ import set from 'lodash/set'
 import camelToSentenceCase from '../utils/camelToSentenceCase'
 
 import shippo from '../utils/shippo'
-import { deepToCamelCase } from '../utils/deepMap'
 import validate from '../utils/validation'
 
 function _validateInput (input, required, setErrors) {
@@ -70,7 +69,7 @@ function useForm ({
     try {
       const finalInput = massageInput ? massageInput(input) : input
       const res = await shippo(resource, action, finalInput)
-      afterSubmit && afterSubmit(deepToCamelCase(res))
+      afterSubmit && afterSubmit(res)
     } catch (serverErrors) {
       handleServerError(serverErrors, setErrors)
     } finally {

@@ -12,7 +12,7 @@ function PurchasedRate ({ rate }) {
     async function getLabels () {
       try {
         const res = await shippo('transaction', 'list', {
-          rate: rate.objectId,
+          rate: rate.rate,
           results: 50
         })
         setResults(res.results)
@@ -43,6 +43,7 @@ function PurchasedRate ({ rate }) {
             <div className='mt-4'>
               <h4>All Labels</h4>
               {results.map(result => {
+                console.log(result)
                 return (
                   <DataList
                     key={result.objectId}
