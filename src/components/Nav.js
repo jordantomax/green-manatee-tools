@@ -23,6 +23,18 @@ function AppNav ({
 
   return (
     <Navbar fixed='top' bg='dark' variant='dark'>
+      <Navbar.Brand>Shippo Multi-Piece Shipments</Navbar.Brand>
+      <Nav>
+        <Nav.Item>
+          <Nav.Link target='_blank' href='https://lazycoconuts.com'>
+            <Logo>
+              <LogoMark src='/logo.png' />
+              A Lazy Coconuts Project
+            </Logo>
+          </Nav.Link>
+        </Nav.Item>
+      </Nav>
+
       <Nav className='ml-auto'>
         <Nav.Item>
           <AuthConsumer>
@@ -78,6 +90,19 @@ const Token = styled(Nav.Link)`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+`
+
+const Logo = styled.div`
+  display: flex;
+  align-items: center;
+  padding-left: 35px;
+  position: relative;
+`
+
+const LogoMark = styled.img`
+  max-height: 30px;
+  position: absolute;
+  left: 0;
 `
 
 export default AppNav
