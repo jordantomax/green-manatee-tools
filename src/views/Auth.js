@@ -2,12 +2,14 @@ import React from 'react'
 import {
   Form,
   Container,
+  Card,
   Button
 } from 'react-bootstrap'
 import styled from 'styled-components'
 
 import { AuthContext } from '../context/Auth'
-import Input from '../components/Input'
+import Input from '../components/InputStacked'
+import HeaderNav from '../components/Nav'
 
 function Auth () {
   const auth = React.useContext(AuthContext)
@@ -19,29 +21,50 @@ function Auth () {
   }
 
   return (
-    <Wrap>
-      <h1>Log in</h1>
-      <Form onSubmit={handleSubmit}>
-        <Input
-          label='Auth Token'
-          onChange={e => setToken(e.target.value)}
-        />
+    <Bg className='bg-dark'>
+      <Content>
+        <HeaderNav />
 
-        <Button type='submit'>
-          Log In
-        </Button>
-      </Form>
-    </Wrap>
+        <h1 className='text-white'>Log in</h1>
+        <Card>
+          <Card.Body>
+            <Form onSubmit={handleSubmit}>
+              <Input
+                vertical
+                label='API Auth Token'
+                onChange={e => setToken(e.target.value)}
+              />
+
+              <Buttons>
+                <Button type='submit'>
+                  Log In
+                </Button>
+              </Buttons>
+            </Form>
+          </Card.Body>
+        </Card>
+      </Content>
+    </Bg>
   )
 }
 
-const Wrap = styled(Container)`
+const Bg = styled.div`
+  height: 100%;
+`
+
+const Content = styled(Container)`
   display: flex;
   height: 100%;
   flex-direction: column;
   justify-content: center;
   margin: 0 auto;
-  max-width: 600px;
+  max-width: 500px;
+`
+
+const Buttons = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 `
 
 export default Auth

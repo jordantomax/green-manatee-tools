@@ -36,50 +36,56 @@ function AppNav ({
       </Nav>
 
       <Nav className='ml-auto'>
-        <Nav.Item>
-          <AuthConsumer>
-            {({ token }) => {
-              return (
-                <Token>
-                  Logged in as {token}
-                </Token>
-              )
-            }}
-          </AuthConsumer>
-        </Nav.Item>
+        <AuthConsumer>
+          {({ isLoggedIn, token }) => {
+            return isLoggedIn && (
+              <>
+                <Nav.Item>
+                  <Token>
+                    Logged in as {token}
+                  </Token>
+                </Nav.Item>
 
-        <Nav.Item>
-          <Nav.Link onClick={handleLogOut}>
-            Log Out
-          </Nav.Link>
-        </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link onClick={handleLogOut}>
+                    Log Out
+                  </Nav.Link>
+                </Nav.Item>
+              </>
+            )
+          }}
+        </AuthConsumer>
 
-        <Nav.Item>
-          <Nav.Link onClick={handleResetRates}>
-            Reset Rates
-          </Nav.Link>
-        </Nav.Item>
+        {setRateData && (
+          <>
+            <Nav.Item>
+              <Nav.Link onClick={handleResetRates}>
+                Reset Rates
+              </Nav.Link>
+            </Nav.Item>
 
-        <Nav.Item>
-          <Button
-            className='ml-2'
-            variant='primary'
-            disabled={isLoading}
-            onClick={handleSubmit}
-          >
-            {isLoading && (
-              <Spinner
-                as='span'
-                animation='border'
-                size='sm'
-                role='status'
-                aria-hidden='true'
-                className='mr-2'
-              />
-            )}
-            Check Rates
-          </Button>
-        </Nav.Item>
+            <Nav.Item>
+              <Button
+                className='ml-2'
+                variant='primary'
+                disabled={isLoading}
+                onClick={handleSubmit}
+              >
+                {isLoading && (
+                  <Spinner
+                    as='span'
+                    animation='border'
+                    size='sm'
+                    role='status'
+                    aria-hidden='true'
+                    className='mr-2'
+                  />
+                )}
+                Check Rates
+              </Button>
+            </Nav.Item>
+          </>
+        )}
       </Nav>
     </Navbar>
   )
