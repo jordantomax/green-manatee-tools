@@ -16,7 +16,7 @@ function Rates ({ rates, setPurchasedRate }) {
     action: 'create',
     defaultInput: {
       rate: null,
-      labelFileType: 'PDF'
+      labelFileType: 'PDF_4x6'
     },
     afterSubmit: setPurchasedRate
   })

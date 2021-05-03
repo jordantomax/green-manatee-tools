@@ -2,13 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import isEqual from 'lodash/isEqual'
 import set from 'lodash/set'
 import camelToSentenceCase from '../utils/camelToSentenceCase'
-import shippo from 'shippo'
 
-import { getSavedToken } from '../utils/auth'
-import {
-  deepToSnakeCase,
-  deepToCamelCase
-} from '../utils/deepMap'
+import shippo from '../utils/shippo'
+import { deepToCamelCase } from '../utils/deepMap'
 import validate from '../utils/validation'
 
 function _validateInput (input, required, setErrors) {
@@ -73,11 +69,7 @@ function useForm ({
 
     try {
       const finalInput = massageInput ? massageInput(input) : input
-      finalInput.async = false
-      const token = await getSavedToken()
-      const session = shippo(token)
-
-      const res = await session[resource][action](deepToSnakeCase(finalInput))
+      const res = await shippo(resource, action, finalInput)
       afterSubmit && afterSubmit(deepToCamelCase(res))
     } catch (serverErrors) {
       handleServerError(serverErrors, setErrors)
