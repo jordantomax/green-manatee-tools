@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import isObject from 'lodash/isObject'
+import isPlainObject from 'lodash/isPlainObject'
+import isArray from 'lodash/isArray'
 import {
   Row,
   Col
@@ -18,6 +19,30 @@ function DataList ({ obj, mask, imageMask, linkMask }) {
     ) isVisible = true
     if (!isVisible) return false
 
+    function getDisplayedValue () {
+      if (!value) return null
+      let displayedValue
+
+      if (mask && mask.includes(key)) {
+        if (isPlainObject(value)) {
+          console.log("IS OBJECT: ", value)
+          return null
+        } else if (isArray(value)) {
+          return value.reduce((prev, cur) => prev + ', ' + cur)
+        } else {
+          return value
+        }
+      } else if (imageMask && imageMask.includes(key)) {
+        return <img src={value} alt={key} />
+      } else if (linkMask && linkMask.includes(key)) {
+        return (
+          <Link target='_blank' rel='noreferrer' href={value}>{value}</Link>
+        )
+      }
+
+      return displayedValue
+    }
+
     return (
       <Row className='mb-1' key={j}>
         <Col xs={5}>
@@ -26,14 +51,7 @@ function DataList ({ obj, mask, imageMask, linkMask }) {
           </span>
         </Col>
         <Col xs={7}>
-          {mask && mask.includes(key) && !isObject(value) && value}
-          {imageMask && imageMask.includes(key) && (
-            <img src={value} alt={key} />
-          )}
-
-          {linkMask && linkMask.includes(key) && (
-            <Link target='_blank' rel='noreferrer' href={value}>{value}</Link>
-          )}
+          {getDisplayedValue()}
         </Col>
       </Row>
     )
