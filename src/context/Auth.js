@@ -1,9 +1,9 @@
 import React, { useState, useEffect, createContext } from 'react'
 
 import {
-  getSavedToken,
-  setSavedToken,
-  removeSavedToken
+  getSavedTokens,
+  setSavedTokens,
+  removeSavedTokens
 } from '../utils/auth'
 
 export const AuthContext = createContext({
@@ -14,37 +14,37 @@ export const AuthContext = createContext({
 })
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(null)
+  const [tokens, setTokens] = useState(null)
   const [isLoggedIn, setIsLoggedIn] = useState(null)
 
   useEffect(() => {
     (async function () {
-      const token = await getSavedToken()
-      setTokens(token)
-      setIsLoggedIn(!!token)
+      const tokens = await getSavedTokens()
+      setAndSaveTokens(tokens)
+      setIsLoggedIn(!!tokens)
     })()
   }, [])
 
-  const setTokens = (token) => {
-    setToken(token)
-    setSavedToken(token)
+  const setAndSaveTokens = (tokens) => {
+    setTokens(tokens)
+    setSavedTokens(tokens)
   }
 
-  const logIn = async (token) => {
-    await setTokens(token)
+  const logIn = async (tokens) => {
+    setAndSaveTokens(tokens)
     setIsLoggedIn(true)
   }
 
   const logOut = async () => {
-    setToken(null)
-    removeSavedToken()
+    setTokens(null)
+    removeSavedTokens()
     setIsLoggedIn(false)
   }
 
   return (
     <AuthContext.Provider
       value={{
-        token: token,
+        tokens: tokens,
         isLoggedIn: isLoggedIn,
         logIn: logIn,
         logOut: logOut
