@@ -21,7 +21,6 @@ function DataList ({ obj, mask, imageMask, linkMask }) {
 
     function getDisplayedValue () {
       if (!value) return null
-      let displayedValue
 
       if (mask && mask.includes(key)) {
         if (isPlainObject(value)) {
@@ -32,15 +31,17 @@ function DataList ({ obj, mask, imageMask, linkMask }) {
         } else {
           return value
         }
-      } else if (imageMask && imageMask.includes(key)) {
+      }
+
+      if (imageMask && imageMask.includes(key)) {
         return <img src={value} alt={key} />
-      } else if (linkMask && linkMask.includes(key)) {
+      }
+
+      if (linkMask && linkMask.includes(key)) {
         return (
           <Link target='_blank' rel='noreferrer' href={value}>{value}</Link>
         )
       }
-
-      return displayedValue
     }
 
     return (
