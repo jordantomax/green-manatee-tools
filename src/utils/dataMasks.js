@@ -14,7 +14,9 @@ export const rateMask = [
   'provider',
   'estimatedDays',
   'carrierAccount',
-  'durationDays'
+  'durationDays',
+  'servicelevel',
+  'name'
 ]
 
 export const rateImageMask = [
