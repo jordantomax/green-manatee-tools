@@ -27,7 +27,7 @@ function DataList ({ obj, mask, imageMask, linkMask }) {
             if (mask.includes(key)) displayedValue += value[key]
           }
           return displayedValue
-        } else if (isArray(value)) {
+        } else if (isArray(value) && value.length > 0) {
           return value.reduce((prev, cur) => prev + ', ' + cur)
         } else {
           return value

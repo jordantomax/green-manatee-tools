@@ -40,20 +40,26 @@ function PurchasedRate ({ rate }) {
           />
 
           {results && results.length > 0 && (
-            <div className='mt-4'>
-              <h4>All Labels</h4>
-              {results.map(result => {
-                console.log(result)
-                return (
-                  <DataList
-                    key={result.objectId}
-                    obj={result}
-                    mask={purchasedRateMask}
-                    linkMask={purchasedRateLinkMask}
-                  />
-                )
-              })}
-            </div>
+            <>
+              <div className='mt-4'>
+                <h4>All Tracking Numbers</h4>
+                {results.map(result => result.trackingNumber).reduce((prev, tn) => prev + tn + ', ')}
+              </div>
+
+              <div className='mt-4'>
+                <h4>All Labels</h4>
+                {results.map(result => {
+                  return (
+                    <DataList
+                      key={result.objectId}
+                      obj={result}
+                      mask={purchasedRateMask}
+                      linkMask={purchasedRateLinkMask}
+                    />
+                  )
+                })}
+              </div>
+            </>
           )}
         </Card.Body>
       </Card>
