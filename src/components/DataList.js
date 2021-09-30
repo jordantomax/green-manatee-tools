@@ -19,28 +19,19 @@ function DataList ({ obj, mask, imageMask, linkMask }) {
     ) isVisible = true
     if (!isVisible) return false
 
-    function getDisplayedValue () {
-      if (!value) return null
-
+    function getMaskedString () {
       if (mask && mask.includes(key)) {
         if (isPlainObject(value)) {
-          console.log("IS OBJECT: ", value)
-          return null
+          let displayedValue = ''
+          for (const key in value) {
+            if (mask.includes(key)) displayedValue += value[key]
+          }
+          return displayedValue
         } else if (isArray(value)) {
           return value.reduce((prev, cur) => prev + ', ' + cur)
         } else {
           return value
         }
-      }
-
-      if (imageMask && imageMask.includes(key)) {
-        return <img src={value} alt={key} />
-      }
-
-      if (linkMask && linkMask.includes(key)) {
-        return (
-          <Link target='_blank' rel='noreferrer' href={value}>{value}</Link>
-        )
       }
     }
 
@@ -51,9 +42,13 @@ function DataList ({ obj, mask, imageMask, linkMask }) {
             {camelToSentenceCase(key)}
           </span>
         </Col>
-        <Col xs={7}>
-          {getDisplayedValue()}
-        </Col>
+        {value && (
+          <Col xs={7}>
+            {getMaskedString()}
+            {imageMask && imageMask.includes(key) && <img src={value} alt={key} />}
+            {linkMask && linkMask.includes(key) && <Link target='_blank' rel='noreferrer' href={value}>{value}</Link>}
+          </Col>
+        )}
       </Row>
     )
   })
