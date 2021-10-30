@@ -43,7 +43,7 @@ function PurchasedRate ({ rate }) {
             <>
               <div className='mt-4'>
                 <h4>All Tracking Numbers</h4>
-                {results.map(result => result.trackingNumber).reduce((prev, tn) => prev + tn + ', ')}
+                {results.map(result => result.trackingNumber).reduce((prev, tn) => prev + ', ' + tn)}
               </div>
 
               <div className='mt-4'>
