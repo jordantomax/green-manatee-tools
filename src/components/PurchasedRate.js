@@ -27,7 +27,7 @@ function PurchasedRate ({ rate }) {
     getLabels()
   }, [rate])
 
-  async function downloadMergedLabels () {
+  async function getMergedLabels () {
     setIsLoadingMergedLabels(true)
     const res = await fetch(PDF_MERGER_API_URL, {
       method: 'POST',
@@ -72,7 +72,7 @@ function PurchasedRate ({ rate }) {
                 <h4>Merged Labels</h4>
                 <Button
                   disabled={isLoadingMergedLabels}
-                  onClick={downloadMergedLabels}
+                  onClick={getMergedLabels}
                 >
                   {isLoadingMergedLabels && <ButtonSpinner />}
                   Download merged labels PDF
