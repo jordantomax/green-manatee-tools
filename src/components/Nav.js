@@ -1,8 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Navbar, Nav, Button, Spinner } from 'react-bootstrap'
+import { Navbar, Nav, Button } from 'react-bootstrap'
 
 import { AuthContext, AuthConsumer } from '../context/Auth'
+import ButtonSpinner from './ButtonSpinner'
 
 function AppNav ({
   setRateData,
@@ -71,16 +72,7 @@ function AppNav ({
                 disabled={isLoading}
                 onClick={handleSubmit}
               >
-                {isLoading && (
-                  <Spinner
-                    as='span'
-                    animation='border'
-                    size='sm'
-                    role='status'
-                    aria-hidden='true'
-                    className='mr-2'
-                  />
-                )}
+                {isLoading && <ButtonSpinner />}
                 Check Rates
               </Button>
             </Nav.Item>
