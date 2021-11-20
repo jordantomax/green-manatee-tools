@@ -1,9 +1,10 @@
 import React from 'react'
-import { Form, Card, Button, Spinner } from 'react-bootstrap'
+import { Form, Card, Button } from 'react-bootstrap'
 
 import useForm from '../hooks/useForm'
 import { rateMask, rateImageMask } from '../utils/dataMasks'
-import DataList from '../components/DataList'
+import DataList from './DataList'
+import ButtonSpinner from './ButtonSpinner'
 
 function Rates ({ rates, setPurchasedRate }) {
   const {
@@ -63,16 +64,7 @@ function Rates ({ rates, setPurchasedRate }) {
                     disabled={isLoading}
                     type='submit'
                   >
-                    {isLoading && (
-                      <Spinner
-                        as='span'
-                        animation='border'
-                        size='sm'
-                        role='status'
-                        aria-hidden='true'
-                        className='mr-2'
-                      />
-                    )}
+                    {isLoading && <ButtonSpinner />}
                     Purchase This Rate
                   </Button>
                 )}
