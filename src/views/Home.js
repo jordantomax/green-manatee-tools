@@ -1,17 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import cloneDeep from 'lodash/cloneDeep'
 import {
   Container,
   Form,
   Row,
-  Col,
-  Button
+  Col
 } from 'react-bootstrap'
 
 import { setLocalData, getLocalData } from '../utils/storage'
-import callNotion from '../utils/notion'
-import { NOTION_SHIPMENTS_DB_ID } from '../constants'
 import { addressFactory } from '../factories'
 import useForm from '../hooks/useForm'
 import HeaderNav from '../components/Nav'
@@ -20,11 +17,12 @@ import Parcels from '../components/Parcels'
 import RateParcels from '../components/RateParcels'
 import Rates from '../components/Rates'
 import PurchasedRate from '../components/PurchasedRate'
+import NotionShipments from '../components/NotionShipments'
 
 function Home () {
-  const [rateParcels, setRateParcels] = React.useState(getLocalData('rateParcels') || [])
-  const [rates, setRates] = React.useState(getLocalData('rates') || [])
-  const [purchasedRate, setPurchasedRate] = React.useState(getLocalData('purchasedRate') || null)
+  const [rateParcels, setRateParcels] = useState(getLocalData('rateParcels') || [])
+  const [rates, setRates] = useState(getLocalData('rates') || [])
+  const [purchasedRate, setPurchasedRate] = useState(getLocalData('purchasedRate') || null)
   const {
     input,
     isLoading,
@@ -63,11 +61,6 @@ function Home () {
     afterSubmit: setRateData
   })
 
-  function getNotionShipments () {
-    const path = `databases/${NOTION_SHIPMENTS_DB_ID}/query`
-    callNotion(path, 'POST')
-  }
-
   function setRateData (data) {
     setLocalData('rateParcels', data.parcels)
     setLocalData('rates', data.rates)
@@ -92,8 +85,7 @@ function Home () {
       <Container fluid>
         <Row className='pt-5'>
           <ColWithBg xs={12} sm={6} className='pb-5 pt-5'>
-
-            <Button className='mb-3' onClick={getNotionShipments}>Populate from Notion Shipment</Button>
+            <NotionShipments />
 
             <Form>
               <Address

@@ -5,7 +5,6 @@ import { deepToCamelCase } from './deepMap'
 async function callNotion (path, method) {
   const tokens = await getSavedTokens()
   const token = tokens.notion
-  console.log(path, method || 'GET')
   const res = await fetch(`${NOTION_PROXY_HOST}/${path}`, {
     method: method || 'GET',
     headers: {
