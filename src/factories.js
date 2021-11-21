@@ -1,5 +1,10 @@
+function idFactory () {
+  return Math.random().toString(36).substring(7)
+}
+
 export function addressFactory () {
   return {
+    id: idFactory(),
     name: '',
     company: '',
     street1: '',
@@ -14,7 +19,7 @@ export function addressFactory () {
 
 export function parcelFactory () {
   return {
-    id: Math.random().toString(36).substring(7),
+    id: idFactory(),
     length: '',
     width: '',
     height: '',

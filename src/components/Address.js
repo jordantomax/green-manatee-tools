@@ -9,17 +9,19 @@ function Address ({ address, name, handleChange }) {
     <div className='pb-4'>
       <h2>{camelToSentenceCase(name)}</h2>
 
-      {Object.entries(address).map(([key, value], i) => {
-        return (
-          <Input
-            key={key}
-            id={`${name}.${key}`}
-            label={capitalize(key)}
-            onChange={handleChange}
-            defaultValue={value}
-          />
-        )
-      })}
+      {Object.entries(address)
+        .filter(([key]) => key !== 'id')
+        .map(([key, value], i) => {
+          return (
+            <Input
+              key={`${address.id}${key}`}
+              id={`${name}.${key}`}
+              label={capitalize(key)}
+              onChange={handleChange}
+              defaultValue={value}
+            />
+          )
+        })}
     </div>
   )
 }

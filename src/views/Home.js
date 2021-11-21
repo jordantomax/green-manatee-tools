@@ -27,7 +27,8 @@ function Home () {
     input,
     isLoading,
     handleChange,
-    handleSubmit
+    handleSubmit,
+    bulkUpdate
   } = useForm({
     resource: 'shipment',
     action: 'create',
@@ -85,7 +86,7 @@ function Home () {
       <Container fluid>
         <Row className='pt-5'>
           <ColWithBg xs={12} sm={6} className='pb-5 pt-5'>
-            <NotionShipments />
+            <NotionShipments bulkUpdate={bulkUpdate} />
 
             <Form>
               <Address
