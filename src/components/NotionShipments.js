@@ -5,6 +5,7 @@ import {
   ListGroup
 } from 'react-bootstrap'
 
+import { setLocalData, getLocalData } from '../utils/storage'
 import { NOTION_SHIPMENTS_DB_ID } from '../constants'
 import notion from '../utils/notion'
 import { addressFactory, parcelFactory } from '../factories'
@@ -17,11 +18,16 @@ function NotionShipments ({ bulkUpdate }) {
 
   function handleClose () { setData(null) }
 
-  async function getShipments () {
+  async function getShipments (forceUpdate) {
     setIsLoading(true)
-    const res = await notion.dbQuery(NOTION_SHIPMENTS_DB_ID)
+    let data = getLocalData('notionShipments')
+    if (!data || forceUpdate) {
+      const res = await notion.dbQuery(NOTION_SHIPMENTS_DB_ID)
+      data = res.results
+    }
     setIsLoading(false)
-    setData(res.results)
+    setLocalData('notionShipments', data)
+    setData(data)
   }
 
   async function selectShipment (shipment) {
@@ -52,7 +58,7 @@ function NotionShipments ({ bulkUpdate }) {
       <Button
         className='mb-3'
         disabled={isLoading}
-        onClick={getShipments}
+        onClick={() => getShipments(false)}
       >
         {isLoading && <ButtonSpinner />}
         Populate from Notion Shipment
@@ -61,6 +67,10 @@ function NotionShipments ({ bulkUpdate }) {
       <Modal show={data && true} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Shipments</Modal.Title>
+          <Button onClick={() => getShipments(true)} className='ml-3'>
+            {isLoading && <ButtonSpinner />}
+            Refresh
+          </Button>
         </Modal.Header>
 
         <Modal.Body>
@@ -79,7 +89,6 @@ function NotionShipments ({ bulkUpdate }) {
             })}
           </ListGroup>
         </Modal.Body>
-        something
       </Modal>
     </>
   )
