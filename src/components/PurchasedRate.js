@@ -15,7 +15,7 @@ function PurchasedRate ({ rate }) {
     async function getLabels () {
       try {
         const res = await shippo('transaction', 'list', {
-          rate: rate.rate,
+          rate: rate?.rate,
           results: 50
         })
         setResults(res.results)

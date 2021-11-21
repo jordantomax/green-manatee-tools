@@ -13,11 +13,12 @@ import HeaderNav from '../components/Nav'
 
 function Auth () {
   const auth = React.useContext(AuthContext)
-  const [token, setToken] = React.useState('')
+  const [shippoToken, setShippoToken] = React.useState('')
+  const [notionToken, setNotionToken] = React.useState('')
 
   function handleSubmit (e) {
     e.preventDefault()
-    auth.logIn(token)
+    auth.logIn({ shippo: shippoToken, notion: notionToken })
   }
 
   return (
@@ -31,8 +32,14 @@ function Auth () {
             <Form onSubmit={handleSubmit}>
               <Input
                 vertical
-                label='API Auth Token'
-                onChange={e => setToken(e.target.value)}
+                label='Shippo API Token'
+                onChange={e => setShippoToken(e.target.value)}
+              />
+
+              <Input
+                vertical
+                label='Notion API Token'
+                onChange={e => setNotionToken(e.target.value)}
               />
 
               <Buttons>

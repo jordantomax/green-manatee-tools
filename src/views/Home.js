@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import cloneDeep from 'lodash/cloneDeep'
 import {
@@ -17,16 +17,18 @@ import Parcels from '../components/Parcels'
 import RateParcels from '../components/RateParcels'
 import Rates from '../components/Rates'
 import PurchasedRate from '../components/PurchasedRate'
+import NotionShipments from '../components/NotionShipments'
 
 function Home () {
-  const [rateParcels, setRateParcels] = React.useState(getLocalData('rateParcels') || [])
-  const [rates, setRates] = React.useState(getLocalData('rates') || [])
-  const [purchasedRate, setPurchasedRate] = React.useState(getLocalData('purchasedRate') || null)
+  const [rateParcels, setRateParcels] = useState(getLocalData('rateParcels') || [])
+  const [rates, setRates] = useState(getLocalData('rates') || [])
+  const [purchasedRate, setPurchasedRate] = useState(getLocalData('purchasedRate') || null)
   const {
     input,
     isLoading,
     handleChange,
-    handleSubmit
+    handleSubmit,
+    bulkUpdate
   } = useForm({
     resource: 'shipment',
     action: 'create',
@@ -84,6 +86,8 @@ function Home () {
       <Container fluid>
         <Row className='pt-5'>
           <ColWithBg xs={12} sm={6} className='pb-5 pt-5'>
+            <NotionShipments bulkUpdate={bulkUpdate} />
+
             <Form>
               <Address
                 address={input.addressFrom}

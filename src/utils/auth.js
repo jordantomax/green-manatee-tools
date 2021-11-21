@@ -4,14 +4,14 @@ import {
   removeLocalData
 } from './storage'
 
-export const getSavedToken = async () => {
-  return getLocalData('token')
+export const getSavedTokens = async () => {
+  return getLocalData('tokens')
 }
 
-export const setSavedToken = (token) => {
-  setLocalData('token', token)
+export const setSavedTokens = (tokens) => {
+  setLocalData('tokens', tokens)
 }
 
-export const removeSavedToken = (token) => {
-  removeLocalData('token')
+export const removeSavedTokens = (tokens) => {
+  removeLocalData('tokens')
 }

@@ -38,12 +38,12 @@ function AppNav ({
 
       <Nav className='ml-auto'>
         <AuthConsumer>
-          {({ isLoggedIn, token }) => {
+          {({ isLoggedIn, tokens }) => {
             return isLoggedIn && (
               <>
                 <Nav.Item>
                   <Token>
-                    Logged in as {token}
+                    Logged in as {tokens.shippo}
                   </Token>
                 </Nav.Item>
 

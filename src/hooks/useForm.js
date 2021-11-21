@@ -53,6 +53,12 @@ function useForm ({
     return _validateInput(input, required, setErrors)
   }
 
+  function bulkUpdate (updates) {
+    const update = Object.assign({}, input, updates)
+    setInput(update)
+    afterChange && afterChange(update)
+  }
+
   function handleChange (e) {
     const { name, value } = e.target
     const update = Object.assign({}, input)
@@ -85,7 +91,8 @@ function useForm ({
     isLoading,
     isChanged: !isEqual(defaultInput, input),
     handleChange,
-    handleSubmit
+    handleSubmit,
+    bulkUpdate
   }
 }
 
