@@ -5,10 +5,13 @@ import {
   Container,
   Form,
   Row,
-  Col
+  Col,
+  Button
 } from 'react-bootstrap'
 
 import { setLocalData, getLocalData } from '../utils/storage'
+import callNotion from '../utils/notion'
+import { NOTION_SHIPMENTS_DB_ID } from '../constants'
 import { addressFactory } from '../factories'
 import useForm from '../hooks/useForm'
 import HeaderNav from '../components/Nav'
@@ -60,6 +63,11 @@ function Home () {
     afterSubmit: setRateData
   })
 
+  function getNotionShipments () {
+    const path = `databases/${NOTION_SHIPMENTS_DB_ID}/query`
+    callNotion(path, 'POST')
+  }
+
   function setRateData (data) {
     setLocalData('rateParcels', data.parcels)
     setLocalData('rates', data.rates)
@@ -84,6 +92,9 @@ function Home () {
       <Container fluid>
         <Row className='pt-5'>
           <ColWithBg xs={12} sm={6} className='pb-5 pt-5'>
+
+            <Button className='mb-3' onClick={getNotionShipments}>Populate from Notion Shipment</Button>
+
             <Form>
               <Address
                 address={input.addressFrom}
