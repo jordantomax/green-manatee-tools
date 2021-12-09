@@ -1,0 +1,80 @@
+import React, { useState } from 'react'
+import {
+  Container
+} from 'react-bootstrap'
+
+import notion from '../utils/notion'
+import NotionShipments from '../components/NotionShipments'
+
+function ShipmentEmail () {
+  const [shipments, setShipments] = useState([])
+
+  async function handleSelectShipment (shipments) {
+    const shipmentsText = []
+    for (let i = 0; i < shipments.length; i++) {
+      const shipment = shipments[i]
+      const [product, destination, cartonTemplate] = await Promise.all(
+        ['product', 'destination', 'cartonTemplate'].map(async (prop) => {
+          const id = shipment.properties[prop]?.relation[0]?.id
+          return await notion.pageRetrieve(id)
+        })
+      )
+
+      shipmentsText.push({
+        shipmentNumber: i,
+        productImage: product.properties.image.files[0].file.url,
+        productSku: product.properties.sku.richText[0].plainText,
+        destinationName: destination.properties.name.title[0].plainText,
+        caseQty: cartonTemplate.properties.unitQty.number,
+        numCases: shipment.properties.numCartons.number,
+        totalUnitQty: shipment.properties.totalUnits.formula.number
+      })
+    }
+
+    setShipments(shipmentsText)
+    console.log(shipmentsText)
+  }
+
+  console.log(shipments)
+
+  return (
+    <Container>
+      <NotionShipments handleSelectShipment={handleSelectShipment} />
+
+      <h3>Subject</h3>
+      <div className='mb-4 card'>
+        <div className='card-body'>
+          <span>Outbound - </span>
+          {shipments.map((s, i) => {
+            return (
+              <span key={i}>{s.productSku} ({s.totalUnitQty}){i !== shipments.length - 1 ? ', ' : ''}</span>
+            )
+          })}
+        </div>
+      </div>
+
+      <h3>Body</h3>
+      <div className='card'>
+        <div className='card-body'>
+          {shipments.map((s, i) => {
+            return (
+              <div key={i}>
+                <strong><u>SHIPMENT #{s.shipmentNumber + 1}</u></strong><br />
+                Reference Image:<br />
+                <img width='175' alt={`${s.productSku}`} src={s.productImage} /><br />
+                SKU: {s.productSku}<br />
+                Destination: {s.destinationName}<br />
+                Case Quantity: {s.caseQty}<br />
+                Total number of cases: {s.numCases}<br />
+                Total quantity: {s.totalUnitQty}<br /><br />
+                <br />
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </Container>
+  )
+}
+
+export default ShipmentEmail
