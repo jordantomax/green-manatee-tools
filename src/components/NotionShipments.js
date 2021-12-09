@@ -39,18 +39,14 @@ function NotionShipments ({ handleSelectShipment }) {
   }
 
   function handleCheck (shipment) {
-    console.log(shipment)
     const newShipments = [...shipments]
     const checkedShipmentIndex = newShipments.findIndex(s => s.id === shipment.id)
     if (checkedShipmentIndex >= 0) {
-      console.log('index', checkedShipmentIndex)
       newShipments.splice(checkedShipmentIndex, 1)
     } else {
-      console.log('no index')
       newShipments.push(shipment)
     }
     setShipments(newShipments)
-    console.log(newShipments)
   }
 
   return (
@@ -61,7 +57,7 @@ function NotionShipments ({ handleSelectShipment }) {
         onClick={() => getShipments(false)}
       >
         {isLoading && <ButtonSpinner />}
-        Populate from Notion Shipment
+        Select Notion Shipments
       </Button>
 
       <Modal centered show={data && true} onHide={handleClose}>
