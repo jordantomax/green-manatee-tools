@@ -2,19 +2,20 @@ import React, { useState } from 'react'
 import {
   Button,
   Modal,
-  ListGroup
+  ListGroup,
+  Form
 } from 'react-bootstrap'
 
 import { setLocalData, getLocalData } from '../utils/storage'
 import { NOTION_SHIPMENTS_DB_ID } from '../constants'
 import notion from '../utils/notion'
-import { addressFactory, parcelFactory } from '../factories'
 import ButtonSpinner from '../components/ButtonSpinner'
 
-function NotionShipments ({ bulkUpdate }) {
+function NotionShipments ({ handleSelectShipment }) {
   const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingShipmentId, setIsLoadingShipmentId] = useState(null)
+  const [isLoadingSelect, setIsLoadingSelect] = useState(false)
   const [data, setData] = useState(null)
+  const [shipments, setShipments] = useState([])
 
   function handleClose () { setData(null) }
 
@@ -30,27 +31,26 @@ function NotionShipments ({ bulkUpdate }) {
     setData(data)
   }
 
-  async function selectShipment (shipment) {
-    setIsLoadingShipmentId(shipment.id)
-    const [origin, destination, cartonTemplate] = await Promise.all(
-      ['origin', 'destination', 'cartonTemplate'].map(async (prop) => {
-        const id = shipment.properties[prop]?.relation[0]?.id
-        return await notion.pageRetrieve(id)
-      })
-    )
-    const addressProps = ['name', 'street1', 'city', 'state', 'zipCode', 'country', 'phone', 'email']
-    const addressFromBase = notion.massagePage(origin, addressProps, { zipCode: 'zip' })
-    const addressToBase = notion.massagePage(destination, addressProps, { zipCode: 'zip' })
-    const parcelBase = notion.massagePage(cartonTemplate, ['grossWeightLb', 'heightIn', 'lengthIn', 'widthIn'], { grossWeightLb: 'weight', heightIn: 'height', lengthIn: 'length', widthIn: 'width' })
-
-    const addressFrom = Object.assign({}, addressFactory(), addressFromBase)
-    const addressTo = Object.assign({}, addressFactory(), addressToBase)
-    const parcel = Object.assign({}, parcelFactory(), parcelBase)
-    parcel.quantity = shipment.properties.numCartons.number
-
-    bulkUpdate({ addressFrom, addressTo, parcels: [parcel] })
-    setIsLoadingShipmentId(null)
+  async function handleClick () {
+    await setIsLoadingSelect(true)
+    await handleSelectShipment(shipments)
+    await setIsLoadingSelect(false)
     handleClose()
+  }
+
+  function handleCheck (shipment) {
+    console.log(shipment)
+    const newShipments = [...shipments]
+    const checkedShipmentIndex = newShipments.findIndex(s => s.id === shipment.id)
+    if (checkedShipmentIndex >= 0) {
+      console.log('index', checkedShipmentIndex)
+      newShipments.splice(checkedShipmentIndex, 1)
+    } else {
+      console.log('no index')
+      newShipments.push(shipment)
+    }
+    setShipments(newShipments)
+    console.log(newShipments)
   }
 
   return (
@@ -64,31 +64,43 @@ function NotionShipments ({ bulkUpdate }) {
         Populate from Notion Shipment
       </Button>
 
-      <Modal show={data && true} onHide={handleClose}>
+      <Modal centered show={data && true} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Shipments</Modal.Title>
-          <Button onClick={() => getShipments(true)} className='ml-3'>
-            {isLoading && <ButtonSpinner />}
-            Refresh
-          </Button>
         </Modal.Header>
 
-        <Modal.Body>
+        <Modal.Body style={{ maxHeight: '350px', overflow: 'scroll' }}>
           <ListGroup>
             {data && data.map(shipment => {
               return (
                 <ListGroup.Item
                   key={shipment.id}
                   action
-                  onClick={() => selectShipment(shipment)}
+                  onClick={() => handleCheck(shipment)}
                 >
-                  {isLoadingShipmentId === shipment.id && <ButtonSpinner />}
-                  {shipment.properties?.id?.title[0]?.plainText}
+                  <Form.Check
+                    type='checkbox'
+                    readOnly
+                    checked={shipments.find(s => s.id === shipment.id) || false}
+                    label={shipment.properties?.id?.title[0]?.plainText}
+                  />
                 </ListGroup.Item>
               )
             })}
           </ListGroup>
         </Modal.Body>
+
+        <Modal.Footer>
+          <Button variant='secondary' onClick={() => getShipments(true)} className='ml-3'>
+            {isLoading && <ButtonSpinner />}
+            Refresh
+          </Button>
+
+          <Button variant='primary' disabled={shipments <= 0} onClick={handleClick}>
+            {isLoadingSelect && <ButtonSpinner />}
+            Select
+          </Button>
+        </Modal.Footer>
       </Modal>
     </>
   )

@@ -9,7 +9,8 @@ import {
 } from 'react-bootstrap'
 
 import { setLocalData, getLocalData } from '../utils/storage'
-import { addressFactory } from '../factories'
+import { addressFactory, parcelFactory } from '../factories'
+import notion from '../utils/notion'
 import useForm from '../hooks/useForm'
 import HeaderNav from '../components/Nav'
 import Address from '../components/Address'
@@ -74,6 +75,27 @@ function BuyPostage () {
     setPurchasedRate(rate)
   }
 
+  async function handleSelectNotionShipment (shipments) {
+    const shipment = shipments[0]
+    const [origin, destination, cartonTemplate] = await Promise.all(
+      ['origin', 'destination', 'cartonTemplate'].map(async (prop) => {
+        const id = shipment.properties[prop]?.relation[0]?.id
+        return await notion.pageRetrieve(id)
+      })
+    )
+    const addressProps = ['name', 'street1', 'city', 'state', 'zipCode', 'country', 'phone', 'email']
+    const addressFromBase = notion.massagePage(origin, addressProps, { zipCode: 'zip' })
+    const addressToBase = notion.massagePage(destination, addressProps, { zipCode: 'zip' })
+    const parcelBase = notion.massagePage(cartonTemplate, ['grossWeightLb', 'heightIn', 'lengthIn', 'widthIn'], { grossWeightLb: 'weight', heightIn: 'height', lengthIn: 'length', widthIn: 'width' })
+
+    const addressFrom = Object.assign({}, addressFactory(), addressFromBase)
+    const addressTo = Object.assign({}, addressFactory(), addressToBase)
+    const parcel = Object.assign({}, parcelFactory(), parcelBase)
+    parcel.quantity = shipment.properties.numCartons.number
+
+    bulkUpdate({ addressFrom, addressTo, parcels: [parcel] })
+  }
+
   return (
     <>
       <HeaderNav
@@ -86,7 +108,7 @@ function BuyPostage () {
       <Container fluid>
         <Row className='pt-5'>
           <ColWithBg xs={12} sm={6} className='pb-5 pt-5'>
-            <NotionShipments bulkUpdate={bulkUpdate} />
+            <NotionShipments handleSelectShipment={handleSelectNotionShipment} />
 
             <Form>
               <Address
