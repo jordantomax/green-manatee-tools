@@ -19,10 +19,12 @@ import RateParcels from '../components/RateParcels'
 import Rates from '../components/Rates'
 import PurchasedRate from '../components/PurchasedRate'
 import NotionShipments from '../components/NotionShipments'
+import Messages from '../components/BuyPostage/Messages'
 
 function BuyPostage () {
-  const [rateParcels, setRateParcels] = useState(getLocalData('rateParcels') || [])
-  const [rates, setRates] = useState(getLocalData('rates') || [])
+  const [rateParcels, setRateParcels] = useState(getLocalData('shipment')?.rateParcels || [])
+  const [rates, setRates] = useState(getLocalData('shipment')?.rates || [])
+  const [messages, setMessages] = useState(getLocalData('shipment')?.messages || [])
   const [purchasedRate, setPurchasedRate] = useState(getLocalData('purchasedRate') || null)
   const {
     input,
@@ -64,10 +66,10 @@ function BuyPostage () {
   })
 
   function setRateData (data) {
-    setLocalData('rateParcels', data.parcels)
-    setLocalData('rates', data.rates)
+    setLocalData('shipment', data)
     setRateParcels(data.parcels)
     setRates(data.rates)
+    setMessages(data.messages)
   }
 
   function _setPurchasedRate (rate) {
@@ -132,6 +134,7 @@ function BuyPostage () {
 
           <Col xs={12} sm={6} className='pt-5'>
             <PurchasedRate rate={purchasedRate} />
+            <Messages messages={messages} />
             <Rates
               rates={rates}
               setPurchasedRate={_setPurchasedRate}
