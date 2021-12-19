@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from 'react-bootstrap'
+import { Button, Card } from 'react-bootstrap'
 
 import camelToSentenceCase from '../utils/camelToSentenceCase'
 import { parcelFactory } from '../factories'
@@ -45,35 +45,34 @@ function Parcels ({
 
       {parcels.map((parcel, parcelIndex) => {
         return (
-          <div className='mb-3' key={parcel.id}>
-            <h5 className='d-flex justify-content-between align-items-center'>
+          <Card className='mb-3' key={parcel.id}>
+            <Card.Header>
               Parcel {parcelIndex}
-              <Button
-                size='sm'
-                variant='light'
-                onClick={() => handleDelete(parcelIndex)}
-              >
+
+              <Card.Link style={{ cursor: 'pointer', float: 'right' }} onClick={() => handleDelete(parcelIndex)}>
                 Delete
-              </Button>
-            </h5>
+              </Card.Link>
+            </Card.Header>
 
-            {Object.entries(parcel).map(([key, value], i) => {
-              if (key === 'id') return false
+            <Card.Body>
+              {Object.entries(parcel).map(([key, value], i) => {
+                if (key === 'id') return false
 
-              return (
-                <Input
-                  key={`${parcel.id}-${key}`}
-                  id={key}
-                  label={camelToSentenceCase(key)}
-                  defaultValue={value}
-                  onChange={(e) => {
-                    const { name, value } = e.target
-                    handleUpdate(parcelIndex, name, value)
-                  }}
-                />
-              )
-            })}
-          </div>
+                return (
+                  <Input
+                    key={`${parcel.id}-${key}`}
+                    id={key}
+                    label={camelToSentenceCase(key)}
+                    defaultValue={value}
+                    onChange={(e) => {
+                      const { name, value } = e.target
+                      handleUpdate(parcelIndex, name, value)
+                    }}
+                  />
+                )
+              })}
+            </Card.Body>
+          </Card>
         )
       })}
     </>
