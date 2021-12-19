@@ -9,14 +9,14 @@ function Customs ({ data, handleChange }) {
       <p>Required for international shipments</p>
 
       <Input
-        name='customsDeclaration.certifySigner'
+        id='customsDeclaration.certifySigner'
         label='Certify Signer'
         onChange={handleChange}
         defaultValue={data.certifySigner}
       />
 
       <Input
-        name='customsDeclaration.description'
+        id='customsDeclaration.description'
         label='Description'
         onChange={handleChange}
         defaultValue={data.description}
