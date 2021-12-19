@@ -1,8 +1,16 @@
 import React from 'react'
 
+import { customsItemFactory } from '../../factories'
 import Input from '../Input'
+import ItemGroup from '../ItemGroup'
 
 function Customs ({ data, handleChange }) {
+  function handleItemChange (value) {
+    handleChange({
+      target: { name: 'customsDeclaration.items', value }
+    })
+  }
+
   return (
     <div className='mb-4'>
       <h2>Customs Declaration</h2>
@@ -20,6 +28,13 @@ function Customs ({ data, handleChange }) {
         label='Description'
         onChange={handleChange}
         defaultValue={data.description}
+      />
+
+      <ItemGroup
+        name='item'
+        items={data.items}
+        factory={customsItemFactory}
+        handleChange={handleItemChange}
       />
     </div>
   )

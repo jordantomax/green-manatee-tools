@@ -36,7 +36,7 @@ function ItemGroup ({
         {capitalize(name)}s
 
         <Button onClick={handleItemCreate}>
-          Add Parcel
+          Add {capitalize(name)}
         </Button>
       </h3>
 

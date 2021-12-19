@@ -36,7 +36,7 @@ export function customsFactory () {
     certifySigner: '',
     certify: true,
     description: '',
-    items: [customsItemFactory()],
+    items: [],
     nonDeliveryOption: 'RETURN',
     contentsType: 'MERCHANDISE'
   }
@@ -51,7 +51,6 @@ export function customsItemFactory () {
     massUnit: 'lb',
     valueAmount: '',
     valueCurrency: 'USD',
-    tariffNumber: '',
     originCountry: 'US'
   }
 }
