@@ -29,3 +29,29 @@ export function parcelFactory () {
     quantity: 1
   }
 }
+
+export function customsFactory () {
+  return {
+    id: idFactory(),
+    certifySigner: '',
+    certify: true,
+    description: '',
+    items: [customsItemFactory()],
+    nonDeliveryOption: 'RETURN',
+    contentsType: 'MERCHANDISE'
+  }
+}
+
+export function customsItemFactory () {
+  return {
+    id: idFactory(),
+    description: '',
+    quantity: 0,
+    netWeight: '',
+    massUnit: 'lb',
+    valueAmount: '',
+    valueCurrency: 'USD',
+    tariffNumber: '',
+    originCountry: 'US'
+  }
+}
