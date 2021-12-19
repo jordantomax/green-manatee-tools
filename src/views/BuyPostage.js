@@ -9,7 +9,7 @@ import {
 } from 'react-bootstrap'
 
 import { setLocalData, getLocalData } from '../utils/storage'
-import { addressFactory, parcelFactory } from '../factories'
+import { addressFactory, parcelFactory, customsFactory } from '../factories'
 import notion from '../utils/notion'
 import useForm from '../hooks/useForm'
 import HeaderNav from '../components/Nav'
@@ -19,11 +19,15 @@ import RateParcels from '../components/RateParcels'
 import Rates from '../components/Rates'
 import PurchasedRate from '../components/PurchasedRate'
 import NotionShipments from '../components/NotionShipments'
+import Messages from '../components/BuyPostage/Messages'
+import Customs from '../components/BuyPostage/Customs'
 
 function BuyPostage () {
-  const [rateParcels, setRateParcels] = useState(getLocalData('rateParcels') || [])
-  const [rates, setRates] = useState(getLocalData('rates') || [])
+  const [rateParcels, setRateParcels] = useState(getLocalData('shipment')?.rateParcels || [])
+  const [rates, setRates] = useState(getLocalData('shipment')?.rates || [])
+  const [messages, setMessages] = useState(getLocalData('shipment')?.messages || [])
   const [purchasedRate, setPurchasedRate] = useState(getLocalData('purchasedRate') || null)
+  const savedInput = getLocalData('input') || {}
   const {
     input,
     isLoading,
@@ -34,12 +38,18 @@ function BuyPostage () {
     resource: 'shipment',
     action: 'create',
     defaultInput: {
-      addressFrom: getLocalData('addressFrom') || addressFactory(),
-      addressTo: getLocalData('addressTo') || addressFactory(),
-      parcels: getLocalData('parcels') || []
+      addressFrom: savedInput.addressFrom || addressFactory(),
+      addressTo: savedInput.addressTo || addressFactory(),
+      customsDeclaration: savedInput.customsDeclaration || customsFactory(),
+      parcels: savedInput.parcels || []
     },
     massageInput: (input) => {
       const massaged = cloneDeep(input)
+
+      if (input.addressTo.country === 'US') {
+        delete massaged.customsDeclaration
+      }
+
       massaged.parcels.forEach((parcel, i) => {
         const qty = parcel.quantity
         delete parcel.id
@@ -55,19 +65,15 @@ function BuyPostage () {
       })
       return massaged
     },
-    afterChange: (newInput) => {
-      setLocalData('addressFrom', newInput.addressFrom)
-      setLocalData('addressTo', newInput.addressTo)
-      setLocalData('parcels', newInput.parcels)
-    },
+    afterChange: input => setLocalData('input', input),
     afterSubmit: setRateData
   })
 
   function setRateData (data) {
-    setLocalData('rateParcels', data.parcels)
-    setLocalData('rates', data.rates)
+    setLocalData('shipment', data)
     setRateParcels(data.parcels)
     setRates(data.rates)
+    setMessages(data.messages)
   }
 
   function _setPurchasedRate (rate) {
@@ -83,7 +89,7 @@ function BuyPostage () {
         return await notion.pageRetrieve(id)
       })
     )
-    const addressProps = ['name', 'street1', 'city', 'state', 'zipCode', 'country', 'phone', 'email']
+    const addressProps = ['company', 'name', 'street1', 'city', 'state', 'zipCode', 'country', 'phone', 'email']
     const addressFromBase = notion.massagePage(origin, addressProps, { zipCode: 'zip' })
     const addressToBase = notion.massagePage(destination, addressProps, { zipCode: 'zip' })
     const parcelBase = notion.massagePage(cartonTemplate, ['grossWeightLb', 'heightIn', 'lengthIn', 'widthIn'], { grossWeightLb: 'weight', heightIn: 'height', lengthIn: 'length', widthIn: 'width' })
@@ -123,6 +129,12 @@ function BuyPostage () {
                 handleChange={handleChange}
               />
 
+              {input.addressTo.country !== 'US' &&
+                <Customs
+                  data={input.customsDeclaration}
+                  handleChange={handleChange}
+                />}
+
               <Parcels
                 parcels={input.parcels}
                 handleChange={handleChange}
@@ -132,6 +144,7 @@ function BuyPostage () {
 
           <Col xs={12} sm={6} className='pt-5'>
             <PurchasedRate rate={purchasedRate} />
+            <Messages messages={messages} />
             <Rates
               rates={rates}
               setPurchasedRate={_setPurchasedRate}
