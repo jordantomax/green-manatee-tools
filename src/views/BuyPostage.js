@@ -89,7 +89,7 @@ function BuyPostage () {
         return await notion.pageRetrieve(id)
       })
     )
-    const addressProps = ['name', 'street1', 'city', 'state', 'zipCode', 'country', 'phone', 'email']
+    const addressProps = ['company', 'name', 'street1', 'city', 'state', 'zipCode', 'country', 'phone', 'email']
     const addressFromBase = notion.massagePage(origin, addressProps, { zipCode: 'zip' })
     const addressToBase = notion.massagePage(destination, addressProps, { zipCode: 'zip' })
     const parcelBase = notion.massagePage(cartonTemplate, ['grossWeightLb', 'heightIn', 'lengthIn', 'widthIn'], { grossWeightLb: 'weight', heightIn: 'height', lengthIn: 'length', widthIn: 'width' })

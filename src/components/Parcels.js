@@ -14,12 +14,15 @@ function Parcels ({
   }
 
   return (
-    <ItemGroup
-      name='parcel'
-      items={parcels}
-      factory={parcelFactory}
-      handleChange={handleParcelChange}
-    />
+    <>
+      <h2>Shipment Parcels</h2>
+      <ItemGroup
+        name='parcel'
+        items={parcels}
+        factory={parcelFactory}
+        handleChange={handleParcelChange}
+      />
+    </>
   )
 }
 

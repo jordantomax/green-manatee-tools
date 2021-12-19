@@ -32,13 +32,13 @@ function ItemGroup ({
 
   return (
     <>
-      <h3 className='d-flex justify-content-between align-items-center'>
+      <h4 className='d-flex justify-content-between align-items-center'>
         {capitalize(name)}s
 
         <Button onClick={handleItemCreate}>
           Add {capitalize(name)}
         </Button>
-      </h3>
+      </h4>
 
       {items.map((item, itemIndex) => {
         return (
