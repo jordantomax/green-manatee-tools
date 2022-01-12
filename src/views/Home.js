@@ -19,6 +19,10 @@ function Home () {
           <ListGroup.Item>
             <Link to='outbound-email'>Generate Outbound Email</Link>
           </ListGroup.Item>
+
+          <ListGroup.Item>
+            <Link to='inbound-email'>Generate Inbound Email</Link>
+          </ListGroup.Item>
         </ListGroup>
       </Content>
     </Bg>

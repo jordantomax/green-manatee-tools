@@ -9,6 +9,7 @@ import Auth from './views/Auth'
 import Home from './views/Home'
 import BuyPostage from './views/BuyPostage'
 import OutboundEmail from './views/OutboundEmail'
+import InboundEmail from './views/InboundEmail'
 
 export default function App () {
   return (
@@ -27,6 +28,7 @@ export default function App () {
                 <Route path='/' element={<Home />} />
                 <Route path='buy-postage' element={<BuyPostage />} />
                 <Route path='outbound-email' element={<OutboundEmail />} />
+                <Route path='inbound-email' element={<InboundEmail />} />
               </Routes>
             )
           }}
