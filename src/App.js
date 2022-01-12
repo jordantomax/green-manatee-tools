@@ -8,7 +8,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Auth from './views/Auth'
 import Home from './views/Home'
 import BuyPostage from './views/BuyPostage'
-import ShipmentEmail from './views/ShipmentEmail'
+import OutboundEmail from './views/OutboundEmail'
 
 export default function App () {
   return (
@@ -26,7 +26,7 @@ export default function App () {
               <Routes>
                 <Route path='/' element={<Home />} />
                 <Route path='buy-postage' element={<BuyPostage />} />
-                <Route path='shipment-email' element={<ShipmentEmail />} />
+                <Route path='outbound-email' element={<OutboundEmail />} />
               </Routes>
             )
           }}

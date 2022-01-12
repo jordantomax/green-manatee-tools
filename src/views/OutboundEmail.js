@@ -6,7 +6,7 @@ import {
 import notion from '../utils/notion'
 import NotionShipments from '../components/NotionShipments'
 
-function ShipmentEmail () {
+function OutboundEmail () {
   const [shipments, setShipments] = useState([])
 
   async function handleSelectShipment (shipments) {
@@ -77,4 +77,4 @@ function ShipmentEmail () {
   )
 }
 
-export default ShipmentEmail
+export default OutboundEmail
