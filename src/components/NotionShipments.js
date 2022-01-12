@@ -11,19 +11,33 @@ import { NOTION_SHIPMENTS_DB_ID } from '../constants'
 import notion from '../utils/notion'
 import ButtonSpinner from '../components/ButtonSpinner'
 
-function NotionShipments ({ handleSelectShipment }) {
+function NotionShipments ({ handleSelectShipment, params }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingSelect, setIsLoadingSelect] = useState(false)
   const [data, setData] = useState(null)
   const [shipments, setShipments] = useState([])
+  const [includeDelivered, setIncludeDelivered] = useState(false)
 
   function handleClose () { setData(null) }
 
   async function getShipments (forceUpdate) {
     setIsLoading(true)
     let data = getLocalData('notionShipments')
+    let params = {}
+
+    if (!includeDelivered) {
+      params = {
+        filter: {
+          property: 'Delivered',
+          checkbox: {
+            equals: false
+          }
+        }
+      }
+    }
+
     if (!data || forceUpdate) {
-      const res = await notion.dbQuery(NOTION_SHIPMENTS_DB_ID)
+      const res = await notion.dbQuery(NOTION_SHIPMENTS_DB_ID, params)
       data = res.results
     }
     setIsLoading(false)
@@ -87,6 +101,16 @@ function NotionShipments ({ handleSelectShipment }) {
         </Modal.Body>
 
         <Modal.Footer>
+          <span onClick={() => setIncludeDelivered(!includeDelivered)}>
+            <Form.Check
+              inline
+              readOnly
+              type='checkbox'
+              checked={includeDelivered}
+              label='Include delivered'
+            />
+          </span>
+
           <Button variant='secondary' onClick={() => getShipments(true)} className='ml-3'>
             {isLoading && <ButtonSpinner />}
             Refresh

@@ -2,26 +2,36 @@ import { NOTION_PROXY_HOST } from '../constants'
 import { getSavedTokens } from './auth'
 import { deepToCamelCase } from './deepMap'
 
-async function call (path, method) {
+async function call (path, _options = {}) {
+  const { method, params } = _options
   const tokens = await getSavedTokens()
   const token = tokens.notion
-  const res = await fetch(`${NOTION_PROXY_HOST}/${path}`, {
+  const options = {
     method: method || 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
       'Notion-Version': '2021-08-16'
     }
-  }).then(res => res.json())
+  }
+  if (options.method !== 'GET') {
+    options.body = JSON.stringify(params || {})
+  }
+
+  const res = await fetch(`${NOTION_PROXY_HOST}/${path}`, options).then(res => res.json())
   return deepToCamelCase(res)
 }
 
-async function dbQuery (id) {
-  const res = await call(`databases/${id}/query`, 'POST')
+async function dbQuery (id, params) {
+  const res = await call(`databases/${id}/query`, {
+    method: 'POST',
+    params
+  })
   return res
 }
 
 async function pageRetrieve (id) {
-  const res = await call(`pages/${id}`, 'GET')
+  const res = await call(`pages/${id}`)
   return res
 }
 
