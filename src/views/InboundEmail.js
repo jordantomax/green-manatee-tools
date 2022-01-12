@@ -14,8 +14,8 @@ function InboundEmail () {
     const shipmentsText = []
     for (let i = 0; i < shipments.length; i++) {
       const shipment = shipments[i]
-      const [product, destination, cartonTemplate] = await Promise.all(
-        ['product', 'destination', 'cartonTemplate'].map(async (prop) => {
+      const [product, cartonTemplate] = await Promise.all(
+        ['product', 'cartonTemplate'].map(async (prop) => {
           const id = shipment.properties[prop]?.relation[0]?.id
           return await notion.pageRetrieve(id)
         })
@@ -25,10 +25,11 @@ function InboundEmail () {
         id: shipment.properties.id.title[0].plainText,
         numCases: shipment.properties.numCartons.number,
         totalUnitQty: shipment.properties.totalUnits.formula.number,
-        productImage: product.properties.image.files[0].file.url,
+        trackingNumbers: shipment.properties.trackingNumberS.richText[0].plainText,
+        productImage: product.properties.image.files[0]?.file.url,
         productSku: product.properties.sku.richText[0].plainText,
-        destinationName: destination.properties.name.title[0].plainText,
-        caseQty: cartonTemplate.properties.unitQty.number
+        caseQty: cartonTemplate.properties.unitQty.number,
+        caseGrossWeight: cartonTemplate.properties.grossWeightLb.formula.number
       })
     }
 
@@ -61,13 +62,18 @@ function InboundEmail () {
             return (
               <div key={i}>
                 <strong><u>SHIPMENT #{s.shipmentNumber + 1}</u></strong><br />
-                Reference Image:<br />
-                <img width='175' alt={`${s.productSku}`} src={s.productImage} /><br />
+                {s.productImage && (
+                  <span>
+                    Reference Image:<br />
+                    <img width='175' alt={`${s.productSku}`} src={s.productImage} /><br />
+                  </span>
+                )}
                 SKU: {s.productSku}<br />
-                Destination: {s.destinationName}<br />
                 Case Quantity: {s.caseQty}<br />
+                Case Gross Weight: {s.caseGrossWeight}<br />
                 Total number of cases: {s.numCases}<br />
-                Total quantity: {s.totalUnitQty}<br /><br />
+                Total quantity: {s.totalUnitQty}<br />
+                Tracking Number(s): {s.trackingNumbers}<br />
                 <br />
               </div>
             )

@@ -104,6 +104,7 @@ function NotionShipments ({ handleSelectShipment, params }) {
           <span onClick={() => setIncludeDelivered(!includeDelivered)}>
             <Form.Check
               inline
+              readOnly
               type='checkbox'
               checked={includeDelivered}
               label='Include delivered'
