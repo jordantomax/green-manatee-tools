@@ -25,7 +25,7 @@ function InboundEmail () {
         id: shipment.properties.id.title[0].plainText,
         numCases: shipment.properties.numCartons.number,
         totalUnitQty: shipment.properties.totalUnits.formula.number,
-        trackingNumbers: shipment.properties.trackingNumberS.richText[0].plainText,
+        trackingNumbers: shipment.properties.trackingNumberS.richText[0]?.plainText,
         productImage: product.properties.image.files[0]?.file.url,
         productSku: product.properties.sku.richText[0].plainText,
         caseQty: cartonTemplate.properties.unitQty.number,
@@ -73,7 +73,7 @@ function InboundEmail () {
                 Case Gross Weight: {s.caseGrossWeight}<br />
                 Total number of cases: {s.numCases}<br />
                 Total quantity: {s.totalUnitQty}<br />
-                Tracking Number(s): {s.trackingNumbers}<br />
+                Tracking Number(s): {s.trackingNumbers || 'Unknown'}<br />
                 <br />
               </div>
             )
