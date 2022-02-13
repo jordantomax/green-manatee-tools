@@ -5,6 +5,7 @@ import {
 
 import notion from '../utils/notion'
 import NotionShipments from '../components/NotionShipments'
+import imgSrcUrlToBase64 from '../utils/imgSrcUrlToBase64'
 
 function OutboundEmail () {
   const [shipments, setShipments] = useState([])
@@ -61,7 +62,13 @@ function OutboundEmail () {
               <div key={i}>
                 <strong><u>SHIPMENT #{s.shipmentNumber + 1}</u></strong><br />
                 Reference Image:<br />
-                <img width='175' alt={`${s.productSku}`} src={s.productImage} /><br />
+                <img
+                  alt={`${s.productSku}`}
+                  src={s.productImage}
+                  onLoad={e => imgSrcUrlToBase64(e.target)}
+                  crossOrigin='anonymous'
+                />
+                <br />
                 SKU: {s.productSku}<br />
                 Destination: {s.destinationName}<br />
                 Case Quantity: {s.caseQty}<br />
