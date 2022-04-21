@@ -24,6 +24,7 @@ function InboundEmail () {
 
       shipmentsText.push({
         id: shipment.properties.id.title[0].plainText,
+        method: shipment.properties.method.select?.name,
         numCases: shipment.properties.numCartons.number,
         totalUnitQty: shipment.properties.totalUnits.formula.number,
         trackingNumbers: shipment.properties.trackingNumberS.richText[0]?.plainText,
@@ -78,8 +79,9 @@ function InboundEmail () {
                 SKU: {s.productSku}<br />
                 Case Quantity: {s.caseQty}<br />
                 Case Gross Weight: {s.caseGrossWeight}<br />
-                Total number of cases: {s.numCases}<br />
-                Total quantity: {s.totalUnitQty}<br />
+                Total Number of Cases: {s.numCases}<br />
+                Total Unit Quantity: {s.totalUnitQty}<br />
+                Shipping Method: {s.method}<br />
                 Tracking Number(s): {s.trackingNumbers || 'Unknown'}<br />
                 <br />
               </div>
