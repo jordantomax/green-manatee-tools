@@ -52,9 +52,11 @@ function getPropValueText (value) {
 
 function massagePage (page, properties, nameMap) {
   const massaged = {}
-  for (const [key, value] of Object.entries(page.properties)) {
-    if (properties.includes(key)) {
-      massaged[nameMap[key] || key] = getPropValueText(value)
+  if (page) {
+    for (const [key, value] of Object.entries(page.properties)) {
+      if (properties.includes(key)) {
+        massaged[nameMap[key] || key] = getPropValueText(value)
+      }
     }
   }
   return massaged
