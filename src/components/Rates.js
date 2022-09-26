@@ -38,41 +38,49 @@ function Rates ({ rates, setPurchasedRate }) {
         </Card>
       )}
 
-      {rates.map((rate, i) => {
-        return (
-          <Card
-            key={rate.objectId}
-            className='mb-4'
-          >
-            <Card.Body>
-              <DataList
-                obj={rate}
-                mask={rateMask}
-                imageMask={rateImageMask}
-              />
-              <div className='mt-2'>
-                <Button
-                  variant='secondary'
-                  className='mr-2'
-                  onClick={() => handleSelect(rate.objectId)}
-                >
-                  Select This Rate
-                </Button>
-
-                {input.rate === rate.objectId && (
+      {rates
+        .sort((a, b) => {
+          const fa = parseFloat(a.amount)
+          const fb = parseFloat(b.amount)
+          if (fa === fb) return 0
+          return fa > fb ? 1 : -1
+        })
+        .map((rate, i) => {
+          return (
+            <Card
+              key={rate.objectId}
+              className='mb-4'
+            >
+              <Card.Body>
+                <DataList
+                  obj={rate}
+                  mask={rateMask}
+                  imageMask={rateImageMask}
+                />
+                <div className='mt-2'>
                   <Button
-                    disabled={isLoading}
-                    type='submit'
+                    variant='secondary'
+                    className='mr-2'
+                    onClick={() => handleSelect(rate.objectId)}
                   >
-                    {isLoading && <ButtonSpinner />}
-                    Purchase This Rate
+                    Select This Rate
                   </Button>
-                )}
-              </div>
-            </Card.Body>
-          </Card>
-        )
-      })}
+
+                  {input.rate === rate.objectId && (
+                    <Button
+                      disabled={isLoading}
+                      type='submit'
+                    >
+                      {isLoading && <ButtonSpinner />}
+                      Purchase This Rate
+                    </Button>
+                  )}
+                </div>
+              </Card.Body>
+            </Card>
+          )
+        })
+      }
     </Form>
   )
 }
