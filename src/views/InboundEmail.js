@@ -17,25 +17,29 @@ function InboundEmail () {
       const shipment = shipments[i]
       const [product, cartonTemplate] = await Promise.all(
         ['product', 'cartonTemplate'].map(async (prop) => {
-          const id = shipment.properties[prop]?.relation[0]?.id
-          if (id) {
-            return await notion.pageRetrieve(id)
-          } else {
-            return null
-          }
+          if (!shipment.properties[prop] || shipment.properties[prop].relation.length <= 0) return null
+          return await Promise.all(
+            // accomodate multiple products per shipment
+            shipment.properties[prop].relation.map(async (r) => {
+              if (!r.id) return null
+              return await notion.pageRetrieve(r.id)
+            })
+          )
         })
       )
-
-      shipmentsText.push({
-        id: shipment.properties.id.title[0].plainText,
-        method: shipment.properties.method.select?.name,
-        numCases: shipment.properties.numCartons.number,
-        totalUnitQty: shipment.properties.totalUnits.formula.number,
-        trackingNumbers: shipment.properties.trackingNumberS.richText[0]?.plainText,
-        productImage: product.properties.image.files[0]?.file.url,
-        productSku: product.properties.sku.richText[0].plainText,
-        caseQty: cartonTemplate.properties.unitQty.number,
-        caseGrossWeight: cartonTemplate.properties.grossWeightLb.formula.number
+      const ct = cartonTemplate ? cartonTemplate[0] ? cartonTemplate[0] : null : null
+      product.forEach(p => {
+        shipmentsText.push({
+          id: shipment.properties.id.title[0].plainText,
+          method: shipment.properties.method.select?.name,
+          numCases: shipment.properties.numCartons.number,
+          totalUnitQty: shipment.properties.totalUnits.formula.number,
+          trackingNumbers: shipment.properties.trackingNumberS.richText[0]?.plainText,
+          productImage: p.properties.image.files[0]?.file.url,
+          productSku: p.properties.sku.richText[0].plainText,
+          caseQty: ct?.properties.unitQty.number,
+          caseGrossWeight: ct?.properties.grossWeightLb.formula.number
+        })
       })
     }
 
@@ -81,13 +85,13 @@ function InboundEmail () {
                   </span>
                 )}
                 SKU: {s.productSku}<br />
-                Case Quantity: {s.caseQty}<br />
-                Case Gross Weight: {s.caseGrossWeight}<br />
-                Total Number of Cases: {s.numCases}<br />
+                Case Quantity: {s.caseQty || 'Unknown'}<br />
+                Case Gross Weight: {s.caseGrossWeight || 'Unknown'}<br />
+                Total Number of Cases: {s.numCases || 'Unknown'}<br />
                 Total Unit Quantity: {s.totalUnitQty}<br />
                 Shipping Method: {s.method}<br />
                 Tracking Number(s): {s.trackingNumbers || 'Unknown'}<br />
-                <br />
+                <br /><br />
               </div>
             )
           })}
