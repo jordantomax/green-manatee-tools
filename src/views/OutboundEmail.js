@@ -77,8 +77,8 @@ function OutboundEmail () {
                 Destination: {s.destinationName}<br />
                 Case Quantity: {s.caseQty}<br />
                 Total number of cases: {s.numCases}<br />
-                Total quantity: {s.totalUnitQty}<br /><br />
-                <br />
+                Total quantity: {s.totalUnitQty}<br />
+                <br /><br />
               </div>
             )
           })}
