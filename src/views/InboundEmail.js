@@ -17,6 +17,9 @@ function InboundEmail () {
       const shipment = shipments[i]
       const [product, cartonTemplate] = await Promise.all(
         ['product', 'cartonTemplate'].map(async (prop) => {
+          // In order to accomodate multiple product shipments, I will need to loop through
+          // each relation, if id, fetch id, return an array of objects instead of just 1.
+          // That would mean another nested await promise callback
           const id = shipment.properties[prop]?.relation[0]?.id
           if (id) {
             return await notion.pageRetrieve(id)
