@@ -17,7 +17,11 @@ function OutboundEmail () {
       const [product, destination, cartonTemplate] = await Promise.all(
         ['product', 'destination', 'cartonTemplate'].map(async (prop) => {
           const id = shipment.properties[prop]?.relation[0]?.id
-          return await notion.pageRetrieve(id)
+          if (id) {
+            return await notion.pageRetrieve(id)
+          } else {
+            return null
+          }
         })
       )
 
