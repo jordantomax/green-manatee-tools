@@ -16,23 +16,29 @@ function OutboundEmail () {
       const shipment = shipments[i]
       const [product, destination, cartonTemplate] = await Promise.all(
         ['product', 'destination', 'cartonTemplate'].map(async (prop) => {
-          const id = shipment.properties[prop]?.relation[0]?.id
-          if (id) {
-            return await notion.pageRetrieve(id)
-          } else {
-            return null
-          }
+          if (!shipment.properties[prop] || shipment.properties[prop].relation.length <= 0) return null
+          return await Promise.all(
+            // accomodate multiple products per shipment
+            shipment.properties[prop].relation.map(async (r) => {
+              if (!r.id) return null
+              return await notion.pageRetrieve(r.id)
+            })
+          )
         })
       )
 
-      shipmentsText.push({
-        id: shipment.properties.id.title[0].plainText,
-        numCases: shipment.properties.numCartons.number,
-        totalUnitQty: shipment.properties.totalUnits.formula.number,
-        productImage: product.properties.image.files[0]?.file.url,
-        productSku: product.properties.sku.richText[0].plainText,
-        destinationName: destination.properties.name.title[0].plainText,
-        caseQty: cartonTemplate.properties.unitQty.number
+      const d = destination ? destination[0] ? destination[0] : null : null
+      const ct = cartonTemplate ? cartonTemplate[0] ? cartonTemplate[0] : null : null
+      product.forEach(p => {
+        shipmentsText.push({
+          id: shipment.properties.id.title[0].plainText,
+          numCases: shipment.properties.numCartons.number,
+          totalUnitQty: shipment.properties.totalUnits.formula.number,
+          productImage: p.properties.image.files[0]?.file.url,
+          productSku: p.properties.sku.richText[0].plainText,
+          destinationName: d.properties.name.title[0].plainText,
+          caseQty: ct?.properties.unitQty.number
+        })
       })
     }
 
