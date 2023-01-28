@@ -55,7 +55,7 @@ function OutboundEmail () {
       <h3>Subject</h3>
       <div className='mb-4 card'>
         <div className='card-body'>
-          <span>Outbound - </span>
+          <span>OUTBOUND - </span>
           {shipments.map((s, i) => {
             return (
               <span key={i}>{s.productSku} ({s.totalUnitQty}){i !== shipments.length - 1 ? ', ' : ''}</span>
@@ -64,7 +64,7 @@ function OutboundEmail () {
         </div>
       </div>
 
-      <h3>Body</h3>
+      <h3>Shipment summary</h3>
       <div className='card'>
         <div className='card-body'>
           {shipments.map((s, i) => {
