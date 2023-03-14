@@ -4,4 +4,4 @@ This is a wrapper around the Shippo API to allow multi-piece shipments.  It allo
 
 ## Hosted version
 
-This app is hosted at [https://shippo.lazycoconuts.com](shippo.lazycoconuts.com).
+This app is hosted at [https://tools.thegreenmanatee.com](tools.thegreenmanatee.com).
