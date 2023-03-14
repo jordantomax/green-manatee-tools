@@ -27,10 +27,10 @@ function AppNav ({
       <Navbar.Brand>Shippo Multi-Piece Shipments</Navbar.Brand>
       <Nav>
         <Nav.Item>
-          <Nav.Link target='_blank' href='https://lazycoconuts.com'>
+          <Nav.Link target='_blank' href='https://thegreenmanatee.com'>
             <Logo>
               <LogoMark src='/logo.png' />
-              A Lazy Coconuts Project
+              A Green Manatee Project
             </Logo>
           </Nav.Link>
         </Nav.Item>
