@@ -1,6 +1,6 @@
 {
-  "short_name": "Shippo Multi-Piece Shipments",
-  "name": "Shippo Multi-Piece Shipments By Lazy Coconuts",
+  "short_name": "Green Manatee Tools",
+  "name": "Green Manatee Tools",
   "icons": [
     {
       "src": "favicon.ico",
@@ -18,7 +18,7 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "./favicon",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
