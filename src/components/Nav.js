@@ -24,7 +24,7 @@ function AppNav ({
 
   return (
     <Navbar fixed='top' bg='dark' variant='dark'>
-      <Navbar.Brand>Shippo Multi-Piece Shipments</Navbar.Brand>
+      <Navbar.Brand>Green Manatee Tools</Navbar.Brand>
       <Nav>
         <Nav.Item>
           <Nav.Link target='_blank' href='https://thegreenmanatee.com'>
