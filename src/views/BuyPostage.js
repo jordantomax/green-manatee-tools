@@ -112,7 +112,7 @@ function BuyPostage () {
       />
 
       <Container fluid>
-        <Row className='pt-5'>
+        <Row>
           <ColWithBg xs={12} sm={6} className='pb-5 pt-5'>
             <NotionShipments handleSelectShipment={handleSelectNotionShipment} />
 

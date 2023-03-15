@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Navbar, Nav, Button } from 'react-bootstrap'
+import { Link } from "react-router-dom";
 
 import { AuthContext, AuthConsumer } from '../context/Auth'
 import ButtonSpinner from './ButtonSpinner'
@@ -23,8 +24,8 @@ function AppNav ({
   }
 
   return (
-    <Navbar fixed='top' bg='dark' variant='dark'>
-      <Navbar.Brand>Green Manatee Tools</Navbar.Brand>
+    <Navbar bg='dark' variant='dark'>
+      <Navbar.Brand><Link to='/' style={{color: 'white'}}>← Green Manatee Tools</Link></Navbar.Brand>
       <Nav>
         <Nav.Item>
           <Nav.Link target='_blank' href='https://thegreenmanatee.com'>
