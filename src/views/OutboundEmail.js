@@ -20,6 +20,7 @@ function OutboundEmail () {
       const [product, destination, cartonTemplate] = await Promise.all(
         ['product', 'destination', 'cartonTemplate'].map(async (prop) => {
           if (!shipment.properties[prop] || shipment.properties[prop].relation.length <= 0) return null
+
           return await Promise.all(
             // accomodate multiple products per shipment
             shipment.properties[prop].relation.map(async (r) => {

@@ -9,7 +9,6 @@ import styled from 'styled-components'
 
 import { AuthContext } from '../context/Auth'
 import Input from '../components/InputStacked'
-import HeaderNav from '../components/Nav'
 
 function Auth () {
   const auth = React.useContext(AuthContext)
@@ -24,8 +23,6 @@ function Auth () {
   return (
     <Bg className='bg-dark'>
       <Content>
-        <HeaderNav />
-
         <h1 className='text-white'>Log in</h1>
         <Card>
           <Card.Body>

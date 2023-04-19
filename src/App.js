@@ -10,6 +10,7 @@ import Home from './views/Home'
 import BuyPostage from './views/BuyPostage'
 import OutboundEmail from './views/OutboundEmail'
 import InboundEmail from './views/InboundEmail'
+import BuildManifest from './views/BuildManifest'
 
 export default function App () {
   return (
@@ -27,6 +28,7 @@ export default function App () {
               <Routes>
                 <Route path='/' element={<Home />} />
                 <Route path='buy-postage' element={<BuyPostage />} />
+                <Route path='build-manifest' element={<BuildManifest />} />
                 <Route path='outbound-email' element={<OutboundEmail />} />
                 <Route path='inbound-email' element={<InboundEmail />} />
               </Routes>
