@@ -21,6 +21,7 @@ function InboundEmail () {
       const [product, cartonTemplate] = await Promise.all(
         ['product', 'cartonTemplate'].map(async (prop) => {
           if (!shipment.properties[prop] || shipment.properties[prop].relation.length <= 0) return null
+
           return await Promise.all(
             // accomodate multiple products per shipment
             shipment.properties[prop].relation.map(async (r) => {
@@ -31,6 +32,7 @@ function InboundEmail () {
         })
       )
       const ct = cartonTemplate ? cartonTemplate[0] ? cartonTemplate[0] : null : null
+
       product.forEach(p => {
         shipmentsText.push({
           id: shipment.properties.id.title[0].plainText,
