@@ -26,16 +26,15 @@ function BuildManifest () {
 
       if (!run || !cartonTemplate) return console.warn("You pulled a shipment without a production run and/or a carton template. Please select only shipments that have both production runs and carton templates")
 
-      const exp = run.properties.exp.date.start
-      const year = exp.slice(0, 4)
-      const month = exp.slice(6, 7)
-      const day = exp.slice(9, 10)
+      const exp = run.properties.exp?.date?.start
+      // Massage to form MM/DD/YYYY
+      const massagedExp = exp ? `${exp.slice(6, 7)}/${exp.slice(9, 10)}/${exp.slice(0, 4)}` : null
 
       shipmentsMassaged.push({
         quantity: shipment.properties.totalUnits.formula.number,
         numCartons: shipment.properties.numCartons.number,
         sku: run.properties.sku.rollup.array[0].richText[0].text.content,
-        expiration: `${month}/${day}/${year}`,
+        expiration: massagedExp,
         cartonWeight: cartonTemplate.properties.grossWeightLb.formula.number,
         cartonLength: cartonTemplate.properties.lengthIn.formula.number,
         cartonWidth: cartonTemplate.properties.widthIn.formula.number,
