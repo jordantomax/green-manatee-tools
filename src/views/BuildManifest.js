@@ -28,7 +28,7 @@ function BuildManifest () {
 
       const exp = run.properties.exp?.date?.start
       // Massage to form MM/DD/YYYY
-      const massagedExp = exp ? `${exp.slice(6, 7)}/${exp.slice(9, 10)}/${exp.slice(0, 4)}` : null
+      const massagedExp = exp ? `${exp.slice(5, 7)}/${exp.slice(8, 10)}/${exp.slice(0, 4)}` : null
 
       shipmentsMassaged.push({
         quantity: shipment.properties.totalUnits.formula.number,
