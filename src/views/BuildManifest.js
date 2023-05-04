@@ -47,7 +47,6 @@ function BuildManifest () {
   }
 
   async function getManifest (shipments) {
-    console.log(JSON.stringify({ shipments }))
     const res = await fetch(SHIPPING_MANIFEST_BUILDER_API_URL, {
       method: 'POST',
       headers: {
@@ -55,7 +54,6 @@ function BuildManifest () {
       },
       body: JSON.stringify({ shipments })
     })
-    console.log(res)
     const base64Txt = await res.text()
     const link = document.createElement('a')
     link.href = `data:application/pdf;base64,${base64Txt}`
