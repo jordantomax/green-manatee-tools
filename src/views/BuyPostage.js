@@ -21,6 +21,7 @@ import PurchasedRate from '../components/PurchasedRate'
 import NotionShipments from '../components/NotionShipments'
 import Messages from '../components/BuyPostage/Messages'
 import Customs from '../components/BuyPostage/Customs'
+import Hazmat from '../components/BuyPostage/Hazmat'
 
 function BuyPostage () {
   const [rateParcels, setRateParcels] = useState(getLocalData('shipment')?.rateParcels || [])
@@ -41,7 +42,12 @@ function BuyPostage () {
       addressFrom: savedInput.addressFrom || addressFactory(),
       addressTo: savedInput.addressTo || addressFactory(),
       customsDeclaration: savedInput.customsDeclaration || customsFactory(),
-      parcels: savedInput.parcels || []
+      parcels: savedInput.parcels || [],
+      extra: {
+        dangerousGoods: {
+          contains: savedInput.extra?.dangerousGoods?.contains || false
+        }
+      }
     },
     massageInput: (input) => {
       const massaged = cloneDeep(input)
@@ -134,6 +140,11 @@ function BuyPostage () {
                   data={input.customsDeclaration}
                   handleChange={handleChange}
                 />}
+
+              <Hazmat
+                hazmat={input.extra.dangerousGoods.contains}
+                handleChange={handleChange}
+              />
 
               <Parcels
                 parcels={input.parcels}
