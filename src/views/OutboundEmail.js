@@ -36,6 +36,7 @@ function OutboundEmail () {
       product.forEach(p => {
         shipmentsText.push({
           id: shipment.properties.id.title[0].plainText,
+          number: shipment.properties.number.number,
           numCases: shipment.properties.numCartons.number,
           totalUnitQty: shipment.properties.totalUnits.formula.number,
           productImage: p.properties.image.files[0]?.file.url,
@@ -47,8 +48,7 @@ function OutboundEmail () {
     }
 
     shipmentsText
-      .sort((a, b) => { return a.id < b.id ? -1 : 1 })
-      .forEach((el, i) => { el.shipmentNumber = i })
+      .sort((a, b) => { return a.number < b.number ? -1 : 1 })
     setShipments(shipmentsText)
   }
 
@@ -79,7 +79,7 @@ function OutboundEmail () {
                 {shipments.map((s, i) => {
                   return (
                     <div key={i}>
-                      <strong><u>SHIPMENT #{s.shipmentNumber + 1}</u></strong><br />
+                      <strong><u>SHIPMENT #{s.number}</u></strong><br />
                       Reference Image:<br />
                       <img
                         alt={`${s.productSku}`}
