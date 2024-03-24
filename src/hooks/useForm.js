@@ -74,6 +74,7 @@ function useForm ({
 
     try {
       const finalInput = massageInput ? massageInput(input) : input
+      console.log(finalInput)
       const res = await shippo(resource, action, finalInput)
       afterSubmit && afterSubmit(res)
     } catch (serverErrors) {

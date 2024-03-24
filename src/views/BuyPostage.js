@@ -5,14 +5,14 @@ import {
   Container,
   Form,
   Row,
-  Col
+  Col,
+  Button
 } from 'react-bootstrap'
 
 import { setLocalData, getLocalData } from '../utils/storage'
 import { addressFactory, parcelFactory, customsFactory } from '../factories'
 import notion from '../utils/notion'
 import useForm from '../hooks/useForm'
-import HeaderNav from '../components/Nav'
 import Address from '../components/Address'
 import Parcels from '../components/Parcels'
 import RateParcels from '../components/RateParcels'
@@ -22,6 +22,7 @@ import NotionShipments from '../components/NotionShipments'
 import Messages from '../components/BuyPostage/Messages'
 import Customs from '../components/BuyPostage/Customs'
 import Hazmat from '../components/BuyPostage/Hazmat'
+import ButtonSpinner from '../components/ButtonSpinner'
 
 function BuyPostage () {
   const [rateParcels, setRateParcels] = useState(getLocalData('shipment')?.rateParcels || [])
@@ -108,15 +109,13 @@ function BuyPostage () {
     bulkUpdate({ addressFrom, addressTo, parcels: [parcel] })
   }
 
+  function handleResetRates () {
+    setRateData({ rates: [], parcels: [] })
+    _setPurchasedRate(null)
+  }
+
   return (
     <>
-      <HeaderNav
-        isLoading={isLoading}
-        setRateData={setRateData}
-        setPurchasedRate={_setPurchasedRate}
-        handleSubmit={handleSubmit}
-      />
-
       <Container fluid>
         <Row>
           <ColWithBg xs={12} sm={6} className='pb-5 pt-5'>
@@ -154,6 +153,22 @@ function BuyPostage () {
           </ColWithBg>
 
           <Col xs={12} sm={6} className='pt-5'>
+            <div className='mb-3'>
+              <Button variant='secondary' onClick={handleResetRates}>
+                Reset Rates
+              </Button>
+
+              <Button
+                className='ml-2'
+                variant='primary'
+                disabled={isLoading}
+                onClick={handleSubmit}
+              >
+                {isLoading && <ButtonSpinner />}
+                Check Rates
+              </Button>
+            </div>
+
             <PurchasedRate rate={purchasedRate} />
             <Messages messages={messages} />
             <Rates

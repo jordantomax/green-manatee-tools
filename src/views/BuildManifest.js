@@ -7,7 +7,6 @@ import {
 } from 'react-bootstrap'
 
 import { SHIPPING_MANIFEST_BUILDER_API_URL } from '../constants'
-import HeaderNav from '../components/Nav'
 import notion from '../utils/notion'
 import NotionShipments from '../components/NotionShipments'
 
@@ -68,28 +67,24 @@ function BuildManifest () {
 
 
   return (
-    <>
-      <HeaderNav />
-
-      <Container>
-        <Row>
-          <Col className='pt-5'>
-            {errorMessage && (
-              <Alert variant='danger'>
-                {errorMessage}
-              </Alert>
-            )}
-            {warningMessage && (
-              <Alert variant='warning'>
-                {warningMessage}
-              </Alert>
-            )}
-            <h3>Build Amazon manifest</h3>
-            <NotionShipments handleSelectShipment={handleSelectShipment} />
-          </Col>
-        </Row>
-      </Container>
-    </>
+    <Container>
+      <Row>
+        <Col className='pt-5'>
+          {errorMessage && (
+            <Alert variant='danger'>
+              {errorMessage}
+            </Alert>
+          )}
+          {warningMessage && (
+            <Alert variant='warning'>
+              {warningMessage}
+            </Alert>
+          )}
+          <h3>Build Amazon manifest</h3>
+          <NotionShipments handleSelectShipment={handleSelectShipment} />
+        </Col>
+      </Row>
+    </Container>
   )
 }
 

@@ -4,19 +4,13 @@ import {
   Row
 } from 'react-bootstrap'
 
-import HeaderNav from '../components/Nav'
-
 function Inventory () {
   return (
-    <>
-      <HeaderNav />
-
-      <Container>
-        <Row>
-          Inventory
-        </Row>
-      </Container>
-    </>
+    <Container>
+      <Row>
+        Inventory
+      </Row>
+    </Container>
   )
 }
 

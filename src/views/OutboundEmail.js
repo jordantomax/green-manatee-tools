@@ -5,7 +5,6 @@ import {
   Col
 } from 'react-bootstrap'
 
-import HeaderNav from '../components/Nav'
 import notion from '../utils/notion'
 import NotionShipments from '../components/NotionShipments'
 import imgSrcUrlToBase64 from '../utils/imgSrcUrlToBase64'
@@ -53,56 +52,52 @@ function OutboundEmail () {
   }
 
   return (
-    <>
-      <HeaderNav />
+    <Container>
+      <Row>
+        <Col className='pt-5'>
+          <NotionShipments handleSelectShipment={handleSelectShipment} />
 
-      <Container>
-        <Row>
-          <Col className='pt-5'>
-            <NotionShipments handleSelectShipment={handleSelectShipment} />
-
-            <h3>Subject</h3>
-            <div className='mb-4 card'>
-              <div className='card-body'>
-                <span>OUTBOUND - </span>
-                {shipments.map((s, i) => {
-                  return (
-                    <span key={i}>{s.productSku} ({s.totalUnitQty}){i !== shipments.length - 1 ? ', ' : ''}</span>
-                  )
-                })}
-              </div>
+          <h3>Subject</h3>
+          <div className='mb-4 card'>
+            <div className='card-body'>
+              <span>OUTBOUND - </span>
+              {shipments.map((s, i) => {
+                return (
+                  <span key={i}>{s.productSku} ({s.totalUnitQty}){i !== shipments.length - 1 ? ', ' : ''}</span>
+                )
+              })}
             </div>
+          </div>
 
-            <h3>Shipment summary</h3>
-            <div className='card'>
-              <div className='card-body'>
-                {shipments.map((s, i) => {
-                  return (
-                    <div key={i}>
-                      <strong><u>SHIPMENT #{s.number}</u></strong><br />
-                      Reference Image:<br />
-                      <img
-                        alt={`${s.productSku}`}
-                        src={s.productImage}
-                        onLoad={e => imgSrcUrlToBase64(e.target)}
-                        crossOrigin='anonymous'
-                      />
-                      <br />
-                      SKU: {s.productSku}<br />
-                      Destination: {s.destinationName}<br />
-                      Case Quantity: {s.caseQty}<br />
-                      Total number of cases: {s.numCases}<br />
-                      Total quantity: {s.totalUnitQty}<br />
-                      <br /><br />
-                    </div>
-                  )
-                })}
-              </div>
+          <h3>Shipment summary</h3>
+          <div className='card'>
+            <div className='card-body'>
+              {shipments.map((s, i) => {
+                return (
+                  <div key={i}>
+                    <strong><u>SHIPMENT #{s.number}</u></strong><br />
+                    Reference Image:<br />
+                    <img
+                      alt={`${s.productSku}`}
+                      src={s.productImage}
+                      onLoad={e => imgSrcUrlToBase64(e.target)}
+                      crossOrigin='anonymous'
+                    />
+                    <br />
+                    SKU: {s.productSku}<br />
+                    Destination: {s.destinationName}<br />
+                    Case Quantity: {s.caseQty}<br />
+                    Total number of cases: {s.numCases}<br />
+                    Total quantity: {s.totalUnitQty}<br />
+                    <br /><br />
+                  </div>
+                )
+              })}
             </div>
-          </Col>
-        </Row>
-      </Container>
-    </>
+          </div>
+        </Col>
+      </Row>
+    </Container>
   )
 }
 

@@ -6,7 +6,6 @@ import {
   Col
 } from 'react-bootstrap'
 
-import HeaderNav from '../components/Nav'
 import notion from '../utils/notion'
 import NotionShipments from '../components/NotionShipments'
 import imgSrcUrlToBase64 from '../utils/imgSrcUrlToBase64'
@@ -55,62 +54,58 @@ function InboundEmail () {
   }
 
   return (
-    <>
-      <HeaderNav />
+    <Container>
+      <Row>
+        <Col className='pt-5'>
+          <NotionShipments handleSelectShipment={handleSelectShipment} />
 
-      <Container>
-        <Row>
-          <Col className='pt-5'>
-            <NotionShipments handleSelectShipment={handleSelectShipment} />
-
-            <h3>Subject</h3>
-            <div className='mb-4 card'>
-              <div className='card-body'>
-                <span>Inbound - </span>
-                {shipments.map((s, i) => {
-                  return (
-                    <span key={i}>{s.productSku} ({s.totalUnitQty}){i !== shipments.length - 1 ? ', ' : ''}</span>
-                  )
-                })}
-              </div>
+          <h3>Subject</h3>
+          <div className='mb-4 card'>
+            <div className='card-body'>
+              <span>Inbound - </span>
+              {shipments.map((s, i) => {
+                return (
+                  <span key={i}>{s.productSku} ({s.totalUnitQty}){i !== shipments.length - 1 ? ', ' : ''}</span>
+                )
+              })}
             </div>
+          </div>
 
-            <h3>Body</h3>
-            <div className='card'>
-              <div className='card-body'>
-                {shipments.map((s, i) => {
-                  return (
-                    <div key={i}>
-                      <strong><u>SHIPMENT #{s.shipmentNumber + 1}</u></strong><br />
-                      {s.productImage && (
-                        <span>
-                          Reference Image:<br />
-                          <img
-                            alt={`${s.productSku}`}
-                            src={s.productImage}
-                            onLoad={e => imgSrcUrlToBase64(e.target)}
-                            crossOrigin='anonymous'
-                          />
-                          <br />
-                        </span>
-                      )}
-                      SKU: {s.productSku}<br />
-                      Case Quantity: {s.caseQty || 'Unknown'}<br />
-                      Case Gross Weight: {s.caseGrossWeight || 'Unknown'}<br />
-                      Total Number of Cases: {s.numCases || 'Unknown'}<br />
-                      Total Unit Quantity: {s.totalUnitQty}<br />
-                      Shipping Method: {s.method}<br />
-                      Tracking Number(s): {s.trackingNumbers || 'Unknown'}<br />
-                      <br /><br />
-                    </div>
-                  )
-                })}
-              </div>
+          <h3>Body</h3>
+          <div className='card'>
+            <div className='card-body'>
+              {shipments.map((s, i) => {
+                return (
+                  <div key={i}>
+                    <strong><u>SHIPMENT #{s.shipmentNumber + 1}</u></strong><br />
+                    {s.productImage && (
+                      <span>
+                        Reference Image:<br />
+                        <img
+                          alt={`${s.productSku}`}
+                          src={s.productImage}
+                          onLoad={e => imgSrcUrlToBase64(e.target)}
+                          crossOrigin='anonymous'
+                        />
+                        <br />
+                      </span>
+                    )}
+                    SKU: {s.productSku}<br />
+                    Case Quantity: {s.caseQty || 'Unknown'}<br />
+                    Case Gross Weight: {s.caseGrossWeight || 'Unknown'}<br />
+                    Total Number of Cases: {s.numCases || 'Unknown'}<br />
+                    Total Unit Quantity: {s.totalUnitQty}<br />
+                    Shipping Method: {s.method}<br />
+                    Tracking Number(s): {s.trackingNumbers || 'Unknown'}<br />
+                    <br /><br />
+                  </div>
+                )
+              })}
             </div>
-          </Col>
-        </Row>
-      </Container>
-    </>
+          </div>
+        </Col>
+      </Row>
+    </Container>
   )
 }
 
