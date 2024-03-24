@@ -20,6 +20,9 @@ function Home () {
             <Link to='build-manifest'>Build Amazon Manifest</Link>
           </ListGroup.Item>
 
+          <ListGroup.Item>
+            <Link to='inventory-recommendations'>Inventory Recommendations</Link>
+          </ListGroup.Item>
 
           <ListGroup.Item>
             <Link to='outbound-email'>Generate Outbound Email</Link>
