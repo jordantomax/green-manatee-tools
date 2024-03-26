@@ -45,7 +45,7 @@ function Inventory () {
             </Alert>
           )}
 
-          <h2>Inventory Manager</h2>
+          <h1>Inventory Manager</h1>
 
           <div className='mb-4'>
             <Button
@@ -63,10 +63,10 @@ function Inventory () {
                 Synced on {datetime.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", dateStyle: "long" })} at {datetime.toLocaleString("en-US", { timeZone: "America/Los_Angeles", timeStyle: "long" })}
               </Badge>
 
-              <h3>Restock needed</h3>
+              <h2>Restock needed</h2>
               <InventoryRestockRecs products={data.restockNeeded} />
 
-              <h3>No restock needed</h3>
+              <h2>No restock needed</h2>
               <InventoryRestockRecs products={data.noRestockNeeded} />
             </>
           ) : ''}
