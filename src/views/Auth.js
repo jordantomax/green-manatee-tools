@@ -14,10 +14,15 @@ function Auth () {
   const auth = React.useContext(AuthContext)
   const [shippoToken, setShippoToken] = React.useState('')
   const [notionToken, setNotionToken] = React.useState('')
+  const [apiGatewayKey, setApiGatewayKey] = React.useState('')
 
   function handleSubmit (e) {
     e.preventDefault()
-    auth.logIn({ shippo: shippoToken, notion: notionToken })
+    auth.logIn({
+      shippo: shippoToken,
+      notion: notionToken,
+      apiGateway: apiGatewayKey
+    })
   }
 
   return (
@@ -37,6 +42,12 @@ function Auth () {
                 vertical
                 label='Notion API Token'
                 onChange={e => setNotionToken(e.target.value)}
+              />
+
+              <Input
+                vertical
+                label='API Gateway Key'
+                onChange={e => setApiGatewayKey(e.target.value)}
               />
 
               <Buttons>

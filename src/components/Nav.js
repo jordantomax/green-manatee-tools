@@ -1,10 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Navbar, Nav, Button } from 'react-bootstrap'
+import { Navbar, Nav } from 'react-bootstrap'
 import { Link } from "react-router-dom";
 
 import { AuthContext, AuthConsumer } from '../context/Auth'
-import ButtonSpinner from './ButtonSpinner'
 
 function AppNav ({
   setRateData,
@@ -16,11 +15,6 @@ function AppNav ({
 
   function handleLogOut () {
     auth.logOut()
-  }
-
-  function handleResetRates () {
-    setRateData({ rates: [], parcels: [] })
-    setPurchasedRate(null)
   }
 
   return (
@@ -57,28 +51,6 @@ function AppNav ({
             )
           }}
         </AuthConsumer>
-
-        {setRateData && (
-          <>
-            <Nav.Item>
-              <Nav.Link onClick={handleResetRates}>
-                Reset Rates
-              </Nav.Link>
-            </Nav.Item>
-
-            <Nav.Item>
-              <Button
-                className='ml-2'
-                variant='primary'
-                disabled={isLoading}
-                onClick={handleSubmit}
-              >
-                {isLoading && <ButtonSpinner />}
-                Check Rates
-              </Button>
-            </Nav.Item>
-          </>
-        )}
       </Nav>
     </Navbar>
   )
