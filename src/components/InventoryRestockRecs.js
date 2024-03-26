@@ -26,7 +26,7 @@ function InventoryRestockRecs ({ products }) {
                   })}
                 </ListGroup.Item>
                 <ListGroup.Item><strong>Monthly growth rate:</strong> {product.amzWeightedMonthlyGrowthRate}</ListGroup.Item>
-                <ListGroup.Item><strong>FBA fulfillable units:</strong> {product.fbaFulfillableUnits}</ListGroup.Item>
+                <ListGroup.Item><strong>FBA units:</strong> {product.fbaFulfillableUnits}</ListGroup.Item>
                 <ListGroup.Item><strong>FBA inbound units:</strong> {product.fbaInboundUnits}</ListGroup.Item>
                 <ListGroup.Item><strong>Warehouse units:</strong> {product.warehouseUnits}</ListGroup.Item>
               </ListGroup>
