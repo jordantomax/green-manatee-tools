@@ -7,36 +7,39 @@ import {
 
 import notion from '../utils/notion'
 import NotionShipments from '../components/NotionShipments'
+import CopyButton from '../components/CopyButton'
 import imgSrcUrlToBase64 from '../utils/imgSrcUrlToBase64'
 
 function OutboundEmail () {
   const [shipments, setShipments] = useState([])
+  const [subject, setSubject] = useState()
 
   async function handleSelectShipment (shipments) {
-    const shipmentsText = []
-    const shipmentsNames = []
+    const sData = []
+    const sDates = []
     for (let i = 0; i < shipments.length; i++) {
       const shipment = shipments[i]
+      const date = shipment.properties.date.date.start
+      if (!sDates.includes(date)) sDates.push(date)
       const [product, destination, cartonTemplate] = await notion.relationsGet(shipment, ['product', 'destination', 'cartonTemplate'])
       const d = destination ? destination[0] ? destination[0] : null : null
       const ct = cartonTemplate ? cartonTemplate[0] ? cartonTemplate[0] : null : null
       product.forEach(p => {
-        shipmentsText.push({
+        sData.push({
           id: shipment.properties.id.title[0].plainText,
           number: shipment.properties.number.number,
           numCases: shipment.properties.numCartons.number,
           totalUnitQty: shipment.properties.totalUnits.formula.number,
           productImage: p.properties.image.files[0]?.file.url,
           productSku: p.properties.sku.richText[0].plainText,
-          destinationName: d.properties.name.title[0].plainText,
+          destinationName: d?.properties.name.title[0].plainText,
           caseQty: ct?.properties.unitQty.number
         })
       })
     }
-
-    shipmentsText
-      .sort((a, b) => { return a.number < b.number ? -1 : 1 })
-    setShipments(shipmentsText)
+    sData.sort((a, b) => a.number < b.number ? -1 : 1 )
+    setShipments(sData)
+    setSubject(`OUTBOUND: ${sDates.map(d => `PO-${d}`).join(', ')}`)
   }
 
   return (
@@ -47,13 +50,13 @@ function OutboundEmail () {
 
           <h3>Subject</h3>
           <div className='mb-4 card'>
-            <div className='card-body'>
-              <span>OUTBOUND - </span>
-              {shipments.map((s, i) => {
-                return (
-                  <span key={i}>{s.productSku} ({s.totalUnitQty}){i !== shipments.length - 1 ? ', ' : ''}</span>
-                )
-              })}
+            <div className='card-body d-flex justify-content-between'>
+              {subject && (
+                <>
+                  <span>{subject}</span>
+                  <CopyButton text={subject} />
+                </>
+              )}
             </div>
           </div>
 
