@@ -93,7 +93,7 @@ function BuyPostage () {
     const [origin, destination, cartonTemplate] = await Promise.all(
       ['origin', 'destination', 'cartonTemplate'].map(async (prop) => {
         const id = shipment.properties[prop]?.relation[0]?.id
-        return id ? await notion.pageRetrieve(id) : null
+        return id ? await notion.pageGet(id) : null
       })
     )
     const addressProps = ['company', 'name', 'street1', 'city', 'state', 'zipCode', 'country', 'phone', 'email']

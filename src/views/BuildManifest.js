@@ -23,7 +23,7 @@ function BuildManifest () {
         ['runOut', 'cartonTemplate'].map(async (prop) => {
           const id = shipment.properties[prop]?.relation[0]?.id
           if (!id) return null
-          return await notion.pageRetrieve(id)
+          return await notion.pageGet(id)
         })
       )
 
