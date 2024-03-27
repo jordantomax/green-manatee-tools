@@ -30,9 +30,26 @@ async function dbQuery (id, params) {
   return res
 }
 
-async function pageRetrieve (id) {
+async function pageGet (id) {
   const res = await call(`pages/${id}`)
   return res
+}
+
+async function relationsGet (obj, relationNames) {
+  const relations = await Promise.all(
+    relationNames.map(async (prop) => {
+      if (!obj.properties[prop] || obj.properties[prop].relation.length <= 0) return null
+
+      return await Promise.all(
+        // accomodate multiple  per shipment
+        obj.properties[prop].relation.map(async (r) => {
+          if (!r.id) return null
+          return await pageGet(r.id)
+        })
+      )
+    })
+  )
+  return relations
 }
 
 function getPropValueText (value) {
@@ -65,7 +82,8 @@ function massagePage (page, properties, nameMap) {
 const notion = {
   call,
   dbQuery,
-  pageRetrieve,
+  pageGet,
+  relationsGet,
   massagePage
 }
 

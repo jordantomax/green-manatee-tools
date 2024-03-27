@@ -14,22 +14,10 @@ function OutboundEmail () {
 
   async function handleSelectShipment (shipments) {
     const shipmentsText = []
+    const shipmentsNames = []
     for (let i = 0; i < shipments.length; i++) {
       const shipment = shipments[i]
-      const [product, destination, cartonTemplate] = await Promise.all(
-        ['product', 'destination', 'cartonTemplate'].map(async (prop) => {
-          if (!shipment.properties[prop] || shipment.properties[prop].relation.length <= 0) return null
-
-          return await Promise.all(
-            // accomodate multiple products per shipment
-            shipment.properties[prop].relation.map(async (r) => {
-              if (!r.id) return null
-              return await notion.pageRetrieve(r.id)
-            })
-          )
-        })
-      )
-
+      const [product, destination, cartonTemplate] = await notion.relationsGet(shipment, ['product', 'destination', 'cartonTemplate'])
       const d = destination ? destination[0] ? destination[0] : null : null
       const ct = cartonTemplate ? cartonTemplate[0] ? cartonTemplate[0] : null : null
       product.forEach(p => {
