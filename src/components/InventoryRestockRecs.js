@@ -10,7 +10,10 @@ function InventoryRestockRecs ({ products }) {
       {products.map(product => {
         return (
           <Card key={product.sku}>
-            <Card.Header as="h5">{product.sku}</Card.Header>
+            <Card.Header>
+              <h5>{product.name}</h5>
+              {product.sku}
+            </Card.Header>
             <Card.Body>
               <ListGroup>
                 <ListGroup.Item variant="primary"><strong>FBA restock:</strong> {product.restockUnits.fba}</ListGroup.Item>
