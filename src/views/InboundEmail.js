@@ -8,15 +8,20 @@ import {
 
 import notion from '../utils/notion'
 import NotionShipments from '../components/NotionShipments'
+import CopyButton from '../components/CopyButton'
 import imgSrcUrlToBase64 from '../utils/imgSrcUrlToBase64'
 
 function InboundEmail () {
   const [shipments, setShipments] = useState([])
+  const [subject, setSubject] = useState()
 
   async function handleSelectShipment (shipments) {
     const shipmentsText = []
+    const sDates = []
     for (let i = 0; i < shipments.length; i++) {
       const shipment = shipments[i]
+      const date = shipment.properties.date.date.start
+      if (!sDates.includes(date)) sDates.push(date)
       const [product, cartonTemplate] = await notion.relationsGet(shipment, ['product', 'cartonTemplate'])
       const ct = cartonTemplate ? cartonTemplate[0] ? cartonTemplate[0] : null : null
 
@@ -39,6 +44,7 @@ function InboundEmail () {
       .sort((a, b) => { return a.id < b.id ? -1 : 1 })
       .forEach((el, i) => { el.shipmentNumber = i })
     setShipments(shipmentsText)
+    setSubject(`INBOUND: ${sDates.map(d => `PO-${d}`).join(', ')}`)
   }
 
   return (
@@ -49,13 +55,14 @@ function InboundEmail () {
 
           <h3>Subject</h3>
           <div className='mb-4 card'>
-            <div className='card-body'>
-              <span>Inbound - </span>
-              {shipments.map((s, i) => {
-                return (
-                  <span key={i}>{s.productSku} ({s.totalUnitQty}){i !== shipments.length - 1 ? ', ' : ''}</span>
-                )
-              })}
+            <div className='card-body d-flex justify-content-between'>
+
+              {subject && (
+                <>
+                  <span>{subject}</span>
+                  <CopyButton text={subject} />
+                </>
+              )}
             </div>
           </div>
 
