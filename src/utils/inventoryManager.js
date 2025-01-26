@@ -9,7 +9,7 @@ async function call (path, _options = {}) {
   const options = {
     method: method || 'GET',
     headers: {
-      'x-api-key': key,
+      'X-Api-Key': key,
       'Content-Type': 'application/json',
     }
   }
