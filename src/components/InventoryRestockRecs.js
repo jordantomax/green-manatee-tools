@@ -5,16 +5,20 @@ import {
 } from 'react-bootstrap'
 
 function RestockUnits ({ product }) {
-  const { cartonUnitQty } = product
-  const { fba, warehouse } = product.restockUnits
+  const {
+    fba,
+    warehouse,
+    needFbaRestock,
+    needWarehouseRestock
+  } = product.restockUnits
 
   return (
     <>
-      <ListGroup.Item variant={fba > cartonUnitQty ? "primary" : ""}>
+      <ListGroup.Item variant={needFbaRestock && "primary"}>
         <strong>FBA restock:</strong> {fba}
       </ListGroup.Item>
 
-      <ListGroup.Item variant={warehouse > cartonUnitQty ? "primary" : ""}>
+      <ListGroup.Item variant={needWarehouseRestock && "primary"}>
         <strong>Warehouse restock:</strong> {warehouse}
       </ListGroup.Item>
     </>
