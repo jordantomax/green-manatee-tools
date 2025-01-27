@@ -4,6 +4,32 @@ import {
   ListGroup
 } from 'react-bootstrap'
 
+function RestockUnits ({ product }) {
+  const { cartonUnitQty } = product
+  const { fba, warehouse } = product.restockUnits
+
+  return (
+    <>
+      <ListGroup.Item variant={fba > cartonUnitQty ? "primary" : ""}>
+        <strong>FBA restock:</strong> {fba}
+      </ListGroup.Item>
+
+      <ListGroup.Item variant={warehouse > cartonUnitQty ? "primary" : ""}>
+        <strong>Warehouse restock:</strong> {warehouse}
+      </ListGroup.Item>
+    </>
+  )
+}
+
+function Sales ({ sales }) {
+  return sales.map((period, i) => {
+    const last = i === sales.length - 1
+    return (
+      <>{period}{last ? '' : ', '}</>
+    )
+  })
+}
+
 function InventoryRestockRecs ({ products }) {
   return (
     <CardColumns className='mb-4'>
@@ -16,17 +42,11 @@ function InventoryRestockRecs ({ products }) {
             </Card.Header>
             <Card.Body>
               <ListGroup>
-                <ListGroup.Item variant="primary"><strong>FBA restock:</strong> {product.restockUnits.fba}</ListGroup.Item>
-                <ListGroup.Item variant="primary"><strong>Warehouse restock:</strong> {product.restockUnits.warehouse}</ListGroup.Item>
+                <RestockUnits product={product} />
                 <ListGroup.Item><strong>Projected monthly sales:</strong> {product.amzProjectedMonthlyUnitSales}</ListGroup.Item>
                 <ListGroup.Item>
                   <strong>30 day sales → new: </strong>
-                  {product.amzUnitSalesBy30DayPeriods.map((period, i) => {
-                    const last = i === product.amzUnitSalesBy30DayPeriods.length - 1
-                    return (
-                      <>{period}{last ? '' : ', '}</>
-                    )
-                  })}
+                  <Sales sales={product.amzUnitSalesBy30DayPeriods} />
                 </ListGroup.Item>
                 <ListGroup.Item><strong>Monthly growth rate:</strong> {product.amzWeightedMonthlyGrowthRate}</ListGroup.Item>
                 <ListGroup.Item><strong>FBA units:</strong> {product.fbaFulfillableUnits}</ListGroup.Item>
