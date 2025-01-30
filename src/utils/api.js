@@ -1,4 +1,4 @@
-import { INVENTORY_MANAGER_API_URL } from '../constants'
+import { API_URL } from '../constants'
 import { getSavedTokens } from './auth'
 import { deepToCamelCase } from './deepMap'
 
@@ -17,7 +17,7 @@ async function call (path, _options = {}) {
     options.body = JSON.stringify(params || {})
   }
 
-  const res = await fetch(`${INVENTORY_MANAGER_API_URL}/${path}`, options).then(res => res.json())
+  const res = await fetch(`${API_URL}/${path}`, options).then(res => res.json())
   return deepToCamelCase(res)
 }
 
