@@ -28,9 +28,25 @@ async function getRecs (options) {
   return res
 }
 
+async function createFbaShipments (products) {
+  const shipments = products.map(({ notionProductId, restockUnits, cartonUnitQty }) => ({
+    notionProductId,
+    cartonQty: Math.ceil(restockUnits.fba/cartonUnitQty) + 1
+  })).reduce((acc, shipment) => {
+    if (shipment.notionProductId) acc.push(shipment)
+    return acc
+  }, [])
+  const res = await call(`fba-shipments`, {
+    method: 'POST',
+    params: shipments
+  })
+  return res
+}
+
 const inventoryManager = {
   call,
-  getRecs
+  getRecs,
+  createFbaShipments
 }
 
 export default inventoryManager
