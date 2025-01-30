@@ -43,10 +43,23 @@ async function createFbaShipments (products) {
   return res
 }
 
+async function createManifest (shipments) {
+  const res = await call(`fba-manifest`, {
+    method: 'POST',
+    params: shipments
+  })
+  const base64Txt = res.body
+  const link = document.createElement('a')
+  link.href = `data:application/pdf;base64,${base64Txt}`
+  link.download = 'manifest.txt'
+  link.click()
+}
+
 const inventoryManager = {
   call,
   getRecs,
-  createFbaShipments
+  createFbaShipments,
+  createManifest
 }
 
 export default inventoryManager
