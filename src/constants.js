@@ -3,4 +3,4 @@ export const NOTION_PROXY_HOST = 'https://48occomy4i.execute-api.us-east-1.amazo
 export const NOTION_SHIPMENTS_DB_ID = '3d738a6a5d6844bdbac6a89beb548c30'
 export const NOTION_LOCATIONS_SHIPIT_ID = '52c9f215b5654085800787b87e34b1e1'
 export const NOTION_LOCATIONS_AMAZON_ID = '788d0b207b3f40dfbe710b05a31202c9'
-export const API_URL = 'https://qs9yg4nge3.execute-api.us-east-1.amazonaws.com/inventory-manager-prod'
+export const API_URL = 'https://api.thegreenmanatee.com'
