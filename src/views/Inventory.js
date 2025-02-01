@@ -58,7 +58,7 @@ function Inventory () {
               Get inventory recommendations
             </Button>
 
-            <InventoryCreateFbaShipments restock={data.restockNeeded} />
+            <InventoryCreateFbaShipments restock={data && data.restockNeeded} />
           </div>
 
           {data ? (

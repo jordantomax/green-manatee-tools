@@ -15,7 +15,7 @@ function InventoryCreateFbaShipments ({ restock }) {
   return (
     <Button
       className="ml-2"
-      disabled={isLoading}
+      disabled={isLoading || !restock}
       variant="outline-info"
       onClick={createFbaShipments}
     >
