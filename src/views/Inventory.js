@@ -10,8 +10,9 @@ import {
 
 import { setLocalData, getLocalData } from '../utils/storage'
 import ButtonSpinner from '../components/ButtonSpinner'
-import inventoryManager from '../utils/inventoryManager'
+import api from '../utils/api'
 import InventoryRestockRecs from '../components/InventoryRestockRecs'
+import InventoryCreateFbaShipments from '../components/InventoryCreateFbaShipments'
 
 function Inventory () {
   const [isLoading, setIsLoading] = useState(false)
@@ -22,7 +23,7 @@ function Inventory () {
   async function getRecommendations () {
     if (errorMessage) setErrorMessage(null)
     setIsLoading(true)
-    const { data } = await inventoryManager.getRecs()
+    const { data } = await api.getRecs()
     setIsLoading(false)
     if (!data) {
       setErrorMessage('Request failed')
@@ -49,12 +50,15 @@ function Inventory () {
 
           <div className='mb-4'>
             <Button
+              variant="primary"
               disabled={isLoading}
               onClick={getRecommendations}
             >
               {isLoading && <ButtonSpinner />}
               Get inventory recommendations
             </Button>
+
+            <InventoryCreateFbaShipments restock={data && data.restockNeeded} />
           </div>
 
           {data ? (

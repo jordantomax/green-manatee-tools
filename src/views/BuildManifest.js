@@ -6,8 +6,8 @@ import {
   Alert
 } from 'react-bootstrap'
 
-import { SHIPPING_MANIFEST_BUILDER_API_URL } from '../constants'
 import notion from '../utils/notion'
+import api from '../utils/api'
 import NotionShipments from '../components/NotionShipments'
 
 function BuildManifest () {
@@ -35,7 +35,7 @@ function BuildManifest () {
       const massagedExp = exp ? `${exp.slice(5, 7)}/${exp.slice(8, 10)}/${exp.slice(0, 4)}` : null
 
       shipmentsMassaged.push({
-        quantity: shipment.properties.totalUnits.formula.number,
+        totalUnits: shipment.properties.totalUnits.formula.number,
         numCartons: shipment.properties.numCartons.number,
         sku: shipment.properties.sku.rollup.array[0].richText[0].text.content,
         expiration: massagedExp,
@@ -43,28 +43,12 @@ function BuildManifest () {
         cartonLength: cartonTemplate.properties.lengthIn.formula.number,
         cartonWidth: cartonTemplate.properties.widthIn.formula.number,
         cartonHeight: cartonTemplate.properties.heightIn.formula.number,
-        cartonQty: cartonTemplate.properties.unitQty.number
+        cartonUnitQty: cartonTemplate.properties.unitQty.number
       })
     }
 
-    getManifest(shipmentsMassaged)
+    api.createManifest(shipmentsMassaged)
   }
-
-  async function getManifest (shipments) {
-    const res = await fetch(SHIPPING_MANIFEST_BUILDER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ shipments })
-    })
-    const base64Txt = await res.text()
-    const link = document.createElement('a')
-    link.href = `data:application/pdf;base64,${base64Txt}`
-    link.download = 'manifest.txt'
-    link.click()
-  }
-
 
   return (
     <Container>
