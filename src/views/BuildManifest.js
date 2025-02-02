@@ -20,7 +20,7 @@ function BuildManifest () {
     for (let i = 0; i < shipments.length; i++) {
       const shipment = shipments[i]
       const [run, cartonTemplate] = await Promise.all(
-        ['runOut', 'cartonTemplate'].map(async (prop) => {
+        ['run', 'cartonTemplate'].map(async (prop) => {
           const id = shipment.properties[prop]?.relation[0]?.id
           if (!id) return null
           return await notion.pageGet(id)
@@ -38,12 +38,12 @@ function BuildManifest () {
         totalUnits: shipment.properties.totalUnits.formula.number,
         numCartons: shipment.properties.numCartons.number,
         sku: shipment.properties.sku.rollup.array[0].richText[0].text.content,
-        expiration: massagedExp,
         cartonWeight: cartonTemplate.properties.grossWeightLb.formula.number,
         cartonLength: cartonTemplate.properties.lengthIn.formula.number,
         cartonWidth: cartonTemplate.properties.widthIn.formula.number,
         cartonHeight: cartonTemplate.properties.heightIn.formula.number,
-        cartonUnitQty: cartonTemplate.properties.unitQty.number
+        cartonUnitQty: cartonTemplate.properties.unitQty.number,
+        ...massagedExp ? { expiration: massagedExp } : {}
       })
     }
 
