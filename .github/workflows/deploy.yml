@@ -15,9 +15,9 @@ jobs:
       with:
         node-version: '14'
 
-    - run: yarn install
+    - run: npm install
 
-    - run: yarn build
+    - run: npm build
 
     - name: Sync S3
       uses: jakejarvis/s3-sync-action@master
