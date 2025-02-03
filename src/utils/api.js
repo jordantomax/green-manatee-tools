@@ -1,6 +1,7 @@
-import { API_URL } from '../constants'
 import { getSavedTokens } from './auth'
 import { deepToCamelCase } from './deepMap'
+
+const API_URL = process.env.REACT_APP_API_URL
 
 async function call (path, _options = {}) {
   const { method, params } = _options
@@ -29,13 +30,20 @@ async function getRecs (options) {
 }
 
 async function createFbaShipments (products) {
-  const shipments = products.map(({ notionProductId, restockUnits, cartonUnitQty }) => ({
-    notionProductId,
-    cartonQty: Math.ceil(restockUnits.fba/cartonUnitQty) + 1
-  })).reduce((acc, shipment) => {
-    if (shipment.notionProductId) acc.push(shipment)
-    return acc
-  }, [])
+  const shipments = products
+    .reduce((acc, product) => {
+      if (
+        product.restockUnits?.needFbaRestock &&
+        product.notionProductId
+      ) {
+        acc.push(product)
+      }
+      return acc
+    }, [])
+    .map(({ notionProductId, restockUnits, cartonUnitQty }) => ({
+      notionProductId,
+      cartonQty: Math.ceil(restockUnits.fba/cartonUnitQty) + 1
+  }))
   const res = await call(`fba-shipments`, {
     method: 'POST',
     params: shipments
