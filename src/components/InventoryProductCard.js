@@ -53,7 +53,7 @@ function InventoryProductCard ({ product }) {
         <h5>{product.name}</h5>
         <div className="pb-2">{product.sku}</div>
         <Button
-          disabled={isLoading}
+          disabled={isLoading || !product.restockUnits.needFbaRestock}
           variant="outline-info"
           size="sm"
           onClick={createFbaShipment}
