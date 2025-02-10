@@ -35,7 +35,7 @@ function BuildManifest () {
       const massagedExp = exp ? `${exp.slice(5, 7)}/${exp.slice(8, 10)}/${exp.slice(0, 4)}` : null
 
       shipmentsMassaged.push({
-        totalUnits: shipment.properties.outUnits.formula.number,
+        totalUnits: Math.abs(shipment.properties.outUnits.formula.number),
         numCartons: shipment.properties.numCartons.number,
         sku: shipment.properties.sku.rollup.array[0].richText[0].text.content,
         cartonWeight: cartonTemplate.properties.grossWeightLb.formula.number,
