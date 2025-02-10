@@ -29,7 +29,7 @@ function OutboundEmail () {
           id: shipment.properties.id.title[0].plainText,
           number: shipment.properties.number.number,
           numCases: shipment.properties.numCartons.number,
-          totalUnitQty: shipment.properties.outUnits.formula.number,
+          totalUnitQty: Math.abs(shipment.properties.outUnits.formula.number),
           productImage: p.properties.image.files[0]?.file.url,
           productSku: p.properties.sku.richText[0].plainText,
           destinationName: d?.properties.name.title[0].plainText,
