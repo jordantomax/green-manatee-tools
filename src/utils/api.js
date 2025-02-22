@@ -40,8 +40,9 @@ async function createFbaShipments (products) {
       }
       return acc
     }, [])
-    .map(({ notionProductId, restockUnits, cartonUnitQty }) => ({
+    .map(({ notionProductId, notionCartonTemplateId, restockUnits, cartonUnitQty }) => ({
       notionProductId,
+      notionCartonTemplateId,
       cartonQty: Math.ceil(restockUnits.fba/cartonUnitQty) + 1
   }))
   const res = await call(`fba-shipments`, {
