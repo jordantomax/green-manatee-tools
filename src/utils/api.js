@@ -22,6 +22,14 @@ async function call (path, _options = {}) {
   return deepToCamelCase(res)
 }
 
+async function queryNotionDatabase (databaseId, options={}) {
+  const res = await call(`notion/database/${databaseId}`, {
+    method: 'POST',
+    params: options
+  })
+  return res.results
+}
+
 async function getRecs (options) {
   const res = await call(`recommendations`, {
     options
@@ -64,11 +72,12 @@ async function createManifest (shipments) {
   link.click()
 }
 
-const inventoryManager = {
+const api = {
   call,
+  queryNotionDatabase,
   getRecs,
   createFbaShipments,
   createManifest
 }
 
-export default inventoryManager
+export default api
