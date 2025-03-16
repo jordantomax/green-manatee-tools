@@ -24,8 +24,7 @@ async function call (path, _options = {}) {
 
 async function queryNotionDatabase (databaseId, options={}) {
   const res = await call(`notion/database/${databaseId}`, {
-    method: 'POST',
-    params: options
+    method: 'POST'
   })
   return res.results
 }
