@@ -52,7 +52,8 @@ async function relationsGet (obj, relationNames) {
   return relations
 }
 
-function getPropValueText (value) {
+export function getNotionProp (value) {
+  if (!value) return
   switch (value.type) {
     case 'title':
       return value.title[0]?.plainText
@@ -61,7 +62,7 @@ function getPropValueText (value) {
     case 'number':
       return value.number
     case 'formula':
-      return getPropValueText(value.formula)
+      return getNotionProp(value.formula)
     default:
       return value.plainText
   }
@@ -72,7 +73,7 @@ function massagePage (page, properties, nameMap) {
   if (page) {
     for (const [key, value] of Object.entries(page.properties)) {
       if (properties.includes(key)) {
-        massaged[nameMap[key] || key] = getPropValueText(value)
+        massaged[nameMap[key] || key] = getNotionProp(value)
       }
     }
   }

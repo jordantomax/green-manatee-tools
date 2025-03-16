@@ -122,12 +122,13 @@ function BuyPostage () {
             <NotionShipments handleSelectShipment={handleSelectNotionShipment} />
 
             <Form>
+              <h4>From Address</h4>
               <Address
                 address={input.addressFrom}
                 name='addressFrom'
                 handleChange={handleChange}
               />
-
+              <h4>To Address</h4>
               <Address
                 address={input.addressTo}
                 name='addressTo'
