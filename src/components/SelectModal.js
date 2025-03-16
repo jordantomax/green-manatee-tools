@@ -19,6 +19,7 @@ function SelectModal({
 }) {
   const [selectedItem, setSelectedItem] = useState(null)
   const [isLoadingSelect, setIsLoadingSelect] = useState(false)
+  const [filterText, setFilterText] = useState('')
 
   async function handleSelect() {
     setIsLoadingSelect(true)
@@ -26,7 +27,12 @@ function SelectModal({
     setIsLoadingSelect(false)
     onHide()
   }
-  
+
+  const filteredData = data?.filter(item => {
+    const label = labelKey ? get(item, labelKey) : item.id
+    return label.toLowerCase().includes(filterText.toLowerCase())
+  })
+
   return (
     <Modal centered show={show} onHide={onHide}>
       <Modal.Header closeButton>
@@ -34,8 +40,16 @@ function SelectModal({
       </Modal.Header>
 
       <Modal.Body style={{ maxHeight: '350px', overflow: 'scroll' }}>
+        <Form.Control
+          type="text"
+          placeholder="Filter items..."
+          value={filterText}
+          onChange={e => setFilterText(e.target.value)}
+          className="mb-3"
+        />
+
         <ListGroup>
-          {data && data.map(item => (
+          {filteredData && filteredData.map(item => (
             <ListGroup.Item
               key={item.id}
               action
