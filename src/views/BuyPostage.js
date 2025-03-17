@@ -19,7 +19,6 @@ import RateParcels from '../components/RateParcels'
 import Rates from '../components/Rates'
 import PurchasedRate from '../components/PurchasedRate'
 import NotionShipments from '../components/NotionShipments'
-import Messages from '../components/BuyPostage/Messages'
 import Customs from '../components/BuyPostage/Customs'
 import Hazmat from '../components/BuyPostage/Hazmat'
 import ButtonSpinner from '../components/ButtonSpinner'
@@ -27,7 +26,6 @@ import ButtonSpinner from '../components/ButtonSpinner'
 function BuyPostage () {
   const [rateParcels, setRateParcels] = useState(getLocalData('shipment')?.rateParcels || [])
   const [rates, setRates] = useState(getLocalData('shipment')?.rates || [])
-  const [messages, setMessages] = useState(getLocalData('shipment')?.messages || [])
   const [purchasedRate, setPurchasedRate] = useState(getLocalData('purchasedRate') || null)
   const savedInput = getLocalData('input') || {}
   const {
@@ -80,7 +78,9 @@ function BuyPostage () {
     setLocalData('shipment', data)
     setRateParcels(data.parcels)
     setRates(data.rates)
-    setMessages(data.messages)
+    data.messages?.forEach(message => {
+      console.log(`${message.source}${message.code ? ` code ${message.code}` : ''}: ${message.text}`)
+    })
   }
 
   function _setPurchasedRate (rate) {
@@ -171,7 +171,6 @@ function BuyPostage () {
             </div>
 
             <PurchasedRate rate={purchasedRate} />
-            <Messages messages={messages} />
             <Rates
               rates={rates}
               setPurchasedRate={_setPurchasedRate}
