@@ -14,8 +14,10 @@ function SelectModal({
     title,
     labelKey,
     show,
+    isLoading,
     onSelect,
-    onHide
+    onHide,
+    onRefresh
 }) {
   const [selectedItem, setSelectedItem] = useState(null)
   const [isLoadingSelect, setIsLoadingSelect] = useState(false)
@@ -67,6 +69,10 @@ function SelectModal({
       </Modal.Body>
 
       <Modal.Footer>
+        <Button variant='secondary' onClick={onRefresh} disabled={isLoading}>
+          {isLoading && <ButtonSpinner />}
+          Refresh
+        </Button>
         <Button variant='primary' disabled={!selectedItem} onClick={handleSelect}>
           {isLoadingSelect && <ButtonSpinner />}
           Select

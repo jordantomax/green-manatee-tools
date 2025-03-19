@@ -28,6 +28,14 @@ function Address ({ address, name, handleChange }) {
     setModalData(locations)
   }
   
+  function hideModal() {
+    setModalIsVisible(false)
+  }
+  
+  async function handleRefresh() {
+    getLocations(true)
+  }
+  
   async function handleSelect(location) {
     const p = location.properties
     const address = {
@@ -74,8 +82,10 @@ function Address ({ address, name, handleChange }) {
         data={modalData}
         show={modalIsVisible}
         labelKey='properties.name.title.0.plainText'
-        onHide={() => setModalIsVisible(false)}
+        onHide={hideModal}
+        isLoading={isLoading}
         onSelect={handleSelect}
+        onRefresh={handleRefresh}
       />
 
       <div className='pb-4'>
