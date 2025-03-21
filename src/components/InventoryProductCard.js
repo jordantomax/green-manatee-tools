@@ -71,11 +71,11 @@ function InventoryProductCard ({ product }) {
           <Sales sales={product.sales.amzUnitSalesBy30DayPeriods} />
         </ListGroup.Item>
         <ListGroup.Item><strong>Monthly growth rate:</strong> {product.sales.amzWeightedMonthlyGrowthRate}</ListGroup.Item>
-        <ListGroup.Item><strong>FBA units:</strong> {product.fba.stock}</ListGroup.Item>
-        <ListGroup.Item><strong>FBA inbound units:</strong> {product.fba.inbound}</ListGroup.Item>
-        <ListGroup.Item><strong>AWD units:</strong> {product.awd.stock}</ListGroup.Item>
-        <ListGroup.Item><strong>AWD inbound units:</strong> {product.awd.inbound}</ListGroup.Item>
-        <ListGroup.Item><strong>Warehouse units:</strong> {product.warehouse.stock}</ListGroup.Item>
+        <ListGroup.Item><strong>FBA stock:</strong> {product.fba.stock}</ListGroup.Item>
+        <ListGroup.Item><strong>FBA inbound:</strong> {product.fba.inbound}</ListGroup.Item>
+        <ListGroup.Item><strong>AWD stock:</strong> {product.awd.stock}</ListGroup.Item>
+        <ListGroup.Item><strong>AWD inbound:</strong> {product.awd.inbound}</ListGroup.Item>
+        <ListGroup.Item><strong>Warehouse stock:</strong> {product.warehouse.stock}</ListGroup.Item>
       </ListGroup>
     </Card>
   )
