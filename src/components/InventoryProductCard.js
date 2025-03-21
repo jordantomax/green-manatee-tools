@@ -15,8 +15,8 @@ function RestockUnits ({ product }) {
     warehouse,
     needFbaRestock,
     needWarehouseRestock
-  } = product.restockUnits
-
+  } = product.restock
+  
   return (
     <>
       <ListGroup.Item variant={needFbaRestock && "primary"}>
@@ -53,7 +53,7 @@ function InventoryProductCard ({ product }) {
         <h5>{product.name}</h5>
         <div className="pb-2">{product.sku}</div>
         <Button
-          disabled={isLoading || !product.restockUnits.needFbaRestock}
+          disabled={isLoading || !product.restock.needFbaRestock}
           variant="outline-info"
           size="sm"
           onClick={createFbaShipment}
@@ -63,20 +63,20 @@ function InventoryProductCard ({ product }) {
         </Button>
       </Card.Header>
 
-      <Card.Body>
-        <ListGroup>
-          <RestockUnits product={product} />
-          <ListGroup.Item><strong>Projected monthly sales:</strong> {product.amzProjectedMonthlyUnitSales}</ListGroup.Item>
-          <ListGroup.Item>
-            <strong>30 day sales → new: </strong>
-            <Sales sales={product.amzUnitSalesBy30DayPeriods} />
-          </ListGroup.Item>
-          <ListGroup.Item><strong>Monthly growth rate:</strong> {product.amzWeightedMonthlyGrowthRate}</ListGroup.Item>
-          <ListGroup.Item><strong>FBA units:</strong> {product.fbaFulfillableUnits}</ListGroup.Item>
-          <ListGroup.Item><strong>FBA inbound units:</strong> {product.fbaInboundUnits}</ListGroup.Item>
-          <ListGroup.Item><strong>Warehouse units:</strong> {product.warehouseUnits}</ListGroup.Item>
-        </ListGroup>
-      </Card.Body>
+      <ListGroup variant="flush" className="small">
+        <RestockUnits product={product} />
+        <ListGroup.Item><strong>Projected monthly sales:</strong> {product.sales.amzProjectedMonthlyUnitSales}</ListGroup.Item>
+        <ListGroup.Item>
+          <strong>30 day sales → new: </strong>
+          <Sales sales={product.sales.amzUnitSalesBy30DayPeriods} />
+        </ListGroup.Item>
+        <ListGroup.Item><strong>Monthly growth rate:</strong> {product.sales.amzWeightedMonthlyGrowthRate}</ListGroup.Item>
+        <ListGroup.Item><strong>FBA units:</strong> {product.fba.stock}</ListGroup.Item>
+        <ListGroup.Item><strong>FBA inbound units:</strong> {product.fba.inbound}</ListGroup.Item>
+        <ListGroup.Item><strong>AWD units:</strong> {product.awd.stock}</ListGroup.Item>
+        <ListGroup.Item><strong>AWD inbound units:</strong> {product.awd.inbound}</ListGroup.Item>
+        <ListGroup.Item><strong>Warehouse units:</strong> {product.warehouse.stock}</ListGroup.Item>
+      </ListGroup>
     </Card>
   )
 }
