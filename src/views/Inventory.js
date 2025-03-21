@@ -23,12 +23,8 @@ function Inventory () {
   async function getRecommendations () {
     if (errorMessage) setErrorMessage(null)
     setIsLoading(true)
-    const { data } = await api.getRecs()
+    const data = await api.getRecs()
     setIsLoading(false)
-    if (!data) {
-      setErrorMessage('Request failed')
-      return
-    }
     setLocalData('inventoryRecs', data)
     setData(data)
     const date = new Date()
