@@ -40,17 +40,17 @@ async function createFbaShipments (products) {
   const shipments = products
     .reduce((acc, product) => {
       if (
-        product.restockUnits?.needFbaRestock &&
-        product.notionProductId
+        product.restock?.needFbaRestock &&
+        product.warehouse?.notionProductId
       ) {
         acc.push(product)
       }
       return acc
     }, [])
-    .map(({ notionProductId, notionCartonTemplateId, restockUnits, cartonUnitQty }) => ({
-      notionProductId,
-      notionCartonTemplateId,
-      cartonQty: Math.ceil(restockUnits.fba/cartonUnitQty) + 1
+    .map(({ warehouse, restock  }) => ({
+      notionProductId: warehouse.notionProductId,
+      notionCartonTemplateId: warehouse.notionCartonTemplateId,
+      cartonQty: Math.ceil(restock.fba/warehouse.cartonUnitQty) + 1
   }))
   const res = await call(`fba-shipments`, {
     method: 'POST',
