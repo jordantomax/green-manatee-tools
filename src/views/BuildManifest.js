@@ -19,8 +19,8 @@ function BuildManifest () {
 
     for (let i = 0; i < shipments.length; i++) {
       const shipment = shipments[i]
-      const [run, cartonTemplate] = await Promise.all(
-        ['run', 'cartonTemplate'].map(async (prop) => {
+      const [run, product, cartonTemplate] = await Promise.all(
+        ['run', 'product', 'cartonTemplate'].map(async (prop) => {
           const id = shipment.properties[prop]?.relation[0]?.id
           if (!id) return null
           return await notion.pageGet(id)
@@ -37,7 +37,7 @@ function BuildManifest () {
       shipmentsMassaged.push({
         totalUnits: Math.abs(shipment.properties.outUnits.formula.number),
         numCartons: shipment.properties.numCartons.number,
-        sku: shipment.properties.sku.rollup.array[0].richText[0].text.content,
+        sku: product.properties.sku.title[0].plainText,
         cartonWeight: cartonTemplate.properties.grossWeightLb.formula.number,
         cartonLength: cartonTemplate.properties.lengthIn.formula.number,
         cartonWidth: cartonTemplate.properties.widthIn.formula.number,
