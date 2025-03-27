@@ -31,7 +31,7 @@ function OutboundEmail () {
           numCases: shipment.properties.numCartons.number,
           totalUnitQty: Math.abs(shipment.properties.outUnits.formula.number),
           productImage: p.properties.image.files[0]?.file.url,
-          productSku: p.properties.sku.richText[0].plainText,
+          productSku: p.properties.sku.title[0].plainText,
           destinationName: d?.properties.name.title[0].plainText,
           caseQty: ct?.properties.unitQty.number
         })

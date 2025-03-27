@@ -33,7 +33,7 @@ function InboundEmail () {
           totalUnitQty: Math.abs(shipment.properties.shipmentUnits.formula.number),
           trackingNumbers: shipment.properties.trackingNumberS.richText[0]?.plainText,
           productImage: p.properties.image.files[0]?.file.url,
-          productSku: p.properties.sku.richText[0].plainText,
+          productSku: p.properties.sku.title[0].plainText,
           caseQty: ct?.properties.unitQty.number,
           caseGrossWeight: ct?.properties.grossWeightLb.formula.number
         })
