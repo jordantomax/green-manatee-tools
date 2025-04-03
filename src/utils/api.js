@@ -52,7 +52,7 @@ async function createFbaShipments (products) {
       notionCartonTemplateId: warehouse.notionCartonTemplateId,
       cartonQty: Math.ceil(restock.fba/warehouse.cartonUnitQty) + 1
   }))
-  const res = await call(`fba-shipments`, {
+  const res = await call(`notion/fba-shipments`, {
     method: 'POST',
     params: shipments
   })
@@ -60,7 +60,7 @@ async function createFbaShipments (products) {
 }
 
 async function createManifest (shipments) {
-  const res = await call(`fba-manifest`, {
+  const res = await call(`amazon/sp/manifest`, {
     method: 'POST',
     params: shipments
   })
