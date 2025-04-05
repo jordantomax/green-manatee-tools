@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Stack, Checkbox, Group, Switch, Text, Paper, Button, Modal, Table, Badge, Loader } from '@mantine/core'
+import { Stack, Checkbox, Group, Text, Paper, Button, Modal, Table, Badge } from '@mantine/core'
 import { IconRefresh } from '@tabler/icons-react'
 
 import { setLocalData, getLocalData } from '../utils/storage'
@@ -64,10 +64,11 @@ function NotionShipments ({ handleSelectShipment, params, inline = false }) {
   }
 
   const content = (
-    <>
-      <Group mb="md" position="apart">
-        <Switch
-          label="Include delivered shipments"
+    <Stack gap="md">
+      <Group>
+        <Checkbox
+          label="Delivered"
+          styles={{ label: { marginBottom: 0 } }}
           checked={includeDelivered}
           onChange={(event) => setIncludeDelivered(event.currentTarget.checked)}
         />
@@ -105,7 +106,10 @@ function NotionShipments ({ handleSelectShipment, params, inline = false }) {
                 </Table.Td>
                 <Table.Td>{shipment.properties?.id?.title[0]?.plainText}</Table.Td>
                 <Table.Td>
-                  <Badge color={shipment.properties?.Delivered?.checkbox ? 'green' : 'blue'}>
+                  <Badge 
+                    color={shipment.properties?.Delivered?.checkbox ? 'green' : 'gray'}
+                    variant='light'
+                  >
                     {shipment.properties?.Delivered?.checkbox ? 'Delivered' : 'Pending'}
                   </Badge>
                 </Table.Td>
@@ -117,7 +121,7 @@ function NotionShipments ({ handleSelectShipment, params, inline = false }) {
         <Text c="dimmed">Loading shipments...</Text>
       )}
 
-      <Group justify="flex-end" mt="xl">
+      <Group justify="flex-end">
         {!inline && <Button variant="light" onClick={() => setOpened(false)}>Cancel</Button>}
         <Button 
           loading={isLoadingSelect}
@@ -127,7 +131,7 @@ function NotionShipments ({ handleSelectShipment, params, inline = false }) {
           Select Shipments
         </Button>
       </Group>
-    </>
+    </Stack>
   )
 
   if (inline) {
@@ -140,8 +144,8 @@ function NotionShipments ({ handleSelectShipment, params, inline = false }) {
       <Modal 
         opened={opened} 
         onClose={() => setOpened(false)}
-        title="Shipments"
-        size="md"
+        title="Notion Shipments"
+        size="lg"
       >
         {content}
       </Modal>
