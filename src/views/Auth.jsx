@@ -1,14 +1,15 @@
 import React from 'react'
 import {
-  Form,
   Container,
-  Card,
-  Button
-} from 'react-bootstrap'
-import styled from 'styled-components'
-
+  Paper,
+  Title,
+  TextInput,
+  Button,
+  Stack,
+  Box,
+  rem
+} from '@mantine/core'
 import { AuthContext } from '../context/Auth'
-import Input from '../components/InputStacked'
 
 function Auth () {
   const auth = React.useContext(AuthContext)
@@ -26,60 +27,53 @@ function Auth () {
   }
 
   return (
-    <Bg className='bg-dark'>
-      <Content>
-        <h1 className='text-white'>Log in</h1>
-        <Card>
-          <Card.Body>
-            <Form onSubmit={handleSubmit}>
-              <Input
-                vertical
-                label='Shippo API Token'
-                onChange={e => setShippoToken(e.target.value)}
+    <Box 
+      minHeight="100vh"
+      justify="center"
+      py="xl"
+      px="md"
+    >
+      <Container size="xxs">
+        <Paper radius="md" p="xl" withBorder shadow="xs">
+          <Title order={1} mb="xl">
+            Log in
+          </Title>
+        
+          <form onSubmit={handleSubmit}>
+            <Stack gap="md">
+              <TextInput
+                label="Shippo API Token"
+                placeholder="Shippo API token"
+                value={shippoToken}
+                onChange={(e) => setShippoToken(e.target.value)}
+                required
               />
 
-              <Input
-                vertical
-                label='Notion API Token'
-                onChange={e => setNotionToken(e.target.value)}
+              <TextInput
+                label="Notion API Token"
+                placeholder="Notion API token"
+                value={notionToken}
+                onChange={(e) => setNotionToken(e.target.value)}
+                required
               />
 
-              <Input
-                vertical
-                label='API Gateway Key'
-                onChange={e => setApiGatewayKey(e.target.value)}
+              <TextInput
+                label="API Gateway Key"
+                placeholder="API Gateway key"
+                value={apiGatewayKey}
+                onChange={(e) => setApiGatewayKey(e.target.value)}
+                required
               />
 
-              <Buttons>
-                <Button type='submit'>
-                  Log In
-                </Button>
-              </Buttons>
-            </Form>
-          </Card.Body>
-        </Card>
-      </Content>
-    </Bg>
+              <Button type="submit" fullWidth mt="md">
+                Log In
+              </Button>
+            </Stack>
+          </form>
+        </Paper>
+      </Container>
+    </Box>
   )
 }
-
-const Bg = styled.div`
-  height: 100%;
-`
-
-const Content = styled(Container)`
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-  justify-content: center;
-  margin: 0 auto;
-  max-width: 500px;
-`
-
-const Buttons = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-`
 
 export default Auth
