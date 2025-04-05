@@ -71,7 +71,7 @@ function AppNav() {
         <Stack gap="xs">
           <Menu shadow="md" width={200}>
             <Menu.Target>
-              <Group style={{ cursor: 'pointer' }} gap={0}>
+              <Group gap={0}>
                 <Avatar radius="xl" size="sm" color="gray">
                   <IconUserFilled size={20} />
                 </Avatar>

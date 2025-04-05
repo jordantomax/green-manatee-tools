@@ -1,24 +1,18 @@
-import React, { useState } from 'react'
-import {
-  Button,
-  Modal,
-  ListGroup,
-  Form
-} from 'react-bootstrap'
+import React, { useState, useEffect } from 'react'
+import { Stack, Checkbox, Group, Text, Paper, Button, Modal, Table, Badge } from '@mantine/core'
+import { IconRefresh } from '@tabler/icons-react'
 
 import { setLocalData, getLocalData } from '../utils/storage'
 import { NOTION_SHIPMENTS_DB_ID } from '../constants'
 import notion from '../utils/notion'
-import ButtonSpinner from '../components/ButtonSpinner'
 
-function NotionShipments ({ handleSelectShipment, params }) {
+function NotionShipments ({ handleSelectShipment, params, inline = false }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingSelect, setIsLoadingSelect] = useState(false)
   const [data, setData] = useState(null)
   const [shipments, setShipments] = useState([])
   const [includeDelivered, setIncludeDelivered] = useState(false)
-
-  function handleClose () { setData(null) }
+  const [opened, setOpened] = useState(false)
 
   async function getShipments (forceUpdate) {
     setIsLoading(true)
@@ -45,11 +39,17 @@ function NotionShipments ({ handleSelectShipment, params }) {
     setData(data)
   }
 
+  useEffect(() => {
+    if (inline || opened) {
+      getShipments(false)
+    }
+  }, [includeDelivered, opened, inline])
+
   async function handleClick () {
     await setIsLoadingSelect(true)
     await handleSelectShipment(shipments)
     await setIsLoadingSelect(false)
-    handleClose()
+    setOpened(false)
   }
 
   function handleCheck (shipment) {
@@ -63,64 +63,88 @@ function NotionShipments ({ handleSelectShipment, params }) {
     setShipments(newShipments)
   }
 
+  const content = (
+    <Stack gap="md">
+      <Group>
+        <Checkbox
+          label="Delivered"
+          styles={{ label: { marginBottom: 0 } }}
+          checked={includeDelivered}
+          onChange={(event) => setIncludeDelivered(event.currentTarget.checked)}
+        />
+        <Button 
+          variant="light" 
+          leftIcon={<IconRefresh size={16} />}
+          onClick={() => getShipments(true)}
+          loading={isLoading}
+        >
+          Refresh
+        </Button>
+      </Group>
+
+      {data ? (
+        <Table highlightOnHover>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th style={{ width: 40 }}></Table.Th>
+              <Table.Th>Shipment ID</Table.Th>
+              <Table.Th>Status</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {data.map(shipment => (
+              <Table.Tr 
+                key={shipment.id}
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleCheck(shipment)}
+              >
+                <Table.Td>
+                  <Checkbox
+                    checked={shipments.find(s => s.id === shipment.id) || false}
+                    onChange={() => handleCheck(shipment)}
+                  />
+                </Table.Td>
+                <Table.Td>{shipment.properties?.id?.title[0]?.plainText}</Table.Td>
+                <Table.Td>
+                  <Badge color={shipment.properties?.Delivered?.checkbox ? 'green' : 'blue'}>
+                    {shipment.properties?.Delivered?.checkbox ? 'Delivered' : 'Pending'}
+                  </Badge>
+                </Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      ) : (
+        <Text c="dimmed">Loading shipments...</Text>
+      )}
+
+      <Group justify="flex-end">
+        {!inline && <Button variant="light" onClick={() => setOpened(false)}>Cancel</Button>}
+        <Button 
+          loading={isLoadingSelect}
+          onClick={handleClick}
+          disabled={shipments.length === 0}
+        >
+          Select Shipments
+        </Button>
+      </Group>
+    </Stack>
+  )
+
+  if (inline) {
+    return content
+  }
+
   return (
     <>
-      <Button
-        className='mb-3'
-        disabled={isLoading}
-        onClick={() => getShipments(false)}
+      <Button onClick={() => setOpened(true)}>Select Notion Shipments</Button>
+      <Modal 
+        opened={opened} 
+        onClose={() => setOpened(false)}
+        title="Shipments"
+        size="md"
       >
-        {isLoading && <ButtonSpinner />}
-        Select Notion Shipments
-      </Button>
-
-      <Modal centered show={data && true} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Shipments</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body style={{ maxHeight: '350px', overflow: 'scroll' }}>
-          <ListGroup>
-            {data && data.map(shipment => {
-              return (
-                <ListGroup.Item
-                  key={shipment.id}
-                  action
-                  onClick={() => handleCheck(shipment)}
-                >
-                  <Form.Check
-                    type='checkbox'
-                    readOnly
-                    checked={shipments.find(s => s.id === shipment.id) || false}
-                    label={shipment.properties?.id?.title[0]?.plainText}
-                  />
-                </ListGroup.Item>
-              )
-            })}
-          </ListGroup>
-        </Modal.Body>
-
-        <Modal.Footer>
-          <span onClick={() => setIncludeDelivered(!includeDelivered)}>
-            <Form.Check
-              inline
-              readOnly
-              type='checkbox'
-              checked={includeDelivered}
-              label='Include delivered'
-            />
-          </span>
-
-          <Button variant='secondary' onClick={() => getShipments(true)} className='ml-3'>
-            {isLoading && <ButtonSpinner />}
-            Refresh
-          </Button>
-
-          <Button variant='primary' disabled={shipments <= 0} onClick={handleClick}>
-            {isLoadingSelect && <ButtonSpinner />}
-            Select
-          </Button>
-        </Modal.Footer>
+        {content}
       </Modal>
     </>
   )

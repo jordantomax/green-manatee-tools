@@ -12,6 +12,7 @@ const CONTAINER_SIZES = {
 export const theme = createTheme({
   primaryColor: 'dark',
   fontFamily: 'system-ui, -apple-system, sans-serif',
+  cursorType: 'pointer',
   components: {
     Container: Container.extend({
       vars: (_, { size, fluid }) => ({
@@ -24,5 +25,15 @@ export const theme = createTheme({
         },
       }),
     }),
+    Table: {
+      defaultProps: {
+        verticalSpacing: 'sm'
+      }
+    },
+    Badge: {
+      defaultProps: {
+        size: 'sm'
+      }
+    }
   },
 }); 
