@@ -32,7 +32,7 @@ export const theme = createTheme({
     },
     Badge: {
       defaultProps: {
-        size: 'sm'
+        size: 'md'
       }
     }
   },

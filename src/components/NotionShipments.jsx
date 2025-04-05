@@ -106,7 +106,10 @@ function NotionShipments ({ handleSelectShipment, params, inline = false }) {
                 </Table.Td>
                 <Table.Td>{shipment.properties?.id?.title[0]?.plainText}</Table.Td>
                 <Table.Td>
-                  <Badge color={shipment.properties?.Delivered?.checkbox ? 'green' : 'blue'}>
+                  <Badge 
+                    color={shipment.properties?.Delivered?.checkbox ? 'green' : 'gray'}
+                    variant='light'
+                  >
                     {shipment.properties?.Delivered?.checkbox ? 'Delivered' : 'Pending'}
                   </Badge>
                 </Table.Td>
