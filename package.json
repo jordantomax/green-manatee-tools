@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@mantine/core": "^7.17.3",
+    "@mantine/form": "^7.17.3",
     "@mantine/hooks": "^7.17.3",
     "@tabler/icons-react": "^3.31.0",
     "@testing-library/jest-dom": "^5.11.4",

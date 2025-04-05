@@ -7,62 +7,71 @@ import {
   Button,
   Stack,
   Box,
-  rem
+  rem,
+  Image,
+  Group
 } from '@mantine/core'
+import { useForm } from '@mantine/form'
 import { AuthContext } from '../context/Auth'
 
 function Auth () {
   const auth = React.useContext(AuthContext)
-  const [shippoToken, setShippoToken] = React.useState('')
-  const [notionToken, setNotionToken] = React.useState('')
-  const [apiGatewayKey, setApiGatewayKey] = React.useState('')
+  
+  const form = useForm({
+    initialValues: {
+      shippoToken: '',
+      notionToken: '',
+      apiGatewayKey: ''
+    },
+    validate: {
+      shippoToken: (value) => (!value ? 'Shippo token is required' : null),
+      notionToken: (value) => (!value ? 'Notion token is required' : null),
+      apiGatewayKey: (value) => (!value ? 'API Gateway key is required' : null)
+    }
+  })
 
-  function handleSubmit (e) {
-    e.preventDefault()
-    auth.logIn({
-      shippo: shippoToken,
-      notion: notionToken,
-      apiGateway: apiGatewayKey
-    })
+  function handleSubmit(values) {
+    auth.logIn(values)
   }
 
   return (
     <Box 
+      h="100vh"
       minHeight="100vh"
       justify="center"
       py="xl"
       px="md"
+      bg="gray.0"
     >
       <Container size="xxs">
         <Paper radius="md" p="xl" withBorder shadow="xs">
-          <Title order={1} mb="xl">
-            Log in
-          </Title>
+          <Group gap="md" align="center" mb="xl">
+            <Title order={1}>
+              Log in
+            </Title>
+          </Group>
         
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack gap="md">
               <TextInput
                 label="Shippo API Token"
                 placeholder="Shippo API token"
-                value={shippoToken}
-                onChange={(e) => setShippoToken(e.target.value)}
                 required
+                {...form.getInputProps('shippoToken')}
               />
 
               <TextInput
                 label="Notion API Token"
                 placeholder="Notion API token"
-                value={notionToken}
-                onChange={(e) => setNotionToken(e.target.value)}
                 required
+                {...form.getInputProps('notionToken')}
               />
 
               <TextInput
                 label="API Gateway Key"
                 placeholder="API Gateway key"
-                value={apiGatewayKey}
-                onChange={(e) => setApiGatewayKey(e.target.value)}
                 required
+                {...form.getInputProps('apiGatewayKey')}
               />
 
               <Button type="submit" fullWidth mt="md">
