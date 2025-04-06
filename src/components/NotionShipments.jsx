@@ -4,9 +4,9 @@ import { IconRefresh } from '@tabler/icons-react'
 
 import { setLocalData, getLocalData } from '../utils/storage'
 import { NOTION_SHIPMENTS_DB_ID } from '../constants'
-import notion from '../utils/notion'
+import api from '../utils/api'
 
-function NotionShipments ({ handleSelectShipment, params, inline = false }) {
+function NotionShipments ({ handleSelectShipment, inline = false }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingSelect, setIsLoadingSelect] = useState(false)
   const [data, setData] = useState(null)
@@ -17,10 +17,10 @@ function NotionShipments ({ handleSelectShipment, params, inline = false }) {
   async function getShipments (forceUpdate) {
     setIsLoading(true)
     let data = getLocalData('notionShipments')
-    let params = {}
+    let body = {}
 
     if (!includeDelivered) {
-      params = {
+      body = {
         filter: {
           property: 'Delivered',
           checkbox: {
@@ -31,11 +31,10 @@ function NotionShipments ({ handleSelectShipment, params, inline = false }) {
     }
 
     if (!data || forceUpdate) {
-      const res = await notion.dbQuery(NOTION_SHIPMENTS_DB_ID, params)
-      data = res.results
+      const data = await api.notionQueryDatabase(NOTION_SHIPMENTS_DB_ID, body)
+      setLocalData('notionShipments', data)
     }
     setIsLoading(false)
-    setLocalData('notionShipments', data)
     setData(data)
   }
 

@@ -28,9 +28,10 @@ async function call (path, _options = {}) {
   return deepToCamelCase(res)
 }
 
-async function notionQueryDatabase (databaseId) {
+async function notionQueryDatabase (databaseId, body) {
   const res = await call(`notion/database/${databaseId}`, {
-    method: 'POST'
+    method: 'POST',
+    body
   })
   return res.results
 }
