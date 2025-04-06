@@ -10,19 +10,20 @@ import { PDF_MERGER_API_URL } from '../constants'
 function PurchasedRate ({ rate }) {
   const [results, setResults] = React.useState(null)
   const [isLoadingMergedLabels, setIsLoadingMergedLabels] = React.useState(false)
+  const rateId = React.useRef(null)
 
   React.useEffect(() => {
-    async function getLabels () {
-      try {
-        const res = await api.shippoGetLabel({ rate: rate?.rate })
-        setResults(res.results)
-      } catch (err) {
-        console.warn(err)
-      }
-    }
+    if (!rate?.rate || rateId.current === rate.rate) return
 
-    getLabels()
-  }, [rate])
+    try {
+      rateId.current = rate.rate
+      api.shippoGetLabel({ rate: rateId.current })
+        .then(res => setResults(res.results))
+        .catch(err => console.warn(err))
+    } catch (err) {
+      console.warn(err)
+    }
+  }, [rate?.rate])
 
   async function getMergedLabels () {
     setIsLoadingMergedLabels(true)
