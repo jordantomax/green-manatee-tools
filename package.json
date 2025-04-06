@@ -17,7 +17,6 @@
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^6.0.2",
-    "shippo": "^1.7.1",
     "styled-components": "^5.2.3",
     "web-vitals": "^1.0.1"
   },
