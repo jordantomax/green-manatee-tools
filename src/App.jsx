@@ -32,6 +32,12 @@ function AppContent() {
     <AppShell
       navbar={{ width: 200, breakpoint: 'sm' }}
       padding="md"
+      styles={{
+        main: {
+          backgroundColor: 'var(--mantine-color-gray-0)',
+          minHeight: '100vh'
+        }
+      }}
     >
       <HeaderNav />
       <AppShell.Main>

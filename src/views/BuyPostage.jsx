@@ -6,7 +6,8 @@ import {
   Stack,
   Group,
   Grid,
-  Paper
+  Paper,
+  Box
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 
@@ -74,8 +75,8 @@ function BuyPostage () {
     )
 
     const addressProps = ['company', 'name', 'street1', 'city', 'state', 'zipCode', 'country', 'phone', 'email']
-    const addressFromBase = origin ? notion.massagePage(origin, addressProps, { zipCode: 'zip' }) : {}
-    const addressToBase = destination ? notion.massagePage(destination, addressProps, { zipCode: 'zip' }) : {}
+    const addressFromBase = origin ? notion.massagePage(origin, addressProps) : {}
+    const addressToBase = destination ? notion.massagePage(destination, addressProps) : {}
     const parcelBase = cartonTemplate ? notion.massagePage(cartonTemplate, ['grossWeightLb', 'heightIn', 'lengthIn', 'widthIn'], { grossWeightLb: 'weight', heightIn: 'height', lengthIn: 'length', widthIn: 'width' }) : {}
 
     const addressFrom = Object.assign({}, addressFactory(), addressFromBase)
@@ -131,36 +132,37 @@ function BuyPostage () {
     <Container fluid>
       <Grid>
         <Grid.Col span={{ base: 12, sm: 6 }}>
-          <Paper bg="gray.0" p="xl" style={{ borderRight: '1px solid var(--mantine-color-gray-3)' }}>
+          <Box pb="md">
             <NotionShipments handleSelectShipment={handleSelectNotionShipment} />
+          </Box>
 
             <form onSubmit={form.onSubmit(handleSubmit)}>
               <Stack gap="md">
-                <div>
-                  <h4>From Address</h4>
+                <Paper p="xl" withBorder>
                   <Address
                     address={form.values.addressFrom}
                     name='addressFrom'
+                    label='From Address'
                     handleChange={(e) => {
                       const { name, value } = e.target
                       const [parent, field] = name.split('.')
                       form.setFieldValue(`${parent}.${field}`, value)
                     }}
                   />
-                </div>
+                </Paper>
 
-                <div>
-                  <h4>To Address</h4>
+                <Paper p="xl" withBorder>
                   <Address
                     address={form.values.addressTo}
                     name='addressTo'
+                    label='To Address'
                     handleChange={(e) => {
                       const { name, value } = e.target
                       const [parent, field] = name.split('.')
                       form.setFieldValue(`${parent}.${field}`, value)
                     }}
                   />
-                </div>
+                </Paper>
 
                 {form.values.addressTo.country !== 'US' && (
                   <Customs
@@ -189,7 +191,6 @@ function BuyPostage () {
                 />
               </Stack>
             </form>
-          </Paper>
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, sm: 6 }} pt="xl">
