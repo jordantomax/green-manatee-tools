@@ -20,7 +20,7 @@ function Address ({ address, name, handleChange }) {
     let locations = getLocalData('notionLocations')
     setIsLoading(true)
     if (!locations || forceUpdate) {
-      locations = await api.queryNotionDatabase(NOTION_LOCATIONS_DB_ID)
+      locations = await api.notionQueryDatabase(NOTION_LOCATIONS_DB_ID)
     }
     setIsLoading(false)
     setModalIsVisible(true)
@@ -52,7 +52,6 @@ function Address ({ address, name, handleChange }) {
     }
 
     Object.entries(address).forEach(([key, value]) => {
-      console.log(name, key, value)
       if (value) {
         handleChange({ 
           target: { 
@@ -98,7 +97,7 @@ function Address ({ address, name, handleChange }) {
                 id={`${name}.${key}`}
                 label={capitalize(key)}
                 onChange={handleChange}
-                defaultValue={value}
+                value={value}
               />
             )
           })}

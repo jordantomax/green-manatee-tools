@@ -22,11 +22,18 @@ async function call (path, _options = {}) {
   return deepToCamelCase(res)
 }
 
-async function queryNotionDatabase (databaseId, options={}) {
+async function notionQueryDatabase (databaseId, options={}) {
   const res = await call(`notion/database/${databaseId}`, {
     method: 'POST'
   })
   return res.results
+}
+
+async function notionGetPage (pageId) {
+  const res = await call(`notion/page/${pageId}`, {
+    method: 'GET'
+  })
+  return res
 }
 
 async function getRecs (options) {
@@ -73,7 +80,8 @@ async function createManifest (shipments) {
 
 const api = {
   call,
-  queryNotionDatabase,
+  notionQueryDatabase,
+  notionGetPage,
   getRecs,
   createFbaShipments,
   createManifest
