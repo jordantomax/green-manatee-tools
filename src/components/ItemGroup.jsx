@@ -1,5 +1,5 @@
 import React from 'react'
-import { Stack, TextInput, Group, Title, Button, Paper, Text } from '@mantine/core'
+import { Stack, TextInput, Group, Title, Button, Paper, Grid } from '@mantine/core'
 import capitalize from 'lodash/capitalize'
 import { IconTrash } from '@tabler/icons-react'
 
@@ -55,20 +55,23 @@ function ItemGroup ({
                 </Button>
               </Group>
 
-              {Object.entries(item)
-                .filter(([key]) => key !== 'id')
-                .map(([key, value]) => {
-                  return (
-                    <TextInput
-                      key={`${item.id}-${key}`}
-                      label={camelToSentenceCase(key)}
-                      placeholder={`Enter ${camelToSentenceCase(key).toLowerCase()}`}
-                      defaultValue={value}
-                      onChange={e => handleItemChange(itemIndex, e)}
-                      name={key}
-                    />
-                  )
-                })}
+              <Grid>
+                {Object.entries(item)
+                  .filter(([key]) => key !== 'id')
+                  .map(([key, value]) => {
+                    return (
+                      <Grid.Col key={`${item.id}-${key}`} span={{ base: 12, sm: 6 }}>
+                        <TextInput
+                          label={camelToSentenceCase(key)}
+                          placeholder={`Enter ${camelToSentenceCase(key).toLowerCase()}`}
+                          defaultValue={value}
+                          onChange={e => handleItemChange(itemIndex, e)}
+                          name={key}
+                        />
+                      </Grid.Col>
+                    )
+                  })}
+              </Grid>
             </Stack>
           </Paper>
         )
