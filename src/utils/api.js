@@ -108,6 +108,18 @@ async function shippoGetLabel (params) {
   return res
 }
 
+async function mergePdfs (body) {
+  const res = await call(`shippo/merge-pdfs`, {
+    method: 'POST',
+    body
+  })
+  const link = document.createElement('a')
+  link.href = `data:application/pdf;base64,${res.body}`
+  link.download = 'postage.pdf'
+  link.click()
+  return res
+}
+
 const api = {
   call,
   notionQueryDatabase,
@@ -117,7 +129,8 @@ const api = {
   createManifest,
   shippoGetRates,
   shippoPurchaseLabel,
-  shippoGetLabel
+  shippoGetLabel,
+  mergePdfs
 }
 
 export default api

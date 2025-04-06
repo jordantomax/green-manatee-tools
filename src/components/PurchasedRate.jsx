@@ -5,7 +5,6 @@ import api from '../utils/api'
 import { purchasedRateMask, purchasedRateLinkMask } from '../utils/dataMasks'
 import DataList from './DataList'
 import ButtonSpinner from './ButtonSpinner'
-import { PDF_MERGER_API_URL } from '../constants'
 
 function PurchasedRate ({ rate }) {
   const [results, setResults] = React.useState(null)
@@ -26,21 +25,11 @@ function PurchasedRate ({ rate }) {
   }, [rate?.rate])
 
   async function getMergedLabels () {
+    const pdfUrls = results.map(result => result.labelUrl).reverse()
     setIsLoadingMergedLabels(true)
-    const res = await fetch(PDF_MERGER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        pdf_urls: results.map(result => result.labelUrl).reverse()
-      })
+    await api.mergePdfs({
+      urls: pdfUrls
     })
-    const base64Pdf = await res.text()
-    const link = document.createElement('a')
-    link.href = `data:application/pdf;base64,${base64Pdf}`
-    link.download = 'postage.pdf'
-    link.click()
     setIsLoadingMergedLabels(false)
   }
 
