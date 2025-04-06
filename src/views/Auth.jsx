@@ -19,12 +19,10 @@ function Auth () {
   
   const form = useForm({
     initialValues: {
-      shippoToken: '',
       notionToken: '',
       apiGatewayKey: ''
     },
     validate: {
-      shippoToken: (value) => (!value ? 'Shippo token is required' : null),
       notionToken: (value) => (!value ? 'Notion token is required' : null),
       apiGatewayKey: (value) => (!value ? 'API Gateway key is required' : null)
     }
@@ -53,13 +51,6 @@ function Auth () {
         
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack gap="md">
-              <TextInput
-                label="Shippo API Token"
-                placeholder="Shippo API token"
-                required
-                {...form.getInputProps('shippoToken')}
-              />
-
               <TextInput
                 label="Notion API Token"
                 placeholder="Notion API token"
