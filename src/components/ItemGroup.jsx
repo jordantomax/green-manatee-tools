@@ -9,7 +9,8 @@ function ItemGroup ({
   name,
   items,
   factory,
-  handleChange
+  handleChange,
+  columns = 2
 }) {
   function handleItemCreate () {
     const newItem = factory()
@@ -28,6 +29,11 @@ function ItemGroup ({
     const { name, value } = e.target
     update[i] = { ...update[i], [name]: value }
     handleChange(update)
+  }
+
+  const columnSpan = {
+    base: 12,
+    sm: 12 / columns
   }
 
   return (
@@ -60,7 +66,7 @@ function ItemGroup ({
                   .filter(([key]) => key !== 'id')
                   .map(([key, value]) => {
                     return (
-                      <Grid.Col key={`${item.id}-${key}`} span={{ base: 12, sm: 6 }}>
+                      <Grid.Col key={`${item.id}-${key}`} span={columnSpan}>
                         <TextInput
                           label={camelToSentenceCase(key)}
                           placeholder={`Enter ${camelToSentenceCase(key).toLowerCase()}`}

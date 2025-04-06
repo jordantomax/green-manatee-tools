@@ -1,4 +1,5 @@
 import React from 'react'
+import { Stack, Title } from '@mantine/core'
 
 import { parcelFactory } from '../factories'
 import ItemGroup from './ItemGroup'
@@ -14,15 +15,16 @@ function Parcels ({
   }
 
   return (
-    <>
-      <h2>Shipment Parcels</h2>
+    <Stack gap="md">
+      <Title order={3} style={{ margin: 0 }}>Shipment Parcels</Title>
       <ItemGroup
         name='parcel'
         items={parcels}
         factory={parcelFactory}
         handleChange={handleParcelChange}
+        columns={4}
       />
-    </>
+    </Stack>
   )
 }
 
