@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, Button } from 'react-bootstrap'
 
-import shippo from '../utils/shippo'
+import api from '../utils/api'
 import { purchasedRateMask, purchasedRateLinkMask } from '../utils/dataMasks'
 import DataList from './DataList'
 import ButtonSpinner from './ButtonSpinner'
@@ -14,10 +14,7 @@ function PurchasedRate ({ rate }) {
   React.useEffect(() => {
     async function getLabels () {
       try {
-        const res = await shippo('transaction', 'list', {
-          rate: rate?.rate,
-          results: 50
-        })
+        const res = await api.shippoGetLabel({ rate: rate?.rate })
         setResults(res.results)
       } catch (err) {
         console.warn(err)

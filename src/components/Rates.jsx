@@ -1,33 +1,42 @@
 import React from 'react'
 import { Form, Card, Button } from 'react-bootstrap'
+import { useForm } from '@mantine/form'
 
-import useForm from '../hooks/useForm'
 import { rateMask, rateImageMask } from '../utils/dataMasks'
 import DataList from './DataList'
 import ButtonSpinner from './ButtonSpinner'
+import api from '../utils/api'
 
 function Rates ({ rates, setPurchasedRate }) {
-  const {
-    input,
-    isLoading,
-    handleChange,
-    handleSubmit
-  } = useForm({
-    resource: 'transaction',
-    action: 'create',
-    defaultInput: {
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [selectedRate, setSelectedRate] = React.useState(null)
+
+  const form = useForm({
+    initialValues: {
       rate: null,
       labelFileType: 'PDF_4x6'
-    },
-    afterSubmit: setPurchasedRate
+    }
   })
 
-  function handleSelect (value) {
-    handleChange({ target: { name: 'rate', value } })
+  async function handleSubmit(values) {
+    setIsLoading(true)
+    try {
+      const response = await api.shippoPurchaseLabel(values)
+      setPurchasedRate(response)
+    } catch (error) {
+      console.error('Error purchasing rate:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  function handleSelect(rateId) {
+    setSelectedRate(rateId)
+    form.setFieldValue('rate', rateId)
   }
 
   return (
-    <Form className='mb-4' onSubmit={handleSubmit}>
+    <Form className='mb-4' onSubmit={form.onSubmit(handleSubmit)}>
       <h3>Rates</h3>
 
       {rates.length === 0 && (
@@ -66,7 +75,7 @@ function Rates ({ rates, setPurchasedRate }) {
                     Select This Rate
                   </Button>
 
-                  {input.rate === rate.objectId && (
+                  {selectedRate === rate.objectId && (
                     <Button
                       disabled={isLoading}
                       type='submit'
