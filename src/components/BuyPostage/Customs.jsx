@@ -1,7 +1,7 @@
 import React from 'react'
+import { Stack, TextInput, Group, Title, Text, Paper } from '@mantine/core'
 
 import { customsItemFactory } from '../../factories'
-import Input from '../Input'
 import ItemGroup from '../ItemGroup'
 
 function Customs ({ data, handleChange }) {
@@ -12,31 +12,37 @@ function Customs ({ data, handleChange }) {
   }
 
   return (
-    <div className='mb-4'>
-      <h2>Customs Declaration</h2>
-      <p>Required for international shipments</p>
+    <Paper p="xl" withBorder>
+      <Stack gap="md">
+        <Group justify="space-between">
+          <Title order={3} style={{ margin: 0 }}>Customs Declaration</Title>
+          <Text c="dimmed">Required for international shipments</Text>
+        </Group>
 
-      <Input
-        id='customsDeclaration.certifySigner'
-        label='Certify Signer'
-        onChange={handleChange}
-        defaultValue={data.certifySigner}
-      />
+        <TextInput
+          label="Certify Signer"
+          placeholder="Certify signer name"
+          defaultValue={data.certifySigner}
+          onChange={handleChange}
+          name="customsDeclaration.certifySigner"
+        />
 
-      <Input
-        id='customsDeclaration.description'
-        label='Description'
-        onChange={handleChange}
-        defaultValue={data.description}
-      />
+        <TextInput
+          label="Description"
+          placeholder="Description of items"
+          defaultValue={data.description}
+          onChange={handleChange}
+          name="customsDeclaration.description"
+        />
 
-      <ItemGroup
-        name='item'
-        items={data.items}
-        factory={customsItemFactory}
-        handleChange={handleItemChange}
-      />
-    </div>
+        <ItemGroup
+          name='item'
+          items={data.items}
+          factory={customsItemFactory}
+          handleChange={handleItemChange}
+        />
+      </Stack>
+    </Paper>
   )
 }
 

@@ -142,7 +142,7 @@ function BuyPostage () {
                   <Address
                     address={form.values.addressFrom}
                     name='addressFrom'
-                    label='From Address'
+                    label='Origin'
                     handleChange={(e) => {
                       const { name, value } = e.target
                       const [parent, field] = name.split('.')
@@ -155,7 +155,7 @@ function BuyPostage () {
                   <Address
                     address={form.values.addressTo}
                     name='addressTo'
-                    label='To Address'
+                    label='Destination'
                     handleChange={(e) => {
                       const { name, value } = e.target
                       const [parent, field] = name.split('.')

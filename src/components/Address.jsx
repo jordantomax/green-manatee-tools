@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, Stack, TextInput, Group, Paper } from '@mantine/core'
+import { Button, Stack, TextInput, Group, Paper, Title } from '@mantine/core'
 import capitalize from 'lodash/capitalize'
 
 import { NOTION_LOCATIONS_DB_ID } from '../constants'
@@ -58,7 +58,7 @@ function Address ({ address, name, handleChange, label }) {
   return (
     <Stack gap="md">
       <Group justify="space-between">
-        <h4 style={{ margin: 0 }}>{label}</h4>
+        <Title order={3} style={{ margin: 0 }}>{label}</Title>
         <Button
           size="xs"
           variant="light"
