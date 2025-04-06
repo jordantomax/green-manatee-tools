@@ -23,7 +23,6 @@ import PurchasedRate from '../components/PurchasedRate'
 import NotionShipments from '../components/NotionShipments'
 import Customs from '../components/BuyPostage/Customs'
 import Hazmat from '../components/BuyPostage/Hazmat'
-import ButtonSpinner from '../components/ButtonSpinner'
 
 function BuyPostage () {
   const [rateParcels, setRateParcels] = useState(getLocalData('shipment')?.rateParcels || [])
@@ -74,7 +73,7 @@ function BuyPostage () {
       })
     )
 
-    const addressProps = ['company', 'name', 'street1', 'city', 'state', 'zipCode', 'country', 'phone', 'email']
+    const addressProps = ['company', 'name', 'street1', 'city', 'state', 'zip', 'country', 'phone', 'email']
     const addressFromBase = origin ? notion.massagePage(origin, addressProps) : {}
     const addressToBase = destination ? notion.massagePage(destination, addressProps) : {}
     const parcelBase = cartonTemplate ? notion.massagePage(cartonTemplate, ['grossWeightLb', 'heightIn', 'lengthIn', 'widthIn'], { grossWeightLb: 'weight', heightIn: 'height', lengthIn: 'length', widthIn: 'width' }) : {}
@@ -101,7 +100,7 @@ function BuyPostage () {
     const { addressFrom, addressTo, parcels } = form.values
     
     // Check required address fields
-    const requiredAddressFields = ['name', 'street1', 'city', 'state', 'zipCode', 'country']
+    const requiredAddressFields = ['name', 'street1', 'city', 'state', 'zip', 'country']
     const isAddressValid = (address) => requiredAddressFields.every(field => address[field])
     
     // Check required parcel fields
@@ -227,10 +226,10 @@ function BuyPostage () {
             <Button
               type="submit"
               variant='primary'
-              disabled={isLoading || !isFormValid()}
+              loading={isLoading}
+              disabled={!isFormValid()}
               onClick={() => form.onSubmit(handleSubmit)()}
             >
-              {isLoading && <ButtonSpinner />}
               Check Rates
             </Button>
 

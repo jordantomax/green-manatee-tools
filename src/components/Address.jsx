@@ -137,11 +137,11 @@ function Address ({ address, name, handleChange, label }) {
           />
           <TextInput
             required
-            label="ZIP Code"
-            placeholder="ZIP code"
-            value={address.zipCode}
+            label="ZIP"
+            placeholder="ZIP"
+            value={address.zip}
             onChange={handleChange}
-            name={`${name}.zipCode`}
+            name={`${name}.zip`}
             style={{ flex: 3 }}
           />
         </Group>

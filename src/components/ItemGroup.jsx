@@ -1,7 +1,6 @@
 import React from 'react'
 import { Stack, TextInput, Group, Title, Button, Paper, Grid } from '@mantine/core'
 import capitalize from 'lodash/capitalize'
-import { IconTrash } from '@tabler/icons-react'
 
 import camelToSentenceCase from '../utils/camelToSentenceCase'
 
@@ -54,7 +53,6 @@ function ItemGroup ({
                 <Button 
                   variant="light" 
                   color="red" 
-                  leftIcon={<IconTrash size={16} />}
                   onClick={() => handleItemDelete(itemIndex)}
                 >
                   Delete

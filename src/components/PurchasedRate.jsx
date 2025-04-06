@@ -60,8 +60,8 @@ function PurchasedRate ({ rate }) {
                 <Button
                   disabled={isLoadingMergedLabels}
                   onClick={getMergedLabels}
+                  loading={isLoadingMergedLabels}
                 >
-                  {isLoadingMergedLabels && <ButtonSpinner />}
                   Download merged labels PDF
                 </Button>
               </Stack>
