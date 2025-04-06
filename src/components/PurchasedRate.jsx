@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, Button } from 'react-bootstrap'
+import { Paper, Title, Stack, Button, Text } from '@mantine/core'
 
 import api from '../utils/api'
 import { purchasedRateMask, purchasedRateLinkMask } from '../utils/dataMasks'
@@ -36,12 +36,12 @@ function PurchasedRate ({ rate }) {
   if (!rate) return null
 
   return (
-    <>
-      <h3>Purchased Rate</h3>
+    <Stack gap="md">
 
-      <Card className='mb-4'>
-        <Card.Body>
-          <h4>Master Label</h4>
+      <Paper p="xl" withBorder>
+        <Title order={3}>Purchased Rate</Title>
+        <Stack gap="md">
+          <Title order={4}>Master Label</Title>
           <DataList
             obj={rate}
             mask={purchasedRateMask}
@@ -50,13 +50,13 @@ function PurchasedRate ({ rate }) {
 
           {results && results.length > 0 && (
             <>
-              <div className='mt-4'>
-                <h4>All Tracking Numbers</h4>
-                {results.map(result => result.trackingNumber).reduce((prev, tn) => prev + ', ' + tn)}
-              </div>
+              <Stack gap="xs">
+                <Title order={5}>All Tracking Numbers</Title>
+                <Text>{results.map(result => result.trackingNumber).reduce((prev, tn) => prev + ', ' + tn)}</Text>
+              </Stack>
 
-              <div className='mt-4'>
-                <h4>Merged Labels</h4>
+              <Stack gap="xs">
+                <Title order={5}>Merged Labels</Title>
                 <Button
                   disabled={isLoadingMergedLabels}
                   onClick={getMergedLabels}
@@ -64,26 +64,24 @@ function PurchasedRate ({ rate }) {
                   {isLoadingMergedLabels && <ButtonSpinner />}
                   Download merged labels PDF
                 </Button>
-              </div>
+              </Stack>
 
-              <div className='mt-4'>
-                <h4>All Labels</h4>
-                {results.map(result => {
-                  return (
-                    <DataList
-                      key={result.objectId}
-                      obj={result}
-                      mask={purchasedRateMask}
-                      linkMask={purchasedRateLinkMask}
-                    />
-                  )
-                })}
-              </div>
+              <Stack gap="md">
+                <Title order={5}>All Labels</Title>
+                {results.map(result => (
+                  <DataList
+                    key={result.objectId}
+                    obj={result}
+                    mask={purchasedRateMask}
+                    linkMask={purchasedRateLinkMask}
+                  />
+                ))}
+              </Stack>
             </>
           )}
-        </Card.Body>
-      </Card>
-    </>
+        </Stack>
+      </Paper>
+    </Stack>
   )
 }
 

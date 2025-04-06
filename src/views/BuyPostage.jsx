@@ -97,6 +97,23 @@ function BuyPostage () {
     _setPurchasedRate(null)
   }
 
+  function isFormValid() {
+    const { addressFrom, addressTo, parcels } = form.values
+    
+    // Check required address fields
+    const requiredAddressFields = ['name', 'street1', 'city', 'state', 'zipCode', 'country']
+    const isAddressValid = (address) => requiredAddressFields.every(field => address[field])
+    
+    // Check required parcel fields
+    const requiredParcelFields = ['length', 'width', 'height', 'weight']
+    const isParcelValid = (parcel) => requiredParcelFields.every(field => parcel[field])
+    
+    // Check if we have at least one parcel
+    const hasValidParcels = parcels.length > 0 && parcels.every(isParcelValid)
+    
+    return isAddressValid(addressFrom) && isAddressValid(addressTo) && hasValidParcels
+  }
+
   async function handleSubmit(values) {
     setIsLoading(true)
     try {
@@ -166,7 +183,6 @@ function BuyPostage () {
                 </Paper>
 
                 {form.values.addressTo.country !== 'US' && (
-
                   <Paper p="xl" withBorder>
                     <Customs
                       data={form.values.customsDeclaration}
@@ -206,20 +222,20 @@ function BuyPostage () {
             </form>
         </Grid.Col>
 
-        <Grid.Col span={{ base: 12, sm: 6 }} pt="xl">
+        <Grid.Col span={{ base: 12, sm: 6 }}>
           <Group gap="md" mb="md">
-            <Button variant='secondary' onClick={handleResetRates}>
-              Reset Rates
-            </Button>
-
             <Button
               type="submit"
               variant='primary'
-              disabled={isLoading}
+              disabled={isLoading || !isFormValid()}
               onClick={() => form.onSubmit(handleSubmit)()}
             >
               {isLoading && <ButtonSpinner />}
               Check Rates
+            </Button>
+
+            <Button variant='light' onClick={handleResetRates}>
+              Reset Rates
             </Button>
           </Group>
 

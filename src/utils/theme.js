@@ -10,7 +10,7 @@ const CONTAINER_SIZES = {
 };
 
 export const theme = createTheme({
-  primaryColor: 'dark',
+  primaryColor: 'green',
   fontFamily: 'system-ui, -apple-system, sans-serif',
   cursorType: 'pointer',
   components: {
