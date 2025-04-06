@@ -169,7 +169,11 @@ function BuyPostage () {
                     data={form.values.customsDeclaration}
                     handleChange={(e) => {
                       const { name, value } = e.target
-                      form.setFieldValue(`customsDeclaration.${name}`, value)
+                      if (name === 'customsDeclaration.items') {
+                        form.setFieldValue('customsDeclaration.items', value)
+                      } else {
+                        form.setFieldValue(`customsDeclaration.${name}`, value)
+                      }
                     }}
                   />
                 )}

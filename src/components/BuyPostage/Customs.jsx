@@ -7,7 +7,10 @@ import ItemGroup from '../ItemGroup'
 function Customs ({ data, handleChange }) {
   function handleItemChange (value) {
     handleChange({
-      target: { name: 'customsDeclaration.items', value }
+      target: { 
+        name: 'customsDeclaration.items', 
+        value: value 
+      }
     })
   }
 
@@ -37,7 +40,7 @@ function Customs ({ data, handleChange }) {
 
         <ItemGroup
           name='item'
-          items={data.items}
+          items={data.items || []}
           factory={customsItemFactory}
           handleChange={handleItemChange}
         />

@@ -1,8 +1,8 @@
 import React from 'react'
-import { Button, Card } from 'react-bootstrap'
+import { Stack, TextInput, Group, Title, Button, Paper, Text } from '@mantine/core'
 import capitalize from 'lodash/capitalize'
+import { IconTrash } from '@tabler/icons-react'
 
-import Input from './Input'
 import camelToSentenceCase from '../utils/camelToSentenceCase'
 
 function ItemGroup ({
@@ -12,64 +12,68 @@ function ItemGroup ({
   handleChange
 }) {
   function handleItemCreate () {
-    const update = items.slice()
-    update.push(factory())
+    const newItem = factory()
+    const update = [...(items || []), newItem]
     handleChange(update)
   }
 
   function handleItemDelete (i) {
-    const update = items.slice()
+    const update = [...items]
     update.splice(i, 1)
     handleChange(update)
   }
 
   function handleItemChange (i, e) {
-    const update = items.slice()
+    const update = [...items]
     const { name, value } = e.target
-    update[i][name] = value
+    update[i] = { ...update[i], [name]: value }
     handleChange(update)
   }
 
   return (
-    <>
-      <h4 className='d-flex justify-content-between align-items-center'>
-        {capitalize(name)}s
-
-        <Button onClick={handleItemCreate}>
+    <Stack gap="md">
+      <Group justify="space-between">
+        <Title order={3} style={{ margin: 0 }}>{capitalize(name)}s</Title>
+        <Button onClick={handleItemCreate} variant="light">
           Add {capitalize(name)}
         </Button>
-      </h4>
+      </Group>
 
-      {items.map((item, itemIndex) => {
+      {(items || []).map((item, itemIndex) => {
         return (
-          <Card className='mb-3' key={item.id}>
-            <Card.Header>
-              {capitalize(name)} {itemIndex}
+          <Paper key={item.id} p="md" withBorder>
+            <Stack gap="md">
+              <Group justify="space-between">
+                <Title order={4} style={{ margin: 0 }}>{capitalize(name)} {itemIndex + 1}</Title>
+                <Button 
+                  variant="light" 
+                  color="red" 
+                  leftIcon={<IconTrash size={16} />}
+                  onClick={() => handleItemDelete(itemIndex)}
+                >
+                  Delete
+                </Button>
+              </Group>
 
-              <Card.Link style={{ cursor: 'pointer', float: 'right' }} onClick={() => handleItemDelete(itemIndex)}>
-                Delete
-              </Card.Link>
-            </Card.Header>
-
-            <Card.Body>
               {Object.entries(item)
                 .filter(([key]) => key !== 'id')
-                .map(([key, value], i) => {
+                .map(([key, value]) => {
                   return (
-                    <Input
+                    <TextInput
                       key={`${item.id}-${key}`}
-                      id={key}
                       label={camelToSentenceCase(key)}
+                      placeholder={`Enter ${camelToSentenceCase(key).toLowerCase()}`}
                       defaultValue={value}
                       onChange={e => handleItemChange(itemIndex, e)}
+                      name={key}
                     />
                   )
                 })}
-            </Card.Body>
-          </Card>
+            </Stack>
+          </Paper>
         )
       })}
-    </>
+    </Stack>
   )
 }
 
