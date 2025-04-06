@@ -15,37 +15,35 @@ function Customs ({ data, handleChange }) {
   }
 
   return (
-    <Paper p="xl" withBorder>
-      <Stack gap="md">
-        <Group justify="space-between">
-          <Title order={3} style={{ margin: 0 }}>Customs Declaration</Title>
-          <Text c="dimmed">Required for international shipments</Text>
-        </Group>
+    <Stack gap="md">
+      <Group justify="space-between">
+        <Title order={3} style={{ margin: 0 }}>Customs Declaration</Title>
+        <Text c="dimmed">Required for international shipments</Text>
+      </Group>
 
-        <TextInput
-          label="Certify Signer"
-          placeholder="Certify signer name"
-          defaultValue={data.certifySigner}
-          onChange={handleChange}
-          name="customsDeclaration.certifySigner"
-        />
+      <TextInput
+        label="Certify Signer"
+        placeholder="Certify signer name"
+        defaultValue={data.certifySigner}
+        onChange={handleChange}
+        name="customsDeclaration.certifySigner"
+      />
 
-        <TextInput
-          label="Description"
-          placeholder="Description of items"
-          defaultValue={data.description}
-          onChange={handleChange}
-          name="customsDeclaration.description"
-        />
+      <TextInput
+        label="Description"
+        placeholder="Description of items"
+        defaultValue={data.description}
+        onChange={handleChange}
+        name="customsDeclaration.description"
+      />
 
-        <ItemGroup
-          name='item'
-          items={data.items || []}
-          factory={customsItemFactory}
-          handleChange={handleItemChange}
-        />
-      </Stack>
-    </Paper>
+      <ItemGroup
+        name='item'
+        items={data.items || []}
+        factory={customsItemFactory}
+        handleChange={handleItemChange}
+      />
+    </Stack>
   )
 }
 

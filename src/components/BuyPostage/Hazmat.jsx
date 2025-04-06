@@ -1,27 +1,26 @@
 import React from 'react'
-import { Form } from 'react-bootstrap'
+import { Stack, Checkbox, Paper, Title } from '@mantine/core'
 
 function Hazmat ({ hazmat, handleChange }) {
   function handleCheck (e) {
     handleChange({
       target: {
-        name: 'extra.dangerousGoods.contains', value: e.target.checked
+        name: 'contains', 
+        value: e.currentTarget.checked
       }
     })
   }
 
   return (
-    <>
-      <Form.Check
-        name='hazmat'
-        type='checkbox'
+    <Stack gap="md">
+      <Title order={3} style={{ margin: 0 }}>Hazmat</Title>
+      <Checkbox
+        label="This shipment contains hazardous materials"
         checked={hazmat}
         onChange={handleCheck}
-        label='Hazmat'
+        size="md"
       />
-      <br></br>
-      <br></br>
-    </>
+    </Stack>
   )
 }
 

@@ -165,34 +165,42 @@ function BuyPostage () {
                 </Paper>
 
                 {form.values.addressTo.country !== 'US' && (
-                  <Customs
-                    data={form.values.customsDeclaration}
-                    handleChange={(e) => {
-                      const { name, value } = e.target
-                      if (name === 'customsDeclaration.items') {
-                        form.setFieldValue('customsDeclaration.items', value)
-                      } else {
-                        form.setFieldValue(`customsDeclaration.${name}`, value)
-                      }
-                    }}
-                  />
+
+                  <Paper p="xl" withBorder>
+                    <Customs
+                      data={form.values.customsDeclaration}
+                      handleChange={(e) => {
+                        const { name, value } = e.target
+                        if (name === 'customsDeclaration.items') {
+                          form.setFieldValue('customsDeclaration.items', value)
+                        } else {
+                          form.setFieldValue(`customsDeclaration.${name}`, value)
+                        }
+                      }}
+                    />
+                  </Paper>
                 )}
 
-                <Hazmat
-                  hazmat={form.values.extra.dangerousGoods.contains}
-                  handleChange={(e) => {
-                    const { name, value } = e.target
-                    form.setFieldValue(`extra.dangerousGoods.${name}`, value)
-                  }}
-                />
+                <Paper p="xl" withBorder>
+                  <Parcels
+                    parcels={form.values.parcels}
+                    handleChange={(e) => {
+                      const { value } = e.target
+                      form.setFieldValue('parcels', value)
+                    }}
+                  />
+                </Paper>
 
-                <Parcels
-                  parcels={form.values.parcels}
-                  handleChange={(e) => {
-                    const { value } = e.target
-                    form.setFieldValue('parcels', value)
-                  }}
-                />
+                <Paper p="xl" withBorder>
+                  <Hazmat
+                    hazmat={form.values.extra.dangerousGoods.contains}
+                    handleChange={(e) => {
+                      const { name, value } = e.target
+                      form.setFieldValue(`extra.dangerousGoods.${name}`, value)
+                    }}
+                  />
+                </Paper>
+
               </Stack>
             </form>
         </Grid.Col>

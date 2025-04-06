@@ -60,7 +60,6 @@ function Address ({ address, name, handleChange, label }) {
       <Group justify="space-between">
         <Title order={3} style={{ margin: 0 }}>{label}</Title>
         <Button
-          size="xs"
           variant="light"
           disabled={isLoading}
           onClick={() => getLocations()}

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Stack, Title } from '@mantine/core'
+import { Stack, Title, Paper } from '@mantine/core'
 
 import { parcelFactory } from '../factories'
 import ItemGroup from './ItemGroup'
