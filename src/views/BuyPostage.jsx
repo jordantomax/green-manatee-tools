@@ -85,6 +85,7 @@ function BuyPostage () {
     parcel.quantity = shipment.properties.numCartons?.number || 1
 
     form.setValues({
+      ...form.values,
       addressFrom,
       addressTo,
       parcels: [parcel]

@@ -68,7 +68,7 @@ export function getNotionProp (value) {
   }
 }
 
-function massagePage (page, properties, nameMap) {
+function massagePage (page, properties, nameMap={}) {
   const massaged = {}
   if (page) {
     for (const [key, value] of Object.entries(page.properties)) {
