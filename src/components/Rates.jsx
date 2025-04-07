@@ -94,7 +94,7 @@ function Rates ({ rates, setPurchasedRate }) {
                     {selectedRate === rate.objectId && (
                       <Button
                         type="submit"
-                        size="xs"
+                        variant="outline"
                         loading={isLoading}
                       >
                         Purchase

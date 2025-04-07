@@ -1,10 +1,7 @@
 import React from 'react'
-import { Paper, Title, Stack, Button, Text } from '@mantine/core'
+import { Paper, Title, Stack, Button, Text, Group } from '@mantine/core'
 
 import api from '../utils/api'
-import { purchasedRateMask, purchasedRateLinkMask } from '../utils/dataMasks'
-import DataList from './DataList'
-import ButtonSpinner from './ButtonSpinner'
 
 function PurchasedRate ({ rate }) {
   const [results, setResults] = React.useState(null)
@@ -27,9 +24,7 @@ function PurchasedRate ({ rate }) {
   async function getMergedLabels () {
     const pdfUrls = results.map(result => result.labelUrl).reverse()
     setIsLoadingMergedLabels(true)
-    await api.mergePdfs({
-      urls: pdfUrls
-    })
+    await api.mergePdfs({ urls: pdfUrls })
     setIsLoadingMergedLabels(false)
   }
 
@@ -37,44 +32,60 @@ function PurchasedRate ({ rate }) {
 
   return (
     <Stack gap="md">
-
       <Paper p="xl" withBorder>
-        <Title order={3}>Purchased Rate</Title>
+        <Title order={2}>Purchased Rate</Title>
         <Stack gap="md">
-          <Title order={4}>Master Label</Title>
-          <DataList
-            obj={rate}
-            mask={purchasedRateMask}
-            linkMask={purchasedRateLinkMask}
-          />
+          <Stack gap="xs">
+            <Group>
+              <Text size="sm" fw={500} w={150}>trackingNumber:</Text>
+              <Text size="sm">{rate.trackingNumber}</Text>
+            </Group>
+            <Group>
+              <Text size="sm" fw={500} w={150}>labelUrl:</Text>
+              <Text size="sm">
+                <a href={rate.labelUrl} target="_blank" rel="noopener noreferrer">
+                  {rate.labelUrl}
+                </a>
+              </Text>
+            </Group>
+          </Stack>
 
           {results && results.length > 0 && (
             <>
               <Stack gap="xs">
-                <Title order={5}>All Tracking Numbers</Title>
-                <Text>{results.map(result => result.trackingNumber).reduce((prev, tn) => prev + ', ' + tn)}</Text>
+                <Text size="sm" fw={500}>All Tracking Numbers</Text>
+                <Text size="sm">{results.map(result => result.trackingNumber).reduce((prev, tn) => prev + ', ' + tn)}</Text>
               </Stack>
 
               <Stack gap="xs">
-                <Title order={5}>Merged Labels</Title>
                 <Button
                   disabled={isLoadingMergedLabels}
                   onClick={getMergedLabels}
                   loading={isLoadingMergedLabels}
                 >
-                  Download merged labels PDF
+                  Download All Labels
                 </Button>
               </Stack>
 
               <Stack gap="md">
                 <Title order={5}>All Labels</Title>
                 {results.map(result => (
-                  <DataList
-                    key={result.objectId}
-                    obj={result}
-                    mask={purchasedRateMask}
-                    linkMask={purchasedRateLinkMask}
-                  />
+                  <Paper key={result.objectId} p="md" withBorder>
+                    <Stack gap="xs">
+                      <Group>
+                        <Text size="sm" fw={500} w={150}>trackingNumber:</Text>
+                        <Text size="sm">{result.trackingNumber}</Text>
+                      </Group>
+                      <Group>
+                        <Text size="sm" fw={500} w={150}>labelUrl:</Text>
+                        <Text size="sm">
+                          <a href={result.labelUrl} target="_blank" rel="noopener noreferrer">
+                            Download Label
+                          </a>
+                        </Text>
+                      </Group>
+                    </Stack>
+                  </Paper>
                 ))}
               </Stack>
             </>
