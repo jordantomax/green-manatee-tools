@@ -73,7 +73,7 @@ function NotionShipments ({ handleSelectShipment, inline = false }) {
         />
         <Button 
           variant="light" 
-          leftIcon={<IconRefresh size={16} />}
+          leftSection={<IconRefresh size={16} />}
           onClick={() => getShipments(true)}
           loading={isLoading}
         >

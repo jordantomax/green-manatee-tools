@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Container, Alert, Title } from '@mantine/core'
+import { Container, Alert, Title, Paper } from '@mantine/core'
 
 import notion from '../utils/notion'
 import api from '../utils/api'
@@ -47,18 +47,22 @@ function BuildManifest () {
 
   return (
     <Container size="md" py="xl">
-      {errorMessage && (
-        <Alert color="red" mb="md">
-          {errorMessage}
-        </Alert>
-      )}
-      {warningMessage && (
-        <Alert color="yellow" mb="md">
-          {warningMessage}
-        </Alert>
-      )}
-      <Title order={3} mb="md">Build Amazon manifest</Title>
-      <NotionShipments handleSelectShipment={handleSelectShipment} inline />
+      <Paper withBorder p="lg">
+        <Title order={3} mb="md">Build Amazon manifest</Title>
+        <NotionShipments handleSelectShipment={handleSelectShipment} inline />
+
+        {errorMessage && (
+          <Alert color="red" mb="md">
+            {errorMessage}
+          </Alert>
+        )}
+
+        {warningMessage && (
+          <Alert color="yellow" mb="md">
+            {warningMessage}
+          </Alert>
+        )}
+      </Paper>
     </Container>
   )
 }
