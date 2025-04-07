@@ -12,7 +12,7 @@ import {
   Group
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { AuthContext } from '../context/Auth'
+import { AuthContext } from '../contexts/Auth'
 
 function Auth () {
   const auth = React.useContext(AuthContext)
