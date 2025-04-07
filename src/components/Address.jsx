@@ -1,38 +1,46 @@
-import React, { useState } from 'react'
-import { Button, Stack, TextInput, Group, Paper, Title } from '@mantine/core'
-import capitalize from 'lodash/capitalize'
+import React, { useState, useEffect } from 'react'
+import { Button, Stack, TextInput, Group, Paper, Title, Combobox, useCombobox } from '@mantine/core'
 
 import { NOTION_LOCATIONS_DB_ID } from '../constants'
-import { setLocalData, getLocalData } from '../utils/storage'
 import { getNotionProp } from '../utils/notion'
-
 import api from '../utils/api'
-import SelectModal from './SelectModal'
-import ButtonSpinner from './ButtonSpinner'
 
 function Address ({ address, name, handleChange, label }) {
   const [isLoading, setIsLoading] = useState(false)
-  const [modalIsVisible, setModalIsVisible] = useState(false)
-  const [modalData, setModalData] = useState(null)
+  const [locations, setLocations] = useState(null)
+  const [options, setOptions] = useState([])
+  const [search, setSearch] = useState('')
 
-  async function getLocations(forceUpdate) {
-    let locations = getLocalData('notionLocations')
-    setIsLoading(true)
-    if (!locations || forceUpdate) {
-      locations = await api.notionQueryDatabase(NOTION_LOCATIONS_DB_ID)
+  useEffect(() => {
+    if (locations) {
+      const newOptions = locations
+        .filter(location => 
+          getNotionProp(location.properties.name).toLowerCase().includes(search.toLowerCase().trim())
+        )
+        .map((location) => {
+          const locationName = getNotionProp(location.properties.name)
+          return (
+            <Combobox.Option 
+              value={location.id} 
+              key={location.id}
+              onClick={() => combobox.selectOption(location.id)}
+            >
+              {locationName}
+            </Combobox.Option>
+          )
+        })
+      setOptions(newOptions)
     }
+  }, [locations, search])
+
+  async function getLocations() {
+    setIsLoading(true)
+    const locations = await api.notionQueryDatabase(NOTION_LOCATIONS_DB_ID, {
+      filter_properties: ['name'],
+      filter_value: search
+    })
     setIsLoading(false)
-    setModalIsVisible(true)
-    setLocalData('notionLocations', locations)
-    setModalData(locations)
-  }
-  
-  function hideModal() {
-    setModalIsVisible(false)
-  }
-  
-  async function handleRefresh() {
-    getLocations(true)
+    setLocations(locations)
   }
   
   async function handleSelect(location) {
@@ -54,31 +62,60 @@ function Address ({ address, name, handleChange, label }) {
       }
     })
   }
+  
+  const combobox = useCombobox({
+    onDropdownClose: () => {
+      combobox.resetSelectedOption()
+      combobox.focusTarget()
+      setSearch('')
+    },
 
-  return (
+    onDropdownOpen: () => {
+      combobox.focusSearchInput()
+      getLocations()
+    },
+    
+  })
+  
+ return (
     <Stack gap="md">
       <Group justify="space-between">
         <Title order={2} style={{ margin: 0 }}>{label}</Title>
-        <Button
-          variant="light"
-          disabled={isLoading}
-          onClick={() => getLocations()}
+    
+        <Combobox
+          store={combobox}
+          width={250}
+          position="bottom-start"
+          withArrow
+          onOptionSubmit={locationId => {
+            combobox.closeDropdown()
+            const selectedLocation = locations.find(location => location.id === locationId)
+            if (selectedLocation) { handleSelect(selectedLocation) }
+          }}
         >
-          {isLoading && <ButtonSpinner />}
-          Search Locations 
-        </Button>
-      </Group>
+          <Combobox.Target withAriaAttributes={false}>
+            <Button
+              variant="light"
+              disabled={isLoading}
+              loading={isLoading}
+              onClick={combobox.toggleDropdown}
+            >
+              Search Locations 
+            </Button>
+          </Combobox.Target>
 
-      <SelectModal 
-        title='Select Location'
-        data={modalData}
-        show={modalIsVisible}
-        labelKey='properties.name.title.0.plainText'
-        onHide={hideModal}
-        isLoading={isLoading}
-        onSelect={handleSelect}
-        onRefresh={handleRefresh}
-      />
+          <Combobox.Dropdown>
+            <Combobox.Search
+              value={search}
+              onChange={(event) => setSearch(event.currentTarget.value)}
+              placeholder="Search locations"
+            />
+            <Combobox.Options style={{ maxHeight: 200, overflowY: 'auto' }}>
+              {options.length > 0 ? options : <Combobox.Empty>Nothing found</Combobox.Empty>}
+            </Combobox.Options>
+          </Combobox.Dropdown>
+        </Combobox>
+      </Group>
 
       <Stack gap="md">
         <Group grow>
