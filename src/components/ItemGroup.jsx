@@ -1,5 +1,6 @@
 import React from 'react'
 import { Stack, TextInput, Group, Title, Button, Paper, Grid } from '@mantine/core'
+import { IconPlus, IconTrash } from '@tabler/icons-react'
 import capitalize from 'lodash/capitalize'
 
 import camelToSentenceCase from '../utils/camelToSentenceCase'
@@ -39,7 +40,11 @@ function ItemGroup ({
     <Stack gap="md">
       <Group justify="space-between">
         <Title order={3} style={{ margin: 0 }}>{capitalize(name)}s</Title>
-        <Button onClick={handleItemCreate} variant="light">
+        <Button 
+          leftSection={<IconPlus size={16} />}
+          onClick={handleItemCreate} 
+          variant="light"
+        >
           Add {capitalize(name)}
         </Button>
       </Group>
@@ -51,9 +56,10 @@ function ItemGroup ({
               <Group justify="space-between">
                 <Title order={4} style={{ margin: 0 }}>{capitalize(name)} {itemIndex + 1}</Title>
                 <Button 
-                  variant="light" 
+                  variant="subtle" 
                   color="red" 
                   onClick={() => handleItemDelete(itemIndex)}
+                  leftSection={<IconTrash size={16} />}
                 >
                   Delete
                 </Button>

@@ -1,5 +1,6 @@
 import React from 'react'
 import { Paper, Title, Stack, Button, Text, Group } from '@mantine/core'
+import { IconDownload } from '@tabler/icons-react'
 
 import api from '../utils/api'
 
@@ -38,6 +39,7 @@ function PurchasedRate ({ rate }) {
               disabled={isLoadingMergedLabels}
               onClick={getMergedLabels}
               loading={isLoadingMergedLabels}
+              leftSection={<IconDownload size={16} />}
             >
               Download All Labels
             </Button>

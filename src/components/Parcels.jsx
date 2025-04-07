@@ -22,7 +22,7 @@ function Parcels ({
         items={parcels}
         factory={parcelFactory}
         handleChange={handleParcelChange}
-        columns={4}
+        columns={3}
       />
     </Stack>
   )
