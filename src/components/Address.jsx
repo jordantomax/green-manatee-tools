@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Button, Stack, TextInput, Group, Title, Combobox, useCombobox } from '@mantine/core'
 
 import { NOTION_LOCATIONS_DB_ID } from '../constants'
+import { setLocalData, getLocalData } from '../utils/storage'
 import { getNotionProp } from '../utils/notion'
 import api from '../utils/api'
 
@@ -33,13 +34,17 @@ function Address ({ address, name, handleChange, label }) {
     }
   }, [locations, search])
 
-  async function getLocations() {
+  async function getLocations(forceUpdate = false) {
+    let locations = getLocalData('notionLocations')
     setIsLoading(true)
-    const locations = await api.notionQueryDatabase(NOTION_LOCATIONS_DB_ID, {
-      filter_properties: ['name'],
-      filter_value: search
-    })
+    if (!locations || forceUpdate) {
+      locations = await api.notionQueryDatabase(NOTION_LOCATIONS_DB_ID, {
+        filter_properties: ['name'],
+        filter_value: search
+      })
+    }
     setIsLoading(false)
+    setLocalData('notionLocations', locations)
     setLocations(locations)
   }
   
