@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Stack, TextInput, Group, Title, Combobox, useCombobox } from '@mantine/core'
+import { Button, Stack, TextInput, Group, Title, Combobox, useCombobox, ActionIcon, Tooltip, Box } from '@mantine/core'
+import { IconRefresh } from '@tabler/icons-react'
 
 import { NOTION_LOCATIONS_DB_ID } from '../constants'
 import { setLocalData, getLocalData } from '../utils/storage'
@@ -110,11 +111,30 @@ function Address ({ address, name, handleChange, label }) {
           </Combobox.Target>
 
           <Combobox.Dropdown>
-            <Combobox.Search
-              value={search}
-              onChange={(event) => setSearch(event.currentTarget.value)}
-              placeholder="Search locations"
-            />
+            <Box style={{ position: 'relative' }}>
+              <Combobox.Search
+                value={search}
+                onChange={(event) => setSearch(event.currentTarget.value)}
+                placeholder="Search locations"
+              />
+              <Tooltip label="Force refresh locations">
+                <ActionIcon 
+                  variant="subtle" 
+                  color="blue" 
+                  onClick={() => getLocations(true)}
+                  loading={isLoading}
+                  style={{ 
+                    position: 'absolute', 
+                    right: 5, 
+                    top: '50%', 
+                    transform: 'translateY(-50%)',
+                    zIndex: 1
+                  }}
+                >
+                  <IconRefresh size={16} />
+                </ActionIcon>
+              </Tooltip>
+            </Box>
             <Combobox.Options style={{ maxHeight: 200, overflowY: 'auto' }}>
               {options.length > 0 ? options : <Combobox.Empty>Nothing found</Combobox.Empty>}
             </Combobox.Options>
