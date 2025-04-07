@@ -34,79 +34,81 @@ function Rates ({ rates, setPurchasedRate }) {
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
-      <Title order={3} mb="xs">Rates</Title>
-
       {rates.length === 0 && (
         <Paper p="xs" withBorder>
           <Text size="sm">No rates</Text>
         </Paper>
       )}
 
-      <Stack gap="xs">
-        {rates
-          .sort((a, b) => {
-            const fa = parseFloat(a.amount)
-            const fb = parseFloat(b.amount)
-            if (fa === fb) return 0
-            return fa > fb ? 1 : -1
-          })
-          .map((rate, i) => {
-            return (
-              <Paper key={rate.objectId} p="md" withBorder>
-                <Stack gap="xs">
-                  <Group justify="space-between" align="flex-start">
-                    <Stack gap="xs">
-                      <Group>
-                        <Text size="sm" fw={500} w={100}>Amount:</Text>
-                        <Text size="sm">${rate.amount}</Text>
-                      </Group>
-                      <Group>
-                        <Text size="sm" fw={500} w={100}>Attributes:</Text>
-                        <Text size="sm">{rate.attributes}</Text>
-                      </Group>
-                      <Group>
-                        <Text size="sm" fw={500} w={100}>Provider:</Text>
-                        <Text size="sm">{rate.provider}</Text>
-                      </Group>
-                      <Group>
-                        <Text size="sm" fw={500} w={100}>Service:</Text>
-                        <Text size="sm">{rate.servicelevel.name}</Text>
-                      </Group>
-                      <Group>
-                        <Text size="sm" fw={500} w={100}>Days:</Text>
-                        <Text size="sm">{rate.estimatedDays}</Text>
-                      </Group>
-                    </Stack>
-                    <Image
-                      src={rate.providerImage75}
-                      alt={rate.provider}
-                      fit="contain"
-                    />
-                  </Group>
+      <Paper p="lg" withBorder>
+        <Stack gap="lg">
+          <Title order={3}>Available Rates</Title>
 
-                  <Group gap="xs">
-                    <Button
-                      onClick={() => handleSelect(rate.objectId)}
-                    >
-                      Select
-                    </Button>
+          {rates
+            .sort((a, b) => {
+              const fa = parseFloat(a.amount)
+              const fb = parseFloat(b.amount)
+              if (fa === fb) return 0
+              return fa > fb ? 1 : -1
+            })
+            .map((rate, i) => {
+              return (
+                <Paper key={rate.objectId} p="md" withBorder>
+                  <Stack gap="xs">
+                    <Group justify="space-between" align="flex-start">
+                      <Stack gap="xs">
+                        <Group>
+                          <Text size="sm" fw={500} w={100}>Amount:</Text>
+                          <Text size="sm">${rate.amount}</Text>
+                        </Group>
+                        <Group>
+                          <Text size="sm" fw={500} w={100}>Attributes:</Text>
+                          <Text size="sm">{rate.attributes}</Text>
+                        </Group>
+                        <Group>
+                          <Text size="sm" fw={500} w={100}>Provider:</Text>
+                          <Text size="sm">{rate.provider}</Text>
+                        </Group>
+                        <Group>
+                          <Text size="sm" fw={500} w={100}>Service:</Text>
+                          <Text size="sm">{rate.servicelevel.name}</Text>
+                        </Group>
+                        <Group>
+                          <Text size="sm" fw={500} w={100}>Days:</Text>
+                          <Text size="sm">{rate.estimatedDays}</Text>
+                        </Group>
+                      </Stack>
+                      <Image
+                        src={rate.providerImage75}
+                        alt={rate.provider}
+                        fit="contain"
+                      />
+                    </Group>
 
-                    {selectedRate === rate.objectId && (
+                    <Group gap="xs">
                       <Button
-                        type="submit"
-                        variant="outline"
-                        loading={isLoading}
+                        onClick={() => handleSelect(rate.objectId)}
                       >
-                        Purchase
+                        Select
                       </Button>
-                    )}
-                  </Group>
-                </Stack>
-              </Paper>
-            )
-          })
-        }
-      </Stack>
+
+                      {selectedRate === rate.objectId && (
+                        <Button
+                          type="submit"
+                          variant="outline"
+                          loading={isLoading}
+                        >
+                          Purchase
+                        </Button>
+                      )}
+                    </Group>
+                  </Stack>
+                </Paper>
+              )
+            })
+          }
+        </Stack>
+      </Paper>
     </form>
   )
 }

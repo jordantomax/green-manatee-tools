@@ -155,7 +155,7 @@ function BuyPostage () {
 
             <form onSubmit={form.onSubmit(handleSubmit)}>
               <Stack gap="md">
-                <Paper p="xl" withBorder>
+                <Paper p="lg" withBorder>
                   <Address
                     address={form.values.addressFrom}
                     name='addressFrom'
@@ -168,7 +168,7 @@ function BuyPostage () {
                   />
                 </Paper>
 
-                <Paper p="xl" withBorder>
+                <Paper p="lg" withBorder>
                   <Address
                     address={form.values.addressTo}
                     name='addressTo'
@@ -182,7 +182,7 @@ function BuyPostage () {
                 </Paper>
 
                 {form.values.addressTo.country !== 'US' && (
-                  <Paper p="xl" withBorder>
+                  <Paper p="lg" withBorder>
                     <Customs
                       data={form.values.customsDeclaration}
                       handleChange={(e) => {
@@ -197,7 +197,7 @@ function BuyPostage () {
                   </Paper>
                 )}
 
-                <Paper p="xl" withBorder>
+                <Paper p="lg" withBorder>
                   <Parcels
                     parcels={form.values.parcels}
                     handleChange={(e) => {
@@ -207,7 +207,7 @@ function BuyPostage () {
                   />
                 </Paper>
 
-                <Paper p="xl" withBorder>
+                <Paper p="lg" withBorder>
                   <Hazmat
                     hazmat={form.values.extra.dangerousGoods.contains}
                     handleChange={(e) => {
@@ -222,28 +222,30 @@ function BuyPostage () {
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, sm: 6 }}>
-          <Group gap="md" mb="md">
-            <Button
-              type="submit"
-              variant='primary'
-              loading={isLoading}
-              disabled={!isFormValid()}
-              onClick={() => form.onSubmit(handleSubmit)()}
-            >
-              Check Rates
-            </Button>
+          <Stack gap="md">
+            <Group gap="md">
+              <Button
+                type="submit"
+                variant='primary'
+                loading={isLoading}
+                disabled={!isFormValid()}
+                onClick={() => form.onSubmit(handleSubmit)()}
+              >
+                Check Rates
+              </Button>
 
-            <Button variant='light' onClick={handleResetRates}>
-              Reset Rates
-            </Button>
-          </Group>
+              <Button variant='light' onClick={handleResetRates}>
+                Reset Rates
+              </Button>
+            </Group>
 
-          <PurchasedRate rate={purchasedRate} />
-          <Rates
-            rates={rates}
-            setPurchasedRate={_setPurchasedRate}
-          />
-          <RateParcels parcels={rateParcels} />
+            <PurchasedRate rate={purchasedRate} />
+            <Rates
+              rates={rates}
+              setPurchasedRate={_setPurchasedRate}
+            />
+            <RateParcels parcels={rateParcels} />
+          </Stack>
         </Grid.Col>
       </Grid>
     </Container>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Stack, TextInput, Group, Paper, Title, Combobox, useCombobox } from '@mantine/core'
+import { Button, Stack, TextInput, Group, Title, Combobox, useCombobox } from '@mantine/core'
 
 import { NOTION_LOCATIONS_DB_ID } from '../constants'
 import { getNotionProp } from '../utils/notion'

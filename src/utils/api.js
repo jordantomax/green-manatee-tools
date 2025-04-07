@@ -94,17 +94,16 @@ async function shippoGetRates (body) {
 }
 
 async function shippoPurchaseLabel (body) {
-  const res = await call(`shippo/purchase-label`, {
+  const res = await call(`shippo/label`, {
     method: 'POST',
     body
   })
   return res
 }
 
-async function shippoGetLabel (params) {
-  const res = await call(`shippo/label`, {
-    method: 'GET',
-    params
+async function shippoGetLabels (rateId) {
+  const res = await call(`shippo/label/${rateId}`, {
+    method: 'GET'
   })
   return res
 }
@@ -130,7 +129,7 @@ const api = {
   createManifest,
   shippoGetRates,
   shippoPurchaseLabel,
-  shippoGetLabel,
+  shippoGetLabels,
   mergePdfs
 }
 
