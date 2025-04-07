@@ -3,7 +3,7 @@ import {
   AuthProvider,
   AuthConsumer,
   AuthContext
-} from './context/Auth'
+} from './contexts/Auth'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { MantineProvider, AppShell } from '@mantine/core'
 
