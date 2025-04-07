@@ -32,16 +32,26 @@ function DataList ({ obj, mask, imageMask, linkMask }) {
     }
 
     return (
-      <Grid key={j} gutter="xs" mb="xs">
+      <Grid key={j} gutter="xs">
         <Grid.Col span={5}>
-          <Text fw={700}>
+          <Text size="sm" fw={500}>
             {camelToSentenceCase(key)}
           </Text>
         </Grid.Col>
         {value && (
           <Grid.Col span={7}>
-            {getMaskedString()}
-            {imageMask && imageMask.includes(key) && <img src={value} alt={key} />}
+            {getMaskedString() && (
+              <Text size="sm">
+                {getMaskedString()}
+              </Text>
+            )}
+            {imageMask && imageMask.includes(key) && (
+              <img 
+                src={value} 
+                alt={key} 
+                style={{ maxHeight: '25px' }}
+              />
+            )}
             {linkMask && linkMask.includes(key) && (
               <Anchor 
                 target="_blank" 

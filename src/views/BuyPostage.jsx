@@ -147,7 +147,7 @@ function BuyPostage () {
 
   return (
     <Container fluid>
-      <Grid>
+      <Grid gutter="xl">
         <Grid.Col span={{ base: 12, sm: 6 }}>
           <Box pb="md">
             <NotionShipments handleSelectShipment={handleSelectNotionShipment} />

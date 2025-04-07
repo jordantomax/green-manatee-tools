@@ -1,10 +1,7 @@
 import React from 'react'
-import { Form, Card, Button } from 'react-bootstrap'
+import { Paper, Stack, Button, Text, Title, Group, Image } from '@mantine/core'
 import { useForm } from '@mantine/form'
 
-import { rateMask, rateImageMask } from '../utils/dataMasks'
-import DataList from './DataList'
-import ButtonSpinner from './ButtonSpinner'
 import api from '../utils/api'
 
 function Rates ({ rates, setPurchasedRate }) {
@@ -36,61 +33,81 @@ function Rates ({ rates, setPurchasedRate }) {
   }
 
   return (
-    <Form className='mb-4' onSubmit={form.onSubmit(handleSubmit)}>
-      <h3>Rates</h3>
+    <form onSubmit={form.onSubmit(handleSubmit)}>
+      <Title order={3} mb="xs">Rates</Title>
 
       {rates.length === 0 && (
-        <Card>
-          <Card.Body>
-            No rates
-          </Card.Body>
-        </Card>
+        <Paper p="xs" withBorder>
+          <Text size="sm">No rates</Text>
+        </Paper>
       )}
 
-      {rates
-        .sort((a, b) => {
-          const fa = parseFloat(a.amount)
-          const fb = parseFloat(b.amount)
-          if (fa === fb) return 0
-          return fa > fb ? 1 : -1
-        })
-        .map((rate, i) => {
-          return (
-            <Card
-              key={rate.objectId}
-              className='mb-4'
-            >
-              <Card.Body>
-                <DataList
-                  obj={rate}
-                  mask={rateMask}
-                  imageMask={rateImageMask}
-                />
-                <div className='mt-2'>
-                  <Button
-                    variant='secondary'
-                    className='mr-2'
-                    onClick={() => handleSelect(rate.objectId)}
-                  >
-                    Select This Rate
-                  </Button>
+      <Stack gap="xs">
+        {rates
+          .sort((a, b) => {
+            const fa = parseFloat(a.amount)
+            const fb = parseFloat(b.amount)
+            if (fa === fb) return 0
+            return fa > fb ? 1 : -1
+          })
+          .map((rate, i) => {
+            return (
+              <Paper key={rate.objectId} p="md" withBorder>
+                <Stack gap="xs">
+                  <Group justify="space-between" align="flex-start">
+                    <Stack gap="xs">
+                      <Group>
+                        <Text size="sm" fw={500} w={100}>Amount:</Text>
+                        <Text size="sm">${rate.amount}</Text>
+                      </Group>
+                      <Group>
+                        <Text size="sm" fw={500} w={100}>Attributes:</Text>
+                        <Text size="sm">{rate.attributes}</Text>
+                      </Group>
+                      <Group>
+                        <Text size="sm" fw={500} w={100}>Provider:</Text>
+                        <Text size="sm">{rate.provider}</Text>
+                      </Group>
+                      <Group>
+                        <Text size="sm" fw={500} w={100}>Service:</Text>
+                        <Text size="sm">{rate.servicelevel.name}</Text>
+                      </Group>
+                      <Group>
+                        <Text size="sm" fw={500} w={100}>Days:</Text>
+                        <Text size="sm">{rate.estimatedDays}</Text>
+                      </Group>
+                    </Stack>
+                    <Image
+                      src={rate.providerImage75}
+                      alt={rate.provider}
+                      fit="contain"
+                    />
+                  </Group>
 
-                  {selectedRate === rate.objectId && (
+                  <Group gap="xs">
                     <Button
-                      disabled={isLoading}
-                      type='submit'
+                      onClick={() => handleSelect(rate.objectId)}
                     >
-                      {isLoading && <ButtonSpinner />}
-                      Purchase This Rate
+                      Select
                     </Button>
-                  )}
-                </div>
-              </Card.Body>
-            </Card>
-          )
-        })
-      }
-    </Form>
+
+                    {selectedRate === rate.objectId && (
+                      <Button
+                        type="submit"
+                        size="xs"
+                        loading={isLoading}
+                      >
+                        Purchase
+                      </Button>
+                    )}
+                  </Group>
+                </Stack>
+              </Paper>
+            )
+          })
+        }
+      </Stack>
+    </form>
   )
 }
 

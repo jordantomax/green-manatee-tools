@@ -58,7 +58,7 @@ function Address ({ address, name, handleChange, label }) {
   return (
     <Stack gap="md">
       <Group justify="space-between">
-        <Title order={3} style={{ margin: 0 }}>{label}</Title>
+        <Title order={2} style={{ margin: 0 }}>{label}</Title>
         <Button
           variant="light"
           disabled={isLoading}

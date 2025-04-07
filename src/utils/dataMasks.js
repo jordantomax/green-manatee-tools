@@ -10,7 +10,6 @@ export const rateParcelMask = [
 export const rateMask = [
   'amount',
   'attributes',
-  'currency',
   'provider',
   'estimatedDays',
   'carrierAccount',

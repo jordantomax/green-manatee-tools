@@ -34,6 +34,13 @@ export const theme = createTheme({
       defaultProps: {
         size: 'md'
       }
+    },
+    Title: {
+      styles: {
+        root: {
+          fontWeight: 500
+        }
+      }
     }
   },
 }); 

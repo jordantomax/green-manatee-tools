@@ -16,7 +16,7 @@ function Parcels ({
 
   return (
     <Stack gap="md">
-      <Title order={3} style={{ margin: 0 }}>Shipment Parcels</Title>
+      <Title order={2} style={{ margin: 0 }}>Shipment Parcels</Title>
       <ItemGroup
         name='parcel'
         items={parcels}
