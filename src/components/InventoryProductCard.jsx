@@ -8,7 +8,7 @@ import {
   Table,
   Box
 } from '@mantine/core'
-import { IconArrowRight } from '@tabler/icons-react'
+import { IconChevronRight } from '@tabler/icons-react'
 
 import api from '../utils/api'
 
@@ -16,7 +16,7 @@ function Sales ({ sales }) {
   return sales.map((period, i) => {
     const last = i === sales.length - 1
     return (
-      <span key={i}>{period}{last ? '' : ', '}</span>
+      <span key={i}>{period}{last ? '' : <IconChevronRight size={14} />}</span>
     )
   })
 }
@@ -30,8 +30,8 @@ function InventoryProductCard ({ product }) {
   }
 
   return (
-    <Card>
-      <Card.Section p="md" withBorder>
+    <Card p="0">
+      <Box p="md" style={{ borderBottom: '1px solid var(--mantine-color-gray-3)' }}>
         <Title order={4}>{product.sku}</Title>
         <Text size="sm" color="dimmed" mb="xs">{product.name}</Text>
         <Button
@@ -43,64 +43,54 @@ function InventoryProductCard ({ product }) {
         >
           Create FBA Shipment
         </Button>
-      </Card.Section>
+      </Box>
 
-      <Table withBorder>
+      <Table verticalSpacing="xs" withBorder>
         <Table.Tbody>
           {/* Restock */}
-          <Table.Tr>
-            <Table.Td><Text size="sm">FBA restock:</Text></Table.Td>
-            <Table.Td><Badge color={product.restock.needFbaRestock ? "green" : "gray"}>{product.restock.fba}</Badge></Table.Td>
+          <Table.Tr bg={product.restock.needFbaRestock ? "green.0" : "red.0"}>
+            <Table.Td px="md"><Text size="sm">FBA restock:</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm" fw={500}>{product.restock.fba}</Text></Table.Td>
           </Table.Tr>
-          <Table.Tr>
-            <Table.Td><Text size="sm">Warehouse restock:</Text></Table.Td>
-            <Table.Td><Badge color={product.restock.needWarehouseRestock ? "green" : "gray"}>{product.restock.warehouse}</Badge></Table.Td>
+          <Table.Tr bg={product.restock.needWarehouseRestock ? "green.0" : "red.0"}>
+            <Table.Td px="md"><Text size="sm">Warehouse restock:</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm" fw={500}>{product.restock.warehouse}</Text></Table.Td>
           </Table.Tr>
           
           {/* Sales */}
           <Table.Tr>
-            <Table.Td colSpan={2}>
-              <Box fw={500} c="dimmed" py="xs">Sales</Box>
-            </Table.Td>
+            <Table.Td px="md"><Text size="sm">90 day sales:</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm"><Sales sales={product.sales.amzUnitSalesBy30DayPeriods} /></Text></Table.Td>
           </Table.Tr>
           <Table.Tr>
-            <Table.Td><Text size="sm">30 day sales:</Text></Table.Td>
-            <Table.Td><Text size="sm"><Sales sales={product.sales.amzUnitSalesBy30DayPeriods} /></Text></Table.Td>
+            <Table.Td px="md"><Text size="sm">Monthly change:</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm">{product.sales.amzWeightedMonthlyGrowthRate}</Text></Table.Td>
           </Table.Tr>
           <Table.Tr>
-            <Table.Td><Text size="sm">Monthly change:</Text></Table.Td>
-            <Table.Td><Text size="sm">{product.sales.amzWeightedMonthlyGrowthRate}</Text></Table.Td>
-          </Table.Tr>
-          <Table.Tr>
-            <Table.Td><Text size="sm">Forecast sales:</Text></Table.Td>
-            <Table.Td><Text size="sm">{product.sales.amzProjectedMonthlyUnitSales}</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm">Forecast sales:</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm">{product.sales.amzProjectedMonthlyUnitSales}</Text></Table.Td>
           </Table.Tr>
           
           {/* Inventory */}
           <Table.Tr>
-            <Table.Td colSpan={2}>
-              <Box fw={500} c="dimmed" py="xs">Inventory</Box>
-            </Table.Td>
+            <Table.Td px="md"><Text size="sm">FBA stock:</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm">{product.fba.stock}</Text></Table.Td>
           </Table.Tr>
           <Table.Tr>
-            <Table.Td><Text size="sm">FBA stock:</Text></Table.Td>
-            <Table.Td><Text size="sm">{product.fba.stock}</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm">FBA inbound:</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm">{product.fba.inbound}</Text></Table.Td>
           </Table.Tr>
           <Table.Tr>
-            <Table.Td><Text size="sm">FBA inbound:</Text></Table.Td>
-            <Table.Td><Text size="sm">{product.fba.inbound}</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm">AWD stock:</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm">{product.awd.stock || 0}</Text></Table.Td>
           </Table.Tr>
           <Table.Tr>
-            <Table.Td><Text size="sm">AWD stock:</Text></Table.Td>
-            <Table.Td><Text size="sm">{product.awd.stock || 0}</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm">AWD inbound:</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm">{product.awd.inbound || 0}</Text></Table.Td>
           </Table.Tr>
           <Table.Tr>
-            <Table.Td><Text size="sm">AWD inbound:</Text></Table.Td>
-            <Table.Td><Text size="sm">{product.awd.inbound || 0}</Text></Table.Td>
-          </Table.Tr>
-          <Table.Tr>
-            <Table.Td><Text size="sm">Warehouse stock:</Text></Table.Td>
-            <Table.Td><Text size="sm">{product.warehouse.stock}</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm">Warehouse stock:</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm">{product.warehouse.stock}</Text></Table.Td>
           </Table.Tr>
         </Table.Tbody>
       </Table>
