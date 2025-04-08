@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import {
   Card,
-  ListGroup,
-  Button
-} from 'react-bootstrap'
+  Text,
+  Button,
+  Group,
+  Stack,
+  Badge,
+  Title
+} from '@mantine/core'
+import { IconArrowRight } from '@tabler/icons-react'
 
 import api from '../utils/api'
-import ButtonSpinner from '../components/ButtonSpinner'
-
 
 function RestockUnits ({ product }) {
   const {
@@ -19,13 +22,15 @@ function RestockUnits ({ product }) {
   
   return (
     <>
-      <ListGroup.Item variant={needFbaRestock && "primary"}>
-        <strong>FBA restock:</strong> {fba}
-      </ListGroup.Item>
+      <Group position="apart">
+        <Text size="sm">FBA restock:</Text>
+        <Badge color={needFbaRestock ? "green" : "gray"}>{fba}</Badge>
+      </Group>
 
-      <ListGroup.Item variant={needWarehouseRestock && "primary"}>
-        <strong>Warehouse restock:</strong> {warehouse}
-      </ListGroup.Item>
+      <Group position="apart">
+        <Text size="sm">Warehouse restock:</Text>
+        <Badge color={needWarehouseRestock ? "green" : "gray"}>{warehouse}</Badge>
+      </Group>
     </>
   )
 }
@@ -48,35 +53,62 @@ function InventoryProductCard ({ product }) {
   }
 
   return (
-    <Card key={product.sku}>
-      <Card.Header>
-        <h5>{product.name}</h5>
-        <div className="pb-2">{product.sku}</div>
+    <Card>
+      <Card.Section p="md" withBorder>
+        <Title order={4}>{product.sku}</Title>
+        <Text size="sm" color="dimmed" mb="xs">{product.name}</Text>
         <Button
-          disabled={isLoading || !product.restock.needFbaRestock}
-          variant="outline-info"
-          size="sm"
+          disabled={!product.restock.needFbaRestock}
           onClick={createFbaShipment}
+          loading={isLoading}
+          size="xs"
+          variant="light"
         >
-          {isLoading && <ButtonSpinner />}
           Create FBA Shipment
         </Button>
-      </Card.Header>
+      </Card.Section>
 
-      <ListGroup variant="flush" className="small">
+      <Card.Section p="md" withBorder>
         <RestockUnits product={product} />
-        <ListGroup.Item><strong>Projected monthly sales:</strong> {product.sales.amzProjectedMonthlyUnitSales}</ListGroup.Item>
-        <ListGroup.Item>
-          <strong>30 day sales → new: </strong>
-          <Sales sales={product.sales.amzUnitSalesBy30DayPeriods} />
-        </ListGroup.Item>
-        <ListGroup.Item><strong>Monthly growth rate:</strong> {product.sales.amzWeightedMonthlyGrowthRate}</ListGroup.Item>
-        <ListGroup.Item><strong>FBA stock:</strong> {product.fba.stock}</ListGroup.Item>
-        <ListGroup.Item><strong>FBA inbound:</strong> {product.fba.inbound}</ListGroup.Item>
-        <ListGroup.Item><strong>AWD stock:</strong> {product.awd.stock}</ListGroup.Item>
-        <ListGroup.Item><strong>AWD inbound:</strong> {product.awd.inbound}</ListGroup.Item>
-        <ListGroup.Item><strong>Warehouse stock:</strong> {product.warehouse.stock}</ListGroup.Item>
-      </ListGroup>
+      </Card.Section>
+
+      <Card.Section p="md" withBorder>
+        <Group>
+          <Text size="sm">Projected monthly sales:</Text>
+          <Text size="sm">{product.sales.amzProjectedMonthlyUnitSales}</Text>
+        </Group>
+        <Group>
+          <Text size="sm">30 day sales <IconArrowRight /> new:</Text>
+          <Text size="sm"><Sales sales={product.sales.amzUnitSalesBy30DayPeriods} /></Text>
+        </Group>
+        <Group>
+          <Text size="sm">Monthly growth rate:</Text>
+          <Text size="sm">{product.sales.amzWeightedMonthlyGrowthRate}</Text>
+        </Group>
+      </Card.Section>
+
+      <Card.Section p="md" withBorder>
+        <Group justify="space-between">
+          <Text size="sm">FBA stock:</Text>
+          <Text size="sm">{product.fba.stock}</Text>
+        </Group>
+        <Group justify="space-between">
+          <Text size="sm">FBA inbound:</Text>
+          <Text size="sm">{product.fba.inbound}</Text>
+        </Group>
+        <Group justify="space-between">
+          <Text size="sm">AWD stock:</Text>
+          <Text size="sm">{product.awd.stock || 0}</Text>
+        </Group>
+        <Group justify="space-between">
+          <Text size="sm">AWD inbound:</Text>
+          <Text size="sm">{product.awd.inbound || 0}</Text>
+        </Group>
+        <Group justify="space-between">
+          <Text size="sm">Warehouse stock:</Text>
+          <Text size="sm">{product.warehouse.stock}</Text>
+        </Group>
+      </Card.Section>
     </Card>
   )
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card } from 'react-bootstrap'
+import { Paper, Text } from '@mantine/core'
 
 import { rateParcelMask } from '../utils/dataMasks'
 import DataList from '../components/DataList'
@@ -10,26 +10,23 @@ function RateParcels ({ parcels }) {
       <h3>Parcels in this Shipment </h3>
 
       {parcels.length === 0 && (
-        <Card>
-          <Card.Body>
+        <Paper>
+          <Text>
             No parcels in this shipment
-          </Card.Body>
-        </Card>
+          </Text>
+        </Paper>
       )}
 
       {parcels.map((parcel, i) => {
         return (
-          <Card
-            key={parcel.objectId}
-            className='mb-4'
-          >
-            <Card.Body>
+          <Paper key={parcel.objectId} >
+            <Text>
               <DataList
                 obj={parcel}
                 mask={rateParcelMask}
               />
-            </Card.Body>
-          </Card>
+            </Text>
+          </Paper>
         )
       })}
     </>

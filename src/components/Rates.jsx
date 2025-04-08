@@ -40,7 +40,6 @@ function Rates ({ rates, setPurchasedRate }) {
         </Paper>
       )}
 
-      <Paper p="lg" withBorder>
         <Stack gap="lg">
           <Title order={3}>Available Rates</Title>
 
@@ -107,8 +106,7 @@ function Rates ({ rates, setPurchasedRate }) {
               )
             })
           }
-        </Stack>
-      </Paper>
+      </Stack>
     </form>
   )
 }

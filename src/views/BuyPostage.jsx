@@ -7,6 +7,7 @@ import {
   Group,
   Grid,
   Paper,
+  Card,
   Box
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
@@ -155,7 +156,7 @@ function BuyPostage () {
 
             <form onSubmit={form.onSubmit(handleSubmit)}>
               <Stack gap="md">
-                <Paper p="lg" withBorder>
+                <Card>
                   <Address
                     address={form.values.addressFrom}
                     name='addressFrom'
@@ -166,9 +167,9 @@ function BuyPostage () {
                       form.setFieldValue(`${parent}.${field}`, value)
                     }}
                   />
-                </Paper>
+                </Card>
 
-                <Paper p="lg" withBorder>
+                <Card>
                   <Address
                     address={form.values.addressTo}
                     name='addressTo'
@@ -179,10 +180,10 @@ function BuyPostage () {
                       form.setFieldValue(`${parent}.${field}`, value)
                     }}
                   />
-                </Paper>
+                </Card>
 
                 {form.values.addressTo.country !== 'US' && (
-                  <Paper p="lg" withBorder>
+                  <Card>
                     <Customs
                       data={form.values.customsDeclaration}
                       handleChange={(e) => {
@@ -194,10 +195,10 @@ function BuyPostage () {
                         }
                       }}
                     />
-                  </Paper>
+                  </Card>
                 )}
 
-                <Paper p="lg" withBorder>
+                <Card>
                   <Parcels
                     parcels={form.values.parcels}
                     handleChange={(e) => {
@@ -205,9 +206,9 @@ function BuyPostage () {
                       form.setFieldValue('parcels', value)
                     }}
                   />
-                </Paper>
+                </Card>
 
-                <Paper p="lg" withBorder>
+                <Card>
                   <Hazmat
                     hazmat={form.values.extra.dangerousGoods.contains}
                     handleChange={(e) => {
@@ -215,7 +216,7 @@ function BuyPostage () {
                       form.setFieldValue(`extra.dangerousGoods.${name}`, value)
                     }}
                   />
-                </Paper>
+                </Card>
 
               </Stack>
             </form>
@@ -239,12 +240,20 @@ function BuyPostage () {
               </Button>
             </Group>
 
-            <PurchasedRate rate={purchasedRate} />
-            <Rates
-              rates={rates}
-              setPurchasedRate={_setPurchasedRate}
-            />
-            <RateParcels parcels={rateParcels} />
+            <Card>
+              <PurchasedRate rate={purchasedRate} />
+            </Card>
+
+            <Card>
+              <Rates
+                rates={rates}
+                setPurchasedRate={_setPurchasedRate}
+              />
+            </Card>
+
+            <Card>
+              <RateParcels parcels={rateParcels} />
+            </Card>
           </Stack>
         </Grid.Col>
       </Grid>

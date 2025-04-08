@@ -48,7 +48,7 @@ function BuildManifest () {
   return (
     <Container size="md" py="xl">
       <Paper withBorder p="lg">
-        <Title order={3} mb="md">Build Amazon manifest</Title>
+        <Title order={2} mb="md">Build Amazon manifest</Title>
         <NotionShipments handleSelectShipment={handleSelectShipment} inline />
 
         {errorMessage && (

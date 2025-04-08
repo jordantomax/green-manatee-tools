@@ -38,8 +38,24 @@ export const theme = createTheme({
     Title: {
       styles: {
         root: {
-          fontWeight: 600
+          fontWeight: 500
         }
+      }
+    },
+    Card: {
+      defaultProps: {
+        shadow: 'sm',
+        p: 'lg',
+        radius: 'md',
+        withBorder: true
+      },
+    },
+    Paper: {
+      defaultProps: {
+        withBorder: true,
+        radius: 'md',
+        p: 'lg',
+        shadow: '0'
       }
     }
   },

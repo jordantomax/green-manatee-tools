@@ -29,44 +29,42 @@ function PurchasedRate ({ rate }) {
 
   return (
     <Stack gap="md">
-      <Paper p="lg" withBorder>
-        <Stack gap="md">
-          <Title order={3}>Purchased Rate</Title>
-          <Stack gap="xs">
-            <Title order={4}>Tracking Numbers</Title>
-            <Text size="sm">{labels.map(label => label.trackingNumber).reduce((prev, tn) => prev + ', ' + tn)}</Text>
-            <Button
-              disabled={isLoadingMergedLabels}
-              onClick={getMergedLabels}
-              loading={isLoadingMergedLabels}
-              leftSection={<IconDownload size={16} />}
-            >
-              Download All Labels
-            </Button>
-          </Stack>
-          <Stack gap="md">
-            <Title order={4}>Labels</Title>
-            {labels.map(label => (
-              <Paper key={label.objectId} p="md" withBorder>
-                <Stack gap="xs">
-                  <Group>
-                    <Text size="sm" fw={500} w={150}>Tracking Number:</Text>
-                    <Text size="sm">{label.trackingNumber}</Text>
-                  </Group>
-                  <Group>
-                    <Text size="sm" fw={500} w={150}>label:</Text>
-                    <Text size="sm">
-                      <a href={label.labelUrl} target="_blank" rel="noopener noreferrer">
-                        View Label
-                      </a>
-                    </Text>
-                  </Group>
-                </Stack>
-              </Paper>
-            ))}
-          </Stack>
+      <Stack gap="md">
+        <Title order={3}>Purchased Rate</Title>
+        <Stack gap="xs">
+          <Title order={4}>Tracking Numbers</Title>
+          <Text size="sm">{labels.map(label => label.trackingNumber).reduce((prev, tn) => prev + ', ' + tn)}</Text>
+          <Button
+            disabled={isLoadingMergedLabels}
+            onClick={getMergedLabels}
+            loading={isLoadingMergedLabels}
+            leftSection={<IconDownload size={16} />}
+          >
+            Download All Labels
+          </Button>
         </Stack>
-      </Paper>
+        <Stack gap="md">
+          <Title order={4}>Labels</Title>
+          {labels.map(label => (
+            <Paper key={label.objectId}>
+              <Stack gap="xs">
+                <Group>
+                  <Text size="sm" fw={500} w={150}>Tracking Number:</Text>
+                  <Text size="sm">{label.trackingNumber}</Text>
+                </Group>
+                <Group>
+                  <Text size="sm" fw={500} w={150}>label:</Text>
+                  <Text size="sm">
+                    <a href={label.labelUrl} target="_blank" rel="noopener noreferrer">
+                      View Label
+                    </a>
+                  </Text>
+                </Group>
+              </Stack>
+            </Paper>
+          ))}
+        </Stack>
+      </Stack>
     </Stack>
   )
 }
