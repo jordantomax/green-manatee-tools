@@ -51,22 +51,31 @@ function Address ({ address, name, handleChange, label }) {
   
   async function handleSelect(location) {
     const p = location.properties
-    const address = Object.fromEntries(
-      Object.keys(p)
-        .filter(key => key !== 'id')
-        .map(key => [key, getNotionProp(p[key])])
-    )
-
-    Object.entries(address).forEach(([key, value]) => {
-      if (value) {
-        handleChange({ 
-          target: { 
-            name: `${name}.${key}`, 
-            value 
-          } 
-        })
-      }
+    
+    // First reset all fields to empty strings
+    Object.keys(address).forEach(field => {
+      handleChange({ 
+        target: { 
+          name: `${name}.${field}`, 
+          value: '' 
+        } 
+      })
     })
+    
+    // Then update only the fields that have values in the location
+    Object.keys(p)
+      .filter(key => key !== 'id')
+      .forEach(field => {
+        const value = getNotionProp(p[field])
+        if (value) {
+          handleChange({ 
+            target: { 
+              name: `${name}.${field}`, 
+              value 
+            } 
+          })
+        }
+      })
   }
   
   const combobox = useCombobox({
