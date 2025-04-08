@@ -34,14 +34,12 @@ function Rates ({ rates, setPurchasedRate }) {
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
-      {rates.length === 0 && (
-        <Paper p="xs" withBorder>
-          <Text size="sm">No rates</Text>
-        </Paper>
-      )}
-
-        <Stack gap="lg">
+        <Stack gap="sm">
           <Title order={3}>Available Rates</Title>
+
+          {rates.length === 0 && (
+            <Text c="dimmed">No rates</Text>
+          )}
 
           {rates
             .sort((a, b) => {

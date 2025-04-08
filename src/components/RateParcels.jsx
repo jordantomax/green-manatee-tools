@@ -1,20 +1,16 @@
 import React from 'react'
-import { Paper, Text } from '@mantine/core'
+import { Title, Paper, Text, Stack, Box } from '@mantine/core'
 
 import { rateParcelMask } from '../utils/dataMasks'
 import DataList from '../components/DataList'
 
 function RateParcels ({ parcels }) {
   return (
-    <>
-      <h3>Parcels in this Shipment </h3>
+    <Stack gap="sm">
+      <Title order={3}>Shipment Parcels</Title>
 
       {parcels.length === 0 && (
-        <Paper>
-          <Text>
-            No parcels in this shipment
-          </Text>
-        </Paper>
+        <Text c="dimmed">No parcels</Text>
       )}
 
       {parcels.map((parcel, i) => {
@@ -29,7 +25,7 @@ function RateParcels ({ parcels }) {
           </Paper>
         )
       })}
-    </>
+    </Stack>
   )
 }
 

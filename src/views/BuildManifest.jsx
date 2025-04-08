@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Container, Alert, Title, Paper } from '@mantine/core'
+import { Container, Alert, Title, Paper, Text } from '@mantine/core'
+import { IconAlertCircle } from '@tabler/icons-react'
 
-import notion from '../utils/notion'
 import api from '../utils/api'
 import NotionShipments from '../components/NotionShipments'
 
@@ -18,11 +18,11 @@ function BuildManifest () {
         ['run', 'product', 'cartonTemplate'].map(async (prop) => {
           const id = shipment.properties[prop]?.relation[0]?.id
           if (!id) return null
-          return await notion.pageGet(id)
+          return await api.notionGetPage(id)
         })
       )
 
-      if (!cartonTemplate) setErrorMessage("You pulled a shipment without a carton template. Carton templates are required for all records in order to generate the manifest weight and dimensions. Please add the carton template and retry.")
+      if (!cartonTemplate) return setErrorMessage("Shipment has no carton template. Carton templates are required to generate manifest weight and dimensions")
       if (!run) setWarningMessage("You pulled a shipment without a production run. If this was intentional, disregard this message.")
 
       const exp = run?.properties?.exp?.date?.start
@@ -48,20 +48,19 @@ function BuildManifest () {
   return (
     <Container size="md" py="xl">
       <Paper withBorder p="lg">
-        <Title order={2} mb="md">Build Amazon manifest</Title>
-        <NotionShipments handleSelectShipment={handleSelectShipment} inline />
-
         {errorMessage && (
-          <Alert color="red" mb="md">
+          <Alert icon={<IconAlertCircle />} title="Error" color="red" mb="md">
             {errorMessage}
           </Alert>
         )}
 
         {warningMessage && (
-          <Alert color="yellow" mb="md">
+          <Alert icon={<IconAlertCircle />} title="Warning" color="yellow" mb="md">
             {warningMessage}
           </Alert>
         )}
+        <Title order={2} mb="md">Build Amazon manifest</Title>
+        <NotionShipments handleSelectShipment={handleSelectShipment} inline />
       </Paper>
     </Container>
   )

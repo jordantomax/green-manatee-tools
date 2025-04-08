@@ -16,26 +16,31 @@ function NotionShipments ({ handleSelectShipment, inline = false }) {
 
   async function getShipments (forceUpdate) {
     setIsLoading(true)
-    let data = getLocalData('notionShipments')
-    let body = {}
+    try {
+      let data = getLocalData('notionShipments')
+      let body = {}
 
-    if (!includeDelivered) {
-      body = {
-        filter: {
-          property: 'Delivered',
-          checkbox: {
-            equals: false
+      if (!includeDelivered) {
+        body = {
+          filter: {
+            property: 'Delivered',
+            checkbox: {
+              equals: false
+            }
           }
         }
       }
-    }
 
-    if (!data || forceUpdate) {
-      const data = await api.notionQueryDatabase(NOTION_SHIPMENTS_DB_ID, body)
-      setLocalData('notionShipments', data)
+      if (!data || forceUpdate) {
+        data = await api.notionQueryDatabase(NOTION_SHIPMENTS_DB_ID, body)
+        setLocalData('notionShipments', data)
+      }
+      setData(data)
+    } catch (error) {
+      console.error('Error fetching shipments:', error)
+    } finally {
+      setIsLoading(false)
     }
-    setIsLoading(false)
-    setData(data)
   }
 
   useEffect(() => {
@@ -45,10 +50,15 @@ function NotionShipments ({ handleSelectShipment, inline = false }) {
   }, [includeDelivered, opened, inline])
 
   async function handleClick () {
-    await setIsLoadingSelect(true)
-    await handleSelectShipment(shipments)
-    await setIsLoadingSelect(false)
-    setOpened(false)
+    setIsLoadingSelect(true)
+    try {
+      await handleSelectShipment(shipments)
+      setOpened(false)
+    } catch (error) {
+      console.error('Error selecting shipments:', error)
+    } finally {
+      setIsLoadingSelect(false)
+    }
   }
 
   function handleCheck (shipment) {
