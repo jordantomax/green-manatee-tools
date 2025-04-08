@@ -240,9 +240,7 @@ function BuyPostage () {
               </Button>
             </Group>
 
-            <Card>
-              <PurchasedRate rate={purchasedRate} />
-            </Card>
+            <PurchasedRate rate={purchasedRate} />
 
             <Card>
               <Rates

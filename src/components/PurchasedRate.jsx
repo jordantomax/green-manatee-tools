@@ -1,5 +1,5 @@
 import React from 'react'
-import { Paper, Title, Stack, Button, Text, Group } from '@mantine/core'
+import { Paper, Title, Stack, Button, Text, Group, Card } from '@mantine/core'
 import { IconDownload } from '@tabler/icons-react'
 
 import api from '../utils/api'
@@ -28,7 +28,7 @@ function PurchasedRate ({ rate }) {
   if (!labels || labels.length === 0) return null
 
   return (
-    <Stack gap="md">
+    <Card>
       <Stack gap="md">
         <Title order={3}>Purchased Rate</Title>
         <Stack gap="xs">
@@ -65,7 +65,7 @@ function PurchasedRate ({ rate }) {
           ))}
         </Stack>
       </Stack>
-    </Stack>
+    </Card>
   )
 }
 
