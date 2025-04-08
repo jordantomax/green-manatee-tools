@@ -60,10 +60,10 @@ function Inventory () {
               Synced on {datetime.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", dateStyle: "long" })} at {datetime.toLocaleString("en-US", { timeZone: "America/Los_Angeles", timeStyle: "long" })}
             </Badge>
 
-            <Title order={3}>Restock needed</Title>
+            <Title order={3}>Restock {data.restockNeeded.length} SKUs</Title>
             <InventoryRestockRecs products={data.restockNeeded} />
 
-            <Title order={3}>No restock needed</Title>
+            <Title order={3}>No Restock {data.noRestockNeeded.length} SKUs</Title>
             <InventoryRestockRecs products={data.noRestockNeeded} />
           </Stack>
         ) : null}

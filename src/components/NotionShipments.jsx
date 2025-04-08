@@ -65,12 +65,14 @@ function NotionShipments ({ handleSelectShipment, inline = false }) {
   const content = (
     <Stack gap="md">
       <Group>
-        <Checkbox
-          label="Delivered"
-          styles={{ label: { marginBottom: 0 } }}
-          checked={includeDelivered}
-          onChange={(event) => setIncludeDelivered(event.currentTarget.checked)}
-        />
+        <Button 
+          loading={isLoadingSelect}
+          onClick={handleClick}
+          disabled={shipments.length === 0}
+        >
+          Select Shipments
+        </Button>
+
         <Button 
           variant="light" 
           leftSection={<IconRefresh size={16} />}
@@ -79,6 +81,14 @@ function NotionShipments ({ handleSelectShipment, inline = false }) {
         >
           Refresh
         </Button>
+
+        <Checkbox
+          label="Include Delivered"
+          styles={{ label: { marginBottom: 0 } }}
+          checked={includeDelivered}
+          onChange={(event) => setIncludeDelivered(event.currentTarget.checked)}
+        />
+
       </Group>
 
       {data ? (
@@ -119,17 +129,6 @@ function NotionShipments ({ handleSelectShipment, inline = false }) {
       ) : (
         <Text c="dimmed">Loading shipments...</Text>
       )}
-
-      <Group justify="flex-end">
-        {!inline && <Button variant="light" onClick={() => setOpened(false)}>Cancel</Button>}
-        <Button 
-          loading={isLoadingSelect}
-          onClick={handleClick}
-          disabled={shipments.length === 0}
-        >
-          Select Shipments
-        </Button>
-      </Group>
     </Stack>
   )
 
@@ -144,6 +143,14 @@ function NotionShipments ({ handleSelectShipment, inline = false }) {
         opened={opened} 
         onClose={() => setOpened(false)}
         title="Notion Shipments"
+        styles={{
+          header: {
+            position: 'static'
+          },
+          title: {
+            fontWeight: 500
+          }
+        }}
         size="lg"
       >
         {content}
