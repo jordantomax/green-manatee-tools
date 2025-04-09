@@ -29,7 +29,8 @@ function BuyPostage () {
   const [rateParcels, setRateParcels] = useState(getLocalData('shipment')?.rateParcels || [])
   const [rates, setRates] = useState(getLocalData('shipment')?.rates || [])
   const [purchasedRate, setPurchasedRate] = useState(getLocalData('purchasedRate') || null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingRates, setIsLoadingRates] = useState(false)
+  const [isLoadingShipment, setIsLoadingShipment] = useState(false)
   const savedInput = getLocalData('input') || {}
 
   const form = useForm({
@@ -64,32 +65,40 @@ function BuyPostage () {
   }
 
   async function handleSelectNotionShipment (shipments) {
-    const shipment = shipments[0]
-    const [origin, destination, cartonTemplate] = await Promise.all(
-      ['origin', 'destination', 'cartonTemplate'].map(async (prop) => {
-        const relation = shipment.properties[prop]?.relation
-        if (!relation || relation.length === 0) return null
-        const page = await api.notionGetPage(relation[0].id)
-        return page
+    setIsLoadingShipment(true)
+    try {
+      const shipment = shipments[0]
+      const [origin, destination, cartonTemplate] = await Promise.all(
+        ['origin', 'destination', 'cartonTemplate'].map(async (prop) => {
+          const relation = shipment.properties[prop]?.relation
+          if (!relation || relation.length === 0) return null
+          const page = await api.notionGetPage(relation[0].id)
+          return page
+        })
+      )
+
+      const addressProps = ['company', 'name', 'street1', 'city', 'state', 'zip', 'country', 'phone', 'email']
+      const addressFromBase = origin ? notion.massagePage(origin, addressProps) : {}
+      const addressToBase = destination ? notion.massagePage(destination, addressProps) : {}
+      const parcelBase = cartonTemplate ? notion.massagePage(cartonTemplate, ['grossWeightLb', 'heightIn', 'lengthIn', 'widthIn'], { grossWeightLb: 'weight', heightIn: 'height', lengthIn: 'length', widthIn: 'width' }) : {}
+
+      const addressFrom = Object.assign({}, addressFactory(), addressFromBase)
+      const addressTo = Object.assign({}, addressFactory(), addressToBase)
+      const parcel = Object.assign({}, parcelFactory(), parcelBase)
+      parcel.quantity = shipment.properties.numCartons?.number || 1
+
+      form.setValues({
+        ...form.values,
+        addressFrom,
+        addressTo,
+        parcels: [parcel]
       })
-    )
-
-    const addressProps = ['company', 'name', 'street1', 'city', 'state', 'zip', 'country', 'phone', 'email']
-    const addressFromBase = origin ? notion.massagePage(origin, addressProps) : {}
-    const addressToBase = destination ? notion.massagePage(destination, addressProps) : {}
-    const parcelBase = cartonTemplate ? notion.massagePage(cartonTemplate, ['grossWeightLb', 'heightIn', 'lengthIn', 'widthIn'], { grossWeightLb: 'weight', heightIn: 'height', lengthIn: 'length', widthIn: 'width' }) : {}
-
-    const addressFrom = Object.assign({}, addressFactory(), addressFromBase)
-    const addressTo = Object.assign({}, addressFactory(), addressToBase)
-    const parcel = Object.assign({}, parcelFactory(), parcelBase)
-    parcel.quantity = shipment.properties.numCartons?.number || 1
-
-    form.setValues({
-      ...form.values,
-      addressFrom,
-      addressTo,
-      parcels: [parcel]
-    })
+    } catch (error) {
+      console.error('Error loading shipment:', error)
+      throw error
+    } finally {
+      setIsLoadingShipment(false)
+    }
   }
 
   function handleResetRates () {
@@ -115,7 +124,7 @@ function BuyPostage () {
   }
 
   async function handleSubmit(values) {
-    setIsLoading(true)
+    setIsLoadingRates(true)
     try {
       const massaged = cloneDeep(values)
 
@@ -142,7 +151,7 @@ function BuyPostage () {
     } catch (error) {
       console.error('Error submitting form:', error)
     } finally {
-      setIsLoading(false)
+      setIsLoadingRates(false)
     }
   }
 
@@ -151,7 +160,28 @@ function BuyPostage () {
       <Grid gutter="xl">
         <Grid.Col span={{ base: 12, sm: 6 }}>
           <Box pb="md">
-            <NotionShipments handleSelectShipment={handleSelectNotionShipment} />
+            <NotionShipments>
+              {({ shipments, setOpened }) => (
+                <Button 
+                  loading={isLoadingShipment}
+                  onClick={async () => {
+                    if (shipments.length !== 1) {
+                      alert('Please select exactly one shipment')
+                      return
+                    }
+                    try {
+                      await handleSelectNotionShipment(shipments)
+                      setOpened(false)
+                    } catch (error) {
+                      console.error('Error selecting shipment:', error)
+                    }
+                  }}
+                  disabled={shipments.length === 0}
+                >
+                  Select Notion Shipment
+                </Button>
+              )}
+            </NotionShipments>
           </Box>
 
             <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -228,7 +258,7 @@ function BuyPostage () {
               <Button
                 type="submit"
                 variant='primary'
-                loading={isLoading}
+                loading={isLoadingRates}
                 disabled={!isFormValid()}
                 onClick={() => form.onSubmit(handleSubmit)()}
               >

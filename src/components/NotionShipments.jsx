@@ -6,9 +6,8 @@ import { setLocalData, getLocalData } from '../utils/storage'
 import { NOTION_SHIPMENTS_DB_ID } from '../constants'
 import api from '../utils/api'
 
-function NotionShipments ({ handleSelectShipment, inline = false }) {
+function NotionShipments ({ children, inline = false }) {
   const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingSelect, setIsLoadingSelect] = useState(false)
   const [data, setData] = useState(null)
   const [shipments, setShipments] = useState([])
   const [includeDelivered, setIncludeDelivered] = useState(false)
@@ -49,18 +48,6 @@ function NotionShipments ({ handleSelectShipment, inline = false }) {
     }
   }, [includeDelivered, opened, inline])
 
-  async function handleClick () {
-    setIsLoadingSelect(true)
-    try {
-      await handleSelectShipment(shipments)
-      setOpened(false)
-    } catch (error) {
-      console.error('Error selecting shipments:', error)
-    } finally {
-      setIsLoadingSelect(false)
-    }
-  }
-
   function handleCheck (shipment) {
     const newShipments = [...shipments]
     const checkedShipmentIndex = newShipments.findIndex(s => s.id === shipment.id)
@@ -72,16 +59,23 @@ function NotionShipments ({ handleSelectShipment, inline = false }) {
     setShipments(newShipments)
   }
 
+  // Create context object with all the values and handlers children might need
+  const context = {
+    isLoading,
+    shipments,
+    data,
+    includeDelivered,
+    setOpened,
+    handleCheck,
+    getShipments,
+    setIncludeDelivered
+  }
+
   const content = (
     <Stack gap="md">
       <Group>
-        <Button 
-          loading={isLoadingSelect}
-          onClick={handleClick}
-          disabled={shipments.length === 0}
-        >
-          Select Shipments
-        </Button>
+        {/* Render children with context */}
+        {typeof children === 'function' ? children(context) : children}
 
         <Button 
           variant="light" 
@@ -98,7 +92,6 @@ function NotionShipments ({ handleSelectShipment, inline = false }) {
           checked={includeDelivered}
           onChange={(event) => setIncludeDelivered(event.currentTarget.checked)}
         />
-
       </Group>
 
       {data ? (

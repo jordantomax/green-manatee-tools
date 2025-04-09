@@ -32,12 +32,12 @@ function AppNav() {
           </Button>
           <Button
             component={Link}
-            to="/build-manifest"
-            variant={location.pathname === '/build-manifest' ? 'light' : 'subtle'}
+            to="/shipping"
+            variant={location.pathname === '/shipping' ? 'light' : 'subtle'}
             fullWidth
             justify="start"
           >
-            Amazon Manifest
+            Shipping
           </Button>
           <Button
             component={Link}

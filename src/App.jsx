@@ -4,18 +4,17 @@ import {
   AuthConsumer,
   AuthContext
 } from './contexts/Auth'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { MantineProvider, AppShell } from '@mantine/core'
 
 import { theme } from './utils/theme'
 import Auth from './views/Auth'
 import HeaderNav from './components/Nav'
-import Home from './views/Home'
 import BuyPostage from './views/BuyPostage'
 import OutboundEmail from './views/OutboundEmail'
 import InboundEmail from './views/InboundEmail'
-import BuildManifest from './views/BuildManifest'
 import Inventory from './views/Inventory'
+import Shipping from './views/Shipping'
 
 function AppContent() {
   const auth = React.useContext(AuthContext)
@@ -42,9 +41,9 @@ function AppContent() {
       <HeaderNav />
       <AppShell.Main>
         <Routes>
-          <Route path='/' element={<Home />} />
+          <Route path='/' element={<Navigate to="/buy-postage" replace />} />
           <Route path='buy-postage' element={<BuyPostage />} />
-          <Route path='build-manifest' element={<BuildManifest />} />
+          <Route path='shipping' element={<Shipping />} />
           <Route path='inventory-recommendations' element={<Inventory />} />
           <Route path='outbound-email' element={<OutboundEmail />} />
           <Route path='inbound-email' element={<InboundEmail />} />

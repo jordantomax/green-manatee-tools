@@ -15,13 +15,11 @@ function RateParcels ({ parcels }) {
 
       {parcels.map((parcel, i) => {
         return (
-          <Paper key={parcel.objectId} >
-            <Text>
-              <DataList
-                obj={parcel}
-                mask={rateParcelMask}
-              />
-            </Text>
+          <Paper key={parcel.objectId} p="sm">
+            <DataList
+              obj={parcel}
+              mask={rateParcelMask}
+            />
           </Paper>
         )
       })}

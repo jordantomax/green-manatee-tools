@@ -16,35 +16,6 @@ function InboundEmail () {
   const [subject, setSubject] = useState()
 
   async function handleSelectShipment (shipments) {
-    const shipmentsText = []
-    const sDates = []
-    for (let i = 0; i < shipments.length; i++) {
-      const shipment = shipments[i]
-      const date = shipment.properties.date.date.start
-      if (!sDates.includes(date)) sDates.push(date)
-      const [product, cartonTemplate] = await notion.relationsGet(shipment, ['product', 'cartonTemplate'])
-      const ct = cartonTemplate ? cartonTemplate[0] ? cartonTemplate[0] : null : null
-
-      product.forEach(p => {
-        shipmentsText.push({
-          id: shipment.properties.id.title[0].plainText,
-          method: shipment.properties.method.select?.name,
-          numCases: shipment.properties.numCartons.number,
-          totalUnitQty: shipment.properties.units.formula.number,
-          trackingNumbers: shipment.properties.trackingNumberS.richText[0]?.plainText,
-          productImage: p.properties.image.files[0]?.file.url,
-          productSku: p.properties.sku.title[0].plainText,
-          caseQty: ct?.properties.unitQty.number,
-          caseGrossWeight: ct?.properties.grossWeightLb.formula.number
-        })
-      })
-    }
-
-    shipmentsText
-      .sort((a, b) => { return a.id < b.id ? -1 : 1 })
-      .forEach((el, i) => { el.shipmentNumber = i })
-    setShipments(shipmentsText)
-    setSubject(`INBOUND: ${sDates.map(d => `PO-${d}`).join(', ')}`)
   }
 
   return (
