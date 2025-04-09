@@ -23,12 +23,12 @@ function AppNav() {
         <Stack gap="xs" style={{ flex: 1 }}>
           <Button
             component={Link}
-            to="/buy-postage"
-            variant={location.pathname === '/buy-postage' ? 'light' : 'subtle'}
+            to="/postage"
+            variant={location.pathname === '/postage' ? 'light' : 'subtle'}
             fullWidth
             justify="start"
           >
-            Buy Postage
+            Postage
           </Button>
           <Button
             component={Link}

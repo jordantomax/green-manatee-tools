@@ -22,10 +22,10 @@ import RateParcels from '../components/RateParcels'
 import Rates from '../components/Rates'
 import PurchasedRate from '../components/PurchasedRate'
 import NotionShipments from '../components/NotionShipments'
-import Customs from '../components/BuyPostage/Customs'
-import Hazmat from '../components/BuyPostage/Hazmat'
+import Customs from '../components/Postage/Customs'
+import Hazmat from '../components/Postage/Hazmat'
 
-function BuyPostage () {
+function Postage () {
   const [rateParcels, setRateParcels] = useState(getLocalData('shipment')?.rateParcels || [])
   const [rates, setRates] = useState(getLocalData('shipment')?.rates || [])
   const [purchasedRate, setPurchasedRate] = useState(getLocalData('purchasedRate') || null)
@@ -289,4 +289,4 @@ function BuyPostage () {
   )
 }
 
-export default BuyPostage
+export default Postage

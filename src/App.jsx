@@ -10,7 +10,7 @@ import { MantineProvider, AppShell } from '@mantine/core'
 import { theme } from './utils/theme'
 import Auth from './views/Auth'
 import HeaderNav from './components/Nav'
-import BuyPostage from './views/BuyPostage'
+import Postage from './views/Postage'
 import Inventory from './views/Inventory'
 import Shipping from './views/Shipping'
 
@@ -39,8 +39,8 @@ function AppContent() {
       <HeaderNav />
       <AppShell.Main>
         <Routes>
-          <Route path='/' element={<Navigate to="/buy-postage" replace />} />
-          <Route path='buy-postage' element={<BuyPostage />} />
+          <Route path='/' element={<Navigate to="/postage" replace />} />
+          <Route path='postage' element={<Postage />} />
           <Route path='shipping' element={<Shipping />} />
           <Route path='inventory-recommendations' element={<Inventory />} />
         </Routes>
