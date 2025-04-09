@@ -48,11 +48,11 @@ function InventoryProductCard ({ product }) {
       <Table verticalSpacing="xs">
         <Table.Tbody>
           {/* Restock */}
-          <Table.Tr bg={product.restock.needFbaRestock ? "green.1" : "gray.1"} style={{ border: 'none' }}>
+          <Table.Tr bg={product.restock.needFbaRestock ? "green.2" : "gray.1"} style={{ border: 'none' }}>
             <Table.Td px="md"><Text size="sm" c={product.restock.needFbaRestock ? undefined : "gray.5"}>FBA restock:</Text></Table.Td>
             <Table.Td px="md"><Text size="sm" fw={500} c={product.restock.needFbaRestock ? undefined : "gray.5"}>{product.restock.fba}</Text></Table.Td>
           </Table.Tr>
-          <Table.Tr bg={product.restock.needWarehouseRestock ? "green.1" : "gray.1"} style={{ border: 'none' }}>
+          <Table.Tr bg={product.restock.needWarehouseRestock ? "green.2" : "gray.1"} style={{ border: 'none' }}>
             <Table.Td px="md"><Text size="sm" c={product.restock.needWarehouseRestock ? undefined : "gray.5"}>Warehouse restock:</Text></Table.Td>
             <Table.Td px="md"><Text size="sm" fw={500} c={product.restock.needWarehouseRestock ? undefined : "gray.5"}>{product.restock.warehouse}</Text></Table.Td>
           </Table.Tr>
