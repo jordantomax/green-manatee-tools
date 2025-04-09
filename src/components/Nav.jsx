@@ -48,24 +48,6 @@ function AppNav() {
           >
             Inventory
           </Button>
-          <Button
-            component={Link}
-            to="/outbound-email"
-            variant={location.pathname === '/outbound-email' ? 'light' : 'subtle'}
-            fullWidth
-            justify="start"
-          >
-            Outbound Email
-          </Button>
-          <Button
-            component={Link}
-            to="/inbound-email"
-            variant={location.pathname === '/inbound-email' ? 'light' : 'subtle'}
-            fullWidth
-            justify="start"
-          >
-            Inbound Email
-          </Button>
         </Stack>
 
         <Stack gap="xs">

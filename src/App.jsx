@@ -11,8 +11,6 @@ import { theme } from './utils/theme'
 import Auth from './views/Auth'
 import HeaderNav from './components/Nav'
 import BuyPostage from './views/BuyPostage'
-import OutboundEmail from './views/OutboundEmail'
-import InboundEmail from './views/InboundEmail'
 import Inventory from './views/Inventory'
 import Shipping from './views/Shipping'
 
@@ -45,8 +43,6 @@ function AppContent() {
           <Route path='buy-postage' element={<BuyPostage />} />
           <Route path='shipping' element={<Shipping />} />
           <Route path='inventory-recommendations' element={<Inventory />} />
-          <Route path='outbound-email' element={<OutboundEmail />} />
-          <Route path='inbound-email' element={<InboundEmail />} />
         </Routes>
       </AppShell.Main>
     </AppShell>

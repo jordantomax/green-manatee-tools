@@ -35,23 +35,6 @@ async function pageGet (id) {
   return res
 }
 
-async function relationsGet (obj, relationNames) {
-  const relations = await Promise.all(
-    relationNames.map(async (prop) => {
-      if (!obj.properties[prop] || obj.properties[prop].relation.length <= 0) return null
-
-      return await Promise.all(
-        // accomodate multiple  per shipment
-        obj.properties[prop].relation.map(async (r) => {
-          if (!r.id) return null
-          return await pageGet(r.id)
-        })
-      )
-    })
-  )
-  return relations
-}
-
 export function getNotionProp (value) {
   if (!value) return
   switch (value.type) {
@@ -84,7 +67,6 @@ const notion = {
   call,
   dbQuery,
   pageGet,
-  relationsGet,
   massagePage
 }
 

@@ -146,15 +146,6 @@ function NotionShipments ({ children, inline = false }) {
         opened={opened} 
         onClose={() => setOpened(false)}
         title="Notion Shipments"
-        styles={{
-          header: {
-            position: 'static'
-          },
-          title: {
-            fontWeight: 500
-          }
-        }}
-        size="lg"
       >
         {content}
       </Modal>

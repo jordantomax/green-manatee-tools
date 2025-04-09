@@ -57,6 +57,26 @@ export const theme = createTheme({
         p: 'lg',
         shadow: '0'
       }
+    },
+    Modal: {
+      defaultProps: {
+        size: 'lg'
+      },
+      styles: {
+        header: {
+          position: 'static'
+        },
+        title: {
+          fontWeight: 500
+        }
+      }
+    },
+    SegmentedControl: {
+      styles: {
+        label: {
+          marginBottom: 0
+        }
+      }
     }
   },
 }); 
