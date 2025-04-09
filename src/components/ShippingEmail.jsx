@@ -11,6 +11,7 @@ function ShippingEmail ({ shipments }) {
     const [modalOpened, setModalOpened] = useState(false)
     const [emailType, setEmailType] = useState('outbound')
     const [isCopying, setIsCopying] = useState(false)
+    const [isCopied, setIsCopied] = useState(false)
     
     useEffect(() => {
         setSubject(`${emailType.toUpperCase()}: ${shipmentDates.map(d => `PO-${d}`).join(', ')}`)
@@ -53,6 +54,8 @@ function ShippingEmail ({ shipments }) {
             const blob = new Blob([htmlContent], { type: 'text/html' })
             const data = [new ClipboardItem({ 'text/html': blob })]
             await navigator.clipboard.write(data)
+            setIsCopied(true)
+            setTimeout(() => setIsCopied(false), 1000)
         } catch (error) {
             console.error('Error copying to clipboard:', error)
             alert('Failed to copy to clipboard. Please try again.')
@@ -175,7 +178,7 @@ function ShippingEmail ({ shipments }) {
                             loading={isCopying}
                             leftSection={<IconCopy size={16} />}
                         >
-                            {isCopying ? 'Copying...' : 'Copy'}
+                            {isCopied ? 'Copied' : 'Copy'}
                         </Button>
                     </Group>
                     <Paper>
