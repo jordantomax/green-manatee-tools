@@ -6,7 +6,6 @@ import {
   Stack,
   Group,
   Grid,
-  Paper,
   Card,
   Box
 } from '@mantine/core'
@@ -78,9 +77,9 @@ function Postage () {
       )
 
       const addressProps = ['company', 'name', 'street1', 'city', 'state', 'zip', 'country', 'phone', 'email']
-      const addressFromBase = origin ? notion.massagePage(origin, addressProps) : {}
-      const addressToBase = destination ? notion.massagePage(destination, addressProps) : {}
-      const parcelBase = cartonTemplate ? notion.massagePage(cartonTemplate, ['grossWeightLb', 'heightIn', 'lengthIn', 'widthIn'], { grossWeightLb: 'weight', heightIn: 'height', lengthIn: 'length', widthIn: 'width' }) : {}
+      const addressFromBase = origin ? notion.getProps(origin, addressProps) : {}
+      const addressToBase = destination ? notion.getProps(destination, addressProps) : {}
+      const parcelBase = cartonTemplate ? notion.getProps(cartonTemplate, ['grossWeightLb', 'heightIn', 'lengthIn', 'widthIn'], { grossWeightLb: 'weight', heightIn: 'height', lengthIn: 'length', widthIn: 'width' }) : {}
 
       const addressFrom = Object.assign({}, addressFactory(), addressFromBase)
       const addressTo = Object.assign({}, addressFactory(), addressToBase)

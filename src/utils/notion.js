@@ -1,41 +1,4 @@
-import { NOTION_PROXY_HOST } from '../constants'
-import { getSavedTokens } from './auth'
-import { deepToCamelCase } from './deepMap'
-
-async function call (path, _options = {}) {
-  const { method, params } = _options
-  const tokens = await getSavedTokens()
-  const token = tokens.notion
-  const options = {
-    method: method || 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      'Notion-Version': '2021-08-16'
-    }
-  }
-  if (options.method !== 'GET') {
-    options.body = JSON.stringify(params || {})
-  }
-
-  const res = await fetch(`${NOTION_PROXY_HOST}/${path}`, options).then(res => res.json())
-  return deepToCamelCase(res)
-}
-
-async function dbQuery (id, params) {
-  const res = await call(`databases/${id}/query`, {
-    method: 'POST',
-    params
-  })
-  return res
-}
-
-async function pageGet (id) {
-  const res = await call(`pages/${id}`)
-  return res
-}
-
-export function getNotionProp (value) {
+export function getProp (value) {
   if (!value) return
   switch (value.type) {
     case 'title':
@@ -45,18 +8,18 @@ export function getNotionProp (value) {
     case 'number':
       return value.number
     case 'formula':
-      return getNotionProp(value.formula)
+      return getProp(value.formula)
     default:
       return value.plainText
   }
 }
 
-function massagePage (page, properties, nameMap={}) {
+function getProps (page, properties, nameMap={}) {
   const massaged = {}
   if (page) {
     for (const [key, value] of Object.entries(page.properties)) {
       if (properties.includes(key)) {
-        massaged[nameMap[key] || key] = getNotionProp(value)
+        massaged[nameMap[key] || key] = getProp(value)
       }
     }
   }
@@ -64,10 +27,8 @@ function massagePage (page, properties, nameMap={}) {
 }
 
 const notion = {
-  call,
-  dbQuery,
-  pageGet,
-  massagePage
+  getProp,
+  getProps
 }
 
 export default notion

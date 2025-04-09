@@ -4,7 +4,7 @@ import { IconRefresh } from '@tabler/icons-react'
 
 import { NOTION_LOCATIONS_DB_ID } from '../constants'
 import { setLocalData, getLocalData } from '../utils/storage'
-import { getNotionProp } from '../utils/notion'
+import notion from '../utils/notion'
 import api from '../utils/api'
 
 function Address ({ address, name, handleChange, label }) {
@@ -17,10 +17,10 @@ function Address ({ address, name, handleChange, label }) {
     if (locations) {
       const newOptions = locations
         .filter(location => 
-          getNotionProp(location.properties.name).toLowerCase().includes(search.toLowerCase().trim())
+          notion.getProp(location.properties.name).toLowerCase().includes(search.toLowerCase().trim())
         )
         .map((location) => {
-          const locationName = getNotionProp(location.properties.name)
+          const locationName = notion.getProp(location.properties.name)
           return (
             <Combobox.Option 
               value={location.id} 
@@ -66,7 +66,7 @@ function Address ({ address, name, handleChange, label }) {
     Object.keys(p)
       .filter(key => key !== 'id')
       .forEach(field => {
-        const value = getNotionProp(p[field])
+        const value = notion.getProp(p[field])
         if (value) {
           handleChange({ 
             target: { 
