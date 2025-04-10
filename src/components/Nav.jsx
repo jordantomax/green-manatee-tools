@@ -53,18 +53,38 @@ function AppNav() {
         <Stack gap="xs">
           <Menu shadow="md" width={200}>
             <Menu.Target>
-              <Group gap={0}>
-                <Avatar radius="xl" size="sm" color="gray">
+              <Button variant="subtle" fullWidth justify="start" p="xs" pl={40} pr={30} style={{ position: 'relative' }}>
+                <Avatar 
+                  radius="xl" 
+                  size="sm" 
+                  color="green" 
+                  style={{ 
+                    position: 'absolute', 
+                    left: 8, 
+                    top: '50%', 
+                    transform: 'translateY(-50%)',
+                    zIndex: 1
+                  }}
+                >
                   <IconUserFilled size={20} />
                 </Avatar>
-                <div style={{ flex: 1, marginLeft: 8 }}>
+                <div style={{ width: '100%' }}>
                   <Text size="sm" fw={500}>User</Text>
                   <Text size="xs" c="dimmed" truncate="end" style={{ maxWidth: 150 }}>
                     {auth.tokens.shippo}
                   </Text>
                 </div>
-                <IconChevronDown size={16} />
-              </Group>
+                <IconChevronDown 
+                  size={16} 
+                  style={{ 
+                    position: 'absolute', 
+                    right: 8, 
+                    top: '50%', 
+                    transform: 'translateY(-50%)',
+                    zIndex: 1
+                  }} 
+                />
+              </Button>
             </Menu.Target>
 
             <Menu.Dropdown>
