@@ -40,7 +40,7 @@ function Auth () {
     >
       <Container size="xxs">
         <Group justify="center" mb="xl">
-          <Image src="/logo.png" alt="Green Manatee Logo" w={50} h={50} />
+          <Image src="/logo512.png" alt="Green Manatee Logo" w={50} h={50} />
           <Title order={3}>Green Manatee</Title>
         </Group>
         <Paper radius="md" p="xl" withBorder shadow="xs">

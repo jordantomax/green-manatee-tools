@@ -16,7 +16,7 @@ function AppNav() {
     <AppShell.Navbar p="md">
       <Stack h="100%">
         <Group>
-          <Image src="/logo.png" h={30} w="auto" />
+          <Image src="/logo512.png" h={30} w="auto" />
           <Text size="md" fw={700}>Green Manatee</Text>
         </Group>
 
