@@ -49,7 +49,6 @@ async function notionGetRelations (obj, relationNames) {
       if (!obj.properties[prop] || obj.properties[prop].relation.length <= 0) return null
 
       return await Promise.all(
-        // accomodate multiple  per shipment
         obj.properties[prop].relation.map(async (r) => {
           if (!r.id) return null
           return await notionGetPage(r.id)
