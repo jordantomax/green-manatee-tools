@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL
 async function call (path, _options = {}) {
   const { method, params, body } = _options
   const tokens = await getSavedTokens()
-  const key = tokens.apiGateway
+  const key = tokens.apiKey
   const options = {
     method: method || 'GET',
     headers: {

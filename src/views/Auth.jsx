@@ -3,13 +3,12 @@ import {
   Container,
   Paper,
   Title,
-  TextInput,
+  PasswordInput,
   Button,
   Stack,
   Box,
-  rem,
-  Image,
-  Group
+  Group,
+  Image
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { AuthContext } from '../contexts/Auth'
@@ -19,12 +18,10 @@ function Auth () {
   
   const form = useForm({
     initialValues: {
-      notionToken: '',
-      apiGatewayKey: ''
+      apiKey: ''
     },
     validate: {
-      notionToken: (value) => (!value ? 'Notion token is required' : null),
-      apiGatewayKey: (value) => (!value ? 'API Gateway key is required' : null)
+      apiKey: (value) => (!value ? 'API key is required' : null)
     }
   })
 
@@ -42,6 +39,10 @@ function Auth () {
       bg="gray.0"
     >
       <Container size="xxs">
+        <Group justify="center" mb="xl">
+          <Image src="/logo.png" alt="Green Manatee Logo" w={50} h={50} />
+          <Title order={3}>Green Manatee</Title>
+        </Group>
         <Paper radius="md" p="xl" withBorder shadow="xs">
           <Group gap="md" align="center" mb="xl">
             <Title order={1}>
@@ -51,18 +52,11 @@ function Auth () {
         
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack gap="md">
-              <TextInput
-                label="Notion API Token"
-                placeholder="Notion API token"
+              <PasswordInput
+                label="API Key"
+                placeholder="API key"
                 required
-                {...form.getInputProps('notionToken')}
-              />
-
-              <TextInput
-                label="API Gateway Key"
-                placeholder="API Gateway key"
-                required
-                {...form.getInputProps('apiGatewayKey')}
+                {...form.getInputProps('apiKey')}
               />
 
               <Button type="submit" fullWidth mt="md">
