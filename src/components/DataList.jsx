@@ -1,11 +1,7 @@
 import React from 'react'
-import styled from 'styled-components'
 import isPlainObject from 'lodash/isPlainObject'
 import isArray from 'lodash/isArray'
-import {
-  Row,
-  Col
-} from 'react-bootstrap'
+import { Grid, Text, Anchor } from '@mantine/core'
 
 import camelToSentenceCase from '../utils/camelToSentenceCase'
 
@@ -36,30 +32,47 @@ function DataList ({ obj, mask, imageMask, linkMask }) {
     }
 
     return (
-      <Row className='mb-1' key={j}>
-        <Col xs={5}>
-          <span className='font-weight-bold'>
+      <Grid key={j} gutter="xs">
+        <Grid.Col span={5}>
+          <Text size="sm" fw={500}>
             {camelToSentenceCase(key)}
-          </span>
-        </Col>
+          </Text>
+        </Grid.Col>
         {value && (
-          <Col xs={7}>
-            {getMaskedString()}
-            {imageMask && imageMask.includes(key) && <img src={value} alt={key} />}
-            {linkMask && linkMask.includes(key) && <Link target='_blank' rel='noreferrer' href={value}>{value}</Link>}
-          </Col>
+          <Grid.Col span={7}>
+            {getMaskedString() && (
+              <Text size="sm">
+                {getMaskedString()}
+              </Text>
+            )}
+            {imageMask && imageMask.includes(key) && (
+              <img 
+                src={value} 
+                alt={key} 
+                style={{ maxHeight: '25px' }}
+              />
+            )}
+            {linkMask && linkMask.includes(key) && (
+              <Anchor 
+                target="_blank" 
+                rel="noreferrer" 
+                href={value}
+                style={{
+                  display: 'inline-block',
+                  width: '100%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {value}
+              </Anchor>
+            )}
+          </Grid.Col>
         )}
-      </Row>
+      </Grid>
     )
   })
 }
-
-const Link = styled.a`
-  display: inline-block;
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`
 
 export default DataList

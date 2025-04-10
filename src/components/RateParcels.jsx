@@ -1,38 +1,29 @@
 import React from 'react'
-import { Card } from 'react-bootstrap'
+import { Title, Paper, Text, Stack, Box } from '@mantine/core'
 
 import { rateParcelMask } from '../utils/dataMasks'
 import DataList from '../components/DataList'
 
 function RateParcels ({ parcels }) {
   return (
-    <>
-      <h3>Parcels in this Shipment </h3>
+    <Stack gap="sm">
+      <Title order={3}>Shipment Parcels</Title>
 
       {parcels.length === 0 && (
-        <Card>
-          <Card.Body>
-            No parcels in this shipment
-          </Card.Body>
-        </Card>
+        <Text c="dimmed">No parcels</Text>
       )}
 
       {parcels.map((parcel, i) => {
         return (
-          <Card
-            key={parcel.objectId}
-            className='mb-4'
-          >
-            <Card.Body>
-              <DataList
-                obj={parcel}
-                mask={rateParcelMask}
-              />
-            </Card.Body>
-          </Card>
+          <Paper key={parcel.objectId} p="sm">
+            <DataList
+              obj={parcel}
+              mask={rateParcelMask}
+            />
+          </Paper>
         )
       })}
-    </>
+    </Stack>
   )
 }
 

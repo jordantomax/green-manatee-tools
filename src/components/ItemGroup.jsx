@@ -1,75 +1,92 @@
 import React from 'react'
-import { Button, Card } from 'react-bootstrap'
+import { Stack, TextInput, Group, Title, Button, Paper, Grid } from '@mantine/core'
+import { IconPlus, IconTrash } from '@tabler/icons-react'
 import capitalize from 'lodash/capitalize'
 
-import Input from './Input'
 import camelToSentenceCase from '../utils/camelToSentenceCase'
 
 function ItemGroup ({
   name,
   items,
   factory,
-  handleChange
+  handleChange,
+  columns = 2
 }) {
   function handleItemCreate () {
-    const update = items.slice()
-    update.push(factory())
+    const newItem = factory()
+    const update = [...(items || []), newItem]
     handleChange(update)
   }
 
   function handleItemDelete (i) {
-    const update = items.slice()
+    const update = [...items]
     update.splice(i, 1)
     handleChange(update)
   }
 
   function handleItemChange (i, e) {
-    const update = items.slice()
+    const update = [...items]
     const { name, value } = e.target
-    update[i][name] = value
+    update[i] = { ...update[i], [name]: value }
     handleChange(update)
   }
 
-  return (
-    <>
-      <h4 className='d-flex justify-content-between align-items-center'>
-        {capitalize(name)}s
+  const columnSpan = {
+    base: 12,
+    sm: 12 / columns
+  }
 
-        <Button onClick={handleItemCreate}>
+  return (
+    <Stack gap="md">
+      <Group justify="space-between">
+        <Title order={3} style={{ margin: 0 }}>{capitalize(name)}s</Title>
+        <Button 
+          leftSection={<IconPlus size={16} />}
+          onClick={handleItemCreate} 
+          variant="light"
+        >
           Add {capitalize(name)}
         </Button>
-      </h4>
+      </Group>
 
-      {items.map((item, itemIndex) => {
+      {(items || []).map((item, itemIndex) => {
         return (
-          <Card className='mb-3' key={item.id}>
-            <Card.Header>
-              {capitalize(name)} {itemIndex}
+          <Paper key={item.id} p="md" withBorder>
+            <Stack gap="md">
+              <Group justify="space-between">
+                <Title order={4} style={{ margin: 0 }}>{capitalize(name)} {itemIndex + 1}</Title>
+                <Button 
+                  variant="subtle" 
+                  color="red" 
+                  onClick={() => handleItemDelete(itemIndex)}
+                  leftSection={<IconTrash size={16} />}
+                >
+                  Delete
+                </Button>
+              </Group>
 
-              <Card.Link style={{ cursor: 'pointer', float: 'right' }} onClick={() => handleItemDelete(itemIndex)}>
-                Delete
-              </Card.Link>
-            </Card.Header>
-
-            <Card.Body>
-              {Object.entries(item)
-                .filter(([key]) => key !== 'id')
-                .map(([key, value], i) => {
-                  return (
-                    <Input
-                      key={`${item.id}-${key}`}
-                      id={key}
-                      label={camelToSentenceCase(key)}
-                      defaultValue={value}
-                      onChange={e => handleItemChange(itemIndex, e)}
-                    />
-                  )
-                })}
-            </Card.Body>
-          </Card>
+              <Grid>
+                {Object.entries(item)
+                  .filter(([key]) => key !== 'id')
+                  .map(([key, value]) => {
+                    return (
+                      <Grid.Col key={`${item.id}-${key}`} span={columnSpan}>
+                        <TextInput
+                          label={camelToSentenceCase(key)}
+                          placeholder={`Enter ${camelToSentenceCase(key).toLowerCase()}`}
+                          defaultValue={value}
+                          onChange={e => handleItemChange(itemIndex, e)}
+                          name={key}
+                        />
+                      </Grid.Col>
+                    )
+                  })}
+              </Grid>
+            </Stack>
+          </Paper>
         )
       })}
-    </>
+    </Stack>
   )
 }
 

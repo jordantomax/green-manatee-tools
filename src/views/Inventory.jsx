@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
 import {
   Container,
-  Row,
-  Col,
   Button,
   Alert,
-  Badge
-} from 'react-bootstrap'
+  Badge,
+  Title,
+  Stack,
+  Group
+} from '@mantine/core'
 
 import { setLocalData, getLocalData } from '../utils/storage'
-import ButtonSpinner from '../components/ButtonSpinner'
 import api from '../utils/api'
 import InventoryRestockRecs from '../components/InventoryRestockRecs'
 import InventoryCreateFbaShipments from '../components/InventoryCreateFbaShipments'
@@ -33,45 +33,41 @@ function Inventory () {
   }
 
   return (
-    <Container>
-      <Row>
-        <Col className='pt-5'>
-          {errorMessage && (
-            <Alert variant='danger'>
-              {errorMessage}
-            </Alert>
-          )}
+    <Container size="md" py="xl">
+      <Stack spacing="xl">
+        {errorMessage && (
+          <Alert color="red" title="Error">
+            {errorMessage}
+          </Alert>
+        )}
 
-          <h1>Inventory Manager</h1>
+        <Title order={2}>Inventory Manager</Title>
 
-          <div className='mb-4'>
-            <Button
-              variant="primary"
-              disabled={isLoading}
-              onClick={getRecommendations}
-            >
-              {isLoading && <ButtonSpinner />}
-              Get inventory recommendations
-            </Button>
+        <Group>
+          <Button
+            onClick={getRecommendations}
+            loading={isLoading}
+          >
+            Get Recommendations
+          </Button>
 
-            <InventoryCreateFbaShipments restock={data && data.restockNeeded} />
-          </div>
+          <InventoryCreateFbaShipments restock={data && data.restockNeeded} />
+        </Group>
 
-          {data ? (
-            <>
-              <Badge className='mb-4' variant='success'>
-                Synced on {datetime.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", dateStyle: "long" })} at {datetime.toLocaleString("en-US", { timeZone: "America/Los_Angeles", timeStyle: "long" })}
-              </Badge>
+        {data ? (
+          <Stack spacing="xl">
+            <Badge size="sm" color="gray" variant="light">
+              Synced on {datetime.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", dateStyle: "long" })} at {datetime.toLocaleString("en-US", { timeZone: "America/Los_Angeles", timeStyle: "long" })}
+            </Badge>
 
-              <h2>Restock needed</h2>
-              <InventoryRestockRecs products={data.restockNeeded} />
+            <Title order={3}>Restock {data.restockNeeded.length} SKUs</Title>
+            <InventoryRestockRecs products={data.restockNeeded} />
 
-              <h2>No restock needed</h2>
-              <InventoryRestockRecs products={data.noRestockNeeded} />
-            </>
-          ) : ''}
-        </Col>
-      </Row>
+            <Title order={3}>No Restock {data.noRestockNeeded.length} SKUs</Title>
+            <InventoryRestockRecs products={data.noRestockNeeded} />
+          </Stack>
+        ) : null}
+      </Stack>
     </Container>
   )
 }

@@ -1,79 +1,82 @@
 import React from 'react'
-import styled from 'styled-components'
-import { Navbar, Nav } from 'react-bootstrap'
-import { Link } from "react-router-dom";
+import { AppShell, Group, Button, Text, Stack, Image, Avatar, Menu } from '@mantine/core'
+import { Link, useLocation } from 'react-router-dom'
+import { AuthContext } from '../contexts/Auth'
+import { IconChevronDown, IconUserFilled } from '@tabler/icons-react'
 
-import { AuthContext, AuthConsumer } from '../context/Auth'
-
-function AppNav ({
-  setRateData,
-  setPurchasedRate,
-  handleSubmit,
-  isLoading
-}) {
+function AppNav() {
+  const location = useLocation()
   const auth = React.useContext(AuthContext)
 
-  function handleLogOut () {
+  function handleLogOut() {
     auth.logOut()
   }
 
   return (
-    <Navbar bg='dark' variant='dark'>
-      <Navbar.Brand><Link to='/' style={{color: 'white'}}>← Green Manatee Tools</Link></Navbar.Brand>
-      <Nav>
-        <Nav.Item>
-          <Nav.Link target='_blank' href='https://thegreenmanatee.com'>
-            <Logo>
-              <LogoMark src='/logo.png' />
-              A Green Manatee Project
-            </Logo>
-          </Nav.Link>
-        </Nav.Item>
-      </Nav>
+    <AppShell.Navbar p="md">
+      <Stack h="100%">
+        <Group>
+          <Image src="/logo512.png" h={30} w="auto" />
+          <Text size="md" fw={700}>Green Manatee</Text>
+        </Group>
 
-      <Nav className='ml-auto'>
-        <AuthConsumer>
-          {({ isLoggedIn, tokens }) => {
-            return isLoggedIn && (
-              <>
-                <Nav.Item>
-                  <Token>
-                    Logged in as {tokens.shippo}
-                  </Token>
-                </Nav.Item>
+        <Stack gap="xs" style={{ flex: 1 }}>
+          <Button
+            component={Link}
+            to="/postage"
+            variant={location.pathname === '/postage' ? 'light' : 'subtle'}
+            fullWidth
+            justify="start"
+          >
+            Postage
+          </Button>
+          <Button
+            component={Link}
+            to="/shipping"
+            variant={location.pathname === '/shipping' ? 'light' : 'subtle'}
+            fullWidth
+            justify="start"
+          >
+            Shipping
+          </Button>
+          <Button
+            component={Link}
+            to="/inventory-recommendations"
+            variant={location.pathname === '/inventory-recommendations' ? 'light' : 'subtle'}
+            fullWidth
+            justify="start"
+          >
+            Inventory
+          </Button>
+        </Stack>
 
-                <Nav.Item>
-                  <Nav.Link onClick={handleLogOut}>
-                    Log Out
-                  </Nav.Link>
-                </Nav.Item>
-              </>
-            )
-          }}
-        </AuthConsumer>
-      </Nav>
-    </Navbar>
+        <Stack gap="xs">
+          <Menu shadow="md" width={200}>
+            <Menu.Target>
+              <Group gap={0}>
+                <Avatar radius="xl" size="sm" color="gray">
+                  <IconUserFilled size={20} />
+                </Avatar>
+                <div style={{ flex: 1, marginLeft: 8 }}>
+                  <Text size="sm" fw={500}>User</Text>
+                  <Text size="xs" c="dimmed" truncate="end" style={{ maxWidth: 150 }}>
+                    {auth.tokens.shippo}
+                  </Text>
+                </div>
+                <IconChevronDown size={16} />
+              </Group>
+            </Menu.Target>
+
+            <Menu.Dropdown>
+              <Menu.Item color="red" onClick={handleLogOut}>
+                Log Out
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        </Stack>
+      </Stack>
+    </AppShell.Navbar>
   )
 }
-
-const Token = styled(Nav.Link)`
-  max-width: 275px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`
-
-const Logo = styled.div`
-  display: flex;
-  align-items: center;
-  padding-left: 35px;
-  position: relative;
-`
-
-const LogoMark = styled.img`
-  max-height: 30px;
-  position: absolute;
-  left: 0;
-`
 
 export default AppNav

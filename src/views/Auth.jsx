@@ -1,85 +1,73 @@
 import React from 'react'
 import {
-  Form,
   Container,
-  Card,
-  Button
-} from 'react-bootstrap'
-import styled from 'styled-components'
-
-import { AuthContext } from '../context/Auth'
-import Input from '../components/InputStacked'
+  Paper,
+  Title,
+  PasswordInput,
+  Button,
+  Stack,
+  Box,
+  Group,
+  Image
+} from '@mantine/core'
+import { useForm } from '@mantine/form'
+import { AuthContext } from '../contexts/Auth'
 
 function Auth () {
   const auth = React.useContext(AuthContext)
-  const [shippoToken, setShippoToken] = React.useState('')
-  const [notionToken, setNotionToken] = React.useState('')
-  const [apiGatewayKey, setApiGatewayKey] = React.useState('')
+  
+  const form = useForm({
+    initialValues: {
+      apiKey: ''
+    },
+    validate: {
+      apiKey: (value) => (!value ? 'API key is required' : null)
+    }
+  })
 
-  function handleSubmit (e) {
-    e.preventDefault()
-    auth.logIn({
-      shippo: shippoToken,
-      notion: notionToken,
-      apiGateway: apiGatewayKey
-    })
+  function handleSubmit(values) {
+    auth.logIn(values)
   }
 
   return (
-    <Bg className='bg-dark'>
-      <Content>
-        <h1 className='text-white'>Log in</h1>
-        <Card>
-          <Card.Body>
-            <Form onSubmit={handleSubmit}>
-              <Input
-                vertical
-                label='Shippo API Token'
-                onChange={e => setShippoToken(e.target.value)}
+    <Box 
+      h="100vh"
+      minHeight="100vh"
+      justify="center"
+      py="xl"
+      px="md"
+      bg="gray.0"
+    >
+      <Container size="xxs">
+        <Group justify="center" mb="xl">
+          <Image src="/logo512.png" alt="Green Manatee Logo" w={50} h={50} />
+          <Title order={3}>Green Manatee</Title>
+        </Group>
+        <Paper radius="md" p="xl" withBorder shadow="xs">
+          <Group gap="md" align="center" mb="xl">
+            <Title order={1}>
+              Log in
+            </Title>
+          </Group>
+        
+          <form onSubmit={form.onSubmit(handleSubmit)}>
+            <Stack gap="md">
+              <PasswordInput
+                label="API Key"
+                placeholder="API key"
+                required
+                {...form.getInputProps('apiKey')}
               />
 
-              <Input
-                vertical
-                label='Notion API Token'
-                onChange={e => setNotionToken(e.target.value)}
-              />
-
-              <Input
-                vertical
-                label='API Gateway Key'
-                onChange={e => setApiGatewayKey(e.target.value)}
-              />
-
-              <Buttons>
-                <Button type='submit'>
-                  Log In
-                </Button>
-              </Buttons>
-            </Form>
-          </Card.Body>
-        </Card>
-      </Content>
-    </Bg>
+              <Button type="submit" fullWidth mt="md">
+                Log In
+              </Button>
+            </Stack>
+          </form>
+        </Paper>
+      </Container>
+    </Box>
   )
 }
-
-const Bg = styled.div`
-  height: 100%;
-`
-
-const Content = styled(Container)`
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-  justify-content: center;
-  margin: 0 auto;
-  max-width: 500px;
-`
-
-const Buttons = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-`
 
 export default Auth

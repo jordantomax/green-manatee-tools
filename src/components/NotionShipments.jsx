@@ -1,56 +1,52 @@
-import React, { useState } from 'react'
-import {
-  Button,
-  Modal,
-  ListGroup,
-  Form
-} from 'react-bootstrap'
+import React, { useState, useEffect } from 'react'
+import { Stack, Checkbox, Group, Text, Paper, Button, Modal, Table, Badge } from '@mantine/core'
+import { IconRefresh } from '@tabler/icons-react'
 
 import { setLocalData, getLocalData } from '../utils/storage'
 import { NOTION_SHIPMENTS_DB_ID } from '../constants'
-import notion from '../utils/notion'
-import ButtonSpinner from '../components/ButtonSpinner'
+import api from '../utils/api'
 
-function NotionShipments ({ handleSelectShipment, params }) {
+function NotionShipments ({ children, inline = false }) {
   const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingSelect, setIsLoadingSelect] = useState(false)
   const [data, setData] = useState(null)
   const [shipments, setShipments] = useState([])
   const [includeDelivered, setIncludeDelivered] = useState(false)
-
-  function handleClose () { setData(null) }
+  const [opened, setOpened] = useState(false)
 
   async function getShipments (forceUpdate) {
     setIsLoading(true)
-    let data = getLocalData('notionShipments')
-    let params = {}
+    try {
+      let data = getLocalData('notionShipments')
+      let body = {}
 
-    if (!includeDelivered) {
-      params = {
-        filter: {
-          property: 'Delivered',
-          checkbox: {
-            equals: false
+      if (!includeDelivered) {
+        body = {
+          filter: {
+            property: 'Delivered',
+            checkbox: {
+              equals: false
+            }
           }
         }
       }
-    }
 
-    if (!data || forceUpdate) {
-      const res = await notion.dbQuery(NOTION_SHIPMENTS_DB_ID, params)
-      data = res.results
+      if (!data || forceUpdate) {
+        data = await api.notionQueryDatabase(NOTION_SHIPMENTS_DB_ID, body)
+        setLocalData('notionShipments', data)
+      }
+      setData(data)
+    } catch (error) {
+      console.error('Error fetching shipments:', error)
+    } finally {
+      setIsLoading(false)
     }
-    setIsLoading(false)
-    setLocalData('notionShipments', data)
-    setData(data)
   }
 
-  async function handleClick () {
-    await setIsLoadingSelect(true)
-    await handleSelectShipment(shipments)
-    await setIsLoadingSelect(false)
-    handleClose()
-  }
+  useEffect(() => {
+    if (inline || opened) {
+      getShipments(false)
+    }
+  }, [includeDelivered, opened, inline])
 
   function handleCheck (shipment) {
     const newShipments = [...shipments]
@@ -63,64 +59,95 @@ function NotionShipments ({ handleSelectShipment, params }) {
     setShipments(newShipments)
   }
 
+  // Create context object with all the values and handlers children might need
+  const context = {
+    isLoading,
+    shipments,
+    data,
+    includeDelivered,
+    setOpened,
+    handleCheck,
+    getShipments,
+    setIncludeDelivered
+  }
+
+  const content = (
+    <Stack gap="md">
+      <Group>
+        {/* Render children with context */}
+        {typeof children === 'function' ? children(context) : children}
+
+        <Button 
+          variant="light" 
+          leftSection={<IconRefresh size={16} />}
+          onClick={() => getShipments(true)}
+          loading={isLoading}
+        >
+          Refresh
+        </Button>
+
+        <Checkbox
+          label="Include Delivered"
+          styles={{ label: { marginBottom: 0 } }}
+          checked={includeDelivered}
+          onChange={(event) => setIncludeDelivered(event.currentTarget.checked)}
+        />
+      </Group>
+
+      {data ? (
+        <Table highlightOnHover>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th style={{ width: 40 }}></Table.Th>
+              <Table.Th>Shipment ID</Table.Th>
+              <Table.Th>Status</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {data.map(shipment => (
+              <Table.Tr 
+                key={shipment.id}
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleCheck(shipment)}
+              >
+                <Table.Td>
+                  <Checkbox
+                    checked={shipments.find(s => s.id === shipment.id) || false}
+                    onChange={() => handleCheck(shipment)}
+                  />
+                </Table.Td>
+                <Table.Td>{shipment.properties?.id?.title[0]?.plainText}</Table.Td>
+                <Table.Td>
+                  <Badge 
+                    color={shipment.properties?.Delivered?.checkbox ? 'green' : 'gray'}
+                    variant='light'
+                  >
+                    {shipment.properties?.Delivered?.checkbox ? 'Delivered' : 'Pending'}
+                  </Badge>
+                </Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      ) : (
+        <Text c="dimmed">Loading shipments...</Text>
+      )}
+    </Stack>
+  )
+
+  if (inline) {
+    return content
+  }
+
   return (
     <>
-      <Button
-        className='mb-3'
-        disabled={isLoading}
-        onClick={() => getShipments(false)}
+      <Button onClick={() => setOpened(true)}>Select Notion Shipments</Button>
+      <Modal 
+        opened={opened} 
+        onClose={() => setOpened(false)}
+        title="Notion Shipments"
       >
-        {isLoading && <ButtonSpinner />}
-        Select Notion Shipments
-      </Button>
-
-      <Modal centered show={data && true} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Shipments</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body style={{ maxHeight: '350px', overflow: 'scroll' }}>
-          <ListGroup>
-            {data && data.map(shipment => {
-              return (
-                <ListGroup.Item
-                  key={shipment.id}
-                  action
-                  onClick={() => handleCheck(shipment)}
-                >
-                  <Form.Check
-                    type='checkbox'
-                    readOnly
-                    checked={shipments.find(s => s.id === shipment.id) || false}
-                    label={shipment.properties?.id?.title[0]?.plainText}
-                  />
-                </ListGroup.Item>
-              )
-            })}
-          </ListGroup>
-        </Modal.Body>
-
-        <Modal.Footer>
-          <span onClick={() => setIncludeDelivered(!includeDelivered)}>
-            <Form.Check
-              inline
-              readOnly
-              type='checkbox'
-              checked={includeDelivered}
-              label='Include delivered'
-            />
-          </span>
-
-          <Button variant='secondary' onClick={() => getShipments(true)} className='ml-3'>
-            {isLoading && <ButtonSpinner />}
-            Refresh
-          </Button>
-
-          <Button variant='primary' disabled={shipments <= 0} onClick={handleClick}>
-            {isLoadingSelect && <ButtonSpinner />}
-            Select
-          </Button>
-        </Modal.Footer>
+        {content}
       </Modal>
     </>
   )

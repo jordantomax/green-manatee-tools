@@ -1,20 +1,12 @@
 import { useState } from 'react'
-import {
-  Container,
-  Row,
-  Col,
-  Alert
-} from 'react-bootstrap'
+import { Button } from '@mantine/core'
 
-import notion from '../utils/notion'
 import api from '../utils/api'
-import NotionShipments from '../components/NotionShipments'
 
-function BuildManifest () {
-  const [ errorMessage, setErrorMessage ] = useState(null)
-  const [ warningMessage, setWarningMessage ] = useState(null)
+function BuildManifest ({ shipments }) {
+  const [ isCreatingManifest, setIsCreatingManifest ] = useState(false)
 
-  async function handleSelectShipment (shipments) {
+  async function createManifest (shipments) {
     const shipmentsMassaged = []
 
     for (let i = 0; i < shipments.length; i++) {
@@ -23,12 +15,18 @@ function BuildManifest () {
         ['run', 'product', 'cartonTemplate'].map(async (prop) => {
           const id = shipment.properties[prop]?.relation[0]?.id
           if (!id) return null
-          return await notion.pageGet(id)
+          return await api.notionGetPage(id)
         })
       )
 
-      if (!cartonTemplate) setErrorMessage("You pulled a shipment without a carton template. Carton templates are required for all records in order to generate the manifest weight and dimensions. Please add the carton template and retry.")
-      if (!run) setWarningMessage("You pulled a shipment without a production run. If this was intentional, disregard this message.")
+      if (!cartonTemplate) {
+        alert("Shipment has no carton template. Carton templates are required to generate manifest weight and dimensions.")
+        return
+      }
+
+      if (!run) {
+        console.warn("Shipment has no production run. If this was intentional, disregard this message.")
+      }
 
       const exp = run?.properties?.exp?.date?.start
       // Massage to form MM/DD/YYYY
@@ -51,24 +49,22 @@ function BuildManifest () {
   }
 
   return (
-    <Container>
-      <Row>
-        <Col className='pt-5'>
-          {errorMessage && (
-            <Alert variant='danger'>
-              {errorMessage}
-            </Alert>
-          )}
-          {warningMessage && (
-            <Alert variant='warning'>
-              {warningMessage}
-            </Alert>
-          )}
-          <h3>Build Amazon manifest</h3>
-          <NotionShipments handleSelectShipment={handleSelectShipment} />
-        </Col>
-      </Row>
-    </Container>
+    <Button 
+      disabled={shipments.length === 0}
+      loading={isCreatingManifest}
+      onClick={async () => {
+        setIsCreatingManifest(true)
+        try {
+          await createManifest(shipments)
+      } catch (error) {
+        console.error('Error selecting shipments:', error)
+      } finally {
+        setIsCreatingManifest(false)
+      }
+    }}
+  >
+    Create Manifest
+  </Button>
   )
 }
 

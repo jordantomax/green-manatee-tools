@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
-import { Button } from 'react-bootstrap'
+import { Button } from '@mantine/core'
 
 import api from '../utils/api'
-import ButtonSpinner from '../components/ButtonSpinner'
 
 function InventoryCreateFbaShipments ({ restock }) {
   const [isLoading, setIsLoading] = useState(false)
@@ -14,12 +13,11 @@ function InventoryCreateFbaShipments ({ restock }) {
 
   return (
     <Button
-      className="ml-2"
-      disabled={isLoading || !restock}
-      variant="outline-info"
+      disabled={!restock}
       onClick={createFbaShipments}
+      loading={isLoading}
+      variant="light"
     >
-      {isLoading && <ButtonSpinner />}
       Create All FBA shipments
     </Button>
   )

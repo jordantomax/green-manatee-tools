@@ -1,102 +1,71 @@
 import React from 'react'
-import { Card, Button } from 'react-bootstrap'
+import { Paper, Title, Stack, Button, Text, Group, Card } from '@mantine/core'
+import { IconDownload } from '@tabler/icons-react'
 
-import shippo from '../utils/shippo'
-import { purchasedRateMask, purchasedRateLinkMask } from '../utils/dataMasks'
-import DataList from './DataList'
-import ButtonSpinner from './ButtonSpinner'
-import { PDF_MERGER_API_URL } from '../constants'
+import api from '../utils/api'
 
 function PurchasedRate ({ rate }) {
-  const [results, setResults] = React.useState(null)
+  const [labels, setLabels] = React.useState([])
   const [isLoadingMergedLabels, setIsLoadingMergedLabels] = React.useState(false)
+  const rateId = React.useRef(null)
 
   React.useEffect(() => {
-    async function getLabels () {
-      try {
-        const res = await shippo('transaction', 'list', {
-          rate: rate?.rate,
-          results: 50
-        })
-        setResults(res.results)
-      } catch (err) {
-        console.warn(err)
-      }
-    }
+    if (!rate?.rate || rateId.current === rate.rate) return
 
-    getLabels()
-  }, [rate])
+    rateId.current = rate.rate
+    api.shippoGetLabels(rateId.current)
+      .then(res => setLabels(res.results))
+      .catch(err => console.warn(err))
+  }, [rate?.rate])
 
   async function getMergedLabels () {
+    const pdfUrls = labels.map(result => result.labelUrl).reverse()
     setIsLoadingMergedLabels(true)
-    const res = await fetch(PDF_MERGER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        pdf_urls: results.map(result => result.labelUrl).reverse()
-      })
-    })
-    const base64Pdf = await res.text()
-    const link = document.createElement('a')
-    link.href = `data:application/pdf;base64,${base64Pdf}`
-    link.download = 'postage.pdf'
-    link.click()
+    await api.mergePdfs({ urls: pdfUrls })
     setIsLoadingMergedLabels(false)
   }
 
-  if (!rate) return null
+  if (!labels || labels.length === 0) return null
 
   return (
-    <>
-      <h3>Purchased Rate</h3>
-
-      <Card className='mb-4'>
-        <Card.Body>
-          <h4>Master Label</h4>
-          <DataList
-            obj={rate}
-            mask={purchasedRateMask}
-            linkMask={purchasedRateLinkMask}
-          />
-
-          {results && results.length > 0 && (
-            <>
-              <div className='mt-4'>
-                <h4>All Tracking Numbers</h4>
-                {results.map(result => result.trackingNumber).reduce((prev, tn) => prev + ', ' + tn)}
-              </div>
-
-              <div className='mt-4'>
-                <h4>Merged Labels</h4>
-                <Button
-                  disabled={isLoadingMergedLabels}
-                  onClick={getMergedLabels}
-                >
-                  {isLoadingMergedLabels && <ButtonSpinner />}
-                  Download merged labels PDF
-                </Button>
-              </div>
-
-              <div className='mt-4'>
-                <h4>All Labels</h4>
-                {results.map(result => {
-                  return (
-                    <DataList
-                      key={result.objectId}
-                      obj={result}
-                      mask={purchasedRateMask}
-                      linkMask={purchasedRateLinkMask}
-                    />
-                  )
-                })}
-              </div>
-            </>
-          )}
-        </Card.Body>
-      </Card>
-    </>
+    <Card>
+      <Stack gap="md">
+        <Title order={3}>Purchased Rate</Title>
+        <Stack gap="xs">
+          <Title order={4}>Tracking Numbers</Title>
+          <Text size="sm">{labels.map(label => label.trackingNumber).reduce((prev, tn) => prev + ', ' + tn)}</Text>
+          <Button
+            disabled={isLoadingMergedLabels}
+            onClick={getMergedLabels}
+            loading={isLoadingMergedLabels}
+            leftSection={<IconDownload size={16} />}
+          >
+            Download All Labels
+          </Button>
+        </Stack>
+        <Stack gap="md">
+          <Title order={4}>Labels</Title>
+          {labels.map(label => (
+            <Paper key={label.objectId}>
+              <Stack gap="xs">
+                <Group>
+                  <Text size="sm" fw={500} w={150}>Tracking Number:</Text>
+                  <Text size="sm">{label.trackingNumber}</Text>
+                </Group>
+                <Group>
+                  <Text size="sm" fw={500} w={150}>label:</Text>
+                  <Text size="sm">
+                    <a href={label.labelUrl} target="_blank" rel="noopener noreferrer">
+                      View Label
+                    </a>
+                  </Text>
+                </Group>
+              </Stack>
+            </Paper>
+          ))}
+        </Stack>
+      </Stack>
+    </Card>
   )
 }
 

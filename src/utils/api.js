@@ -1,12 +1,12 @@
 import { getSavedTokens } from './auth'
 import { deepToCamelCase } from './deepMap'
 
-const API_URL = process.env.REACT_APP_API_URL
+const API_URL = import.meta.env.VITE_API_URL
 
 async function call (path, _options = {}) {
-  const { method, params } = _options
+  const { method, params, body } = _options
   const tokens = await getSavedTokens()
-  const key = tokens.apiGateway
+  const key = tokens.apiKey
   const options = {
     method: method || 'GET',
     headers: {
@@ -14,24 +14,55 @@ async function call (path, _options = {}) {
       'Content-Type': 'application/json',
     }
   }
-  if (options.method !== 'GET') {
-    options.body = JSON.stringify(params || {})
+
+  const url = new URL(`${API_URL}/${path}`)
+  if (options.method === 'GET' && params) {
+    Object.entries(params).forEach(([key, value]) => {
+      if (value != null) url.searchParams.append(key, value)
+    })
+  } else if (options.method !== 'GET' && body) {
+    options.body = JSON.stringify(body)
   }
 
-  const res = await fetch(`${API_URL}/${path}`, options).then(res => res.json())
+  const res = await fetch(url, options).then(res => res.json())
   return deepToCamelCase(res)
 }
 
-async function queryNotionDatabase (databaseId, options={}) {
+async function notionQueryDatabase (databaseId, body={}) {
   const res = await call(`notion/database/${databaseId}`, {
-    method: 'POST'
+    method: 'POST',
+    body
   })
   return res.results
 }
 
-async function getRecs (options) {
+async function notionGetPage (pageId) {
+  const res = await call(`notion/page/${pageId}`, {
+    method: 'GET'
+  })
+  return res
+}
+
+async function notionGetRelations (obj, relationNames) {
+  const relations = await Promise.all(
+    relationNames.map(async (prop) => {
+      if (!obj.properties[prop] || obj.properties[prop].relation.length <= 0) return null
+
+      return await Promise.all(
+        obj.properties[prop].relation.map(async (r) => {
+          if (!r.id) return null
+          return await notionGetPage(r.id)
+        })
+      )
+    })
+  )
+  return relations
+}
+
+
+async function getRecs () {
   const res = await call(`recommendations`, {
-    options
+    method: 'GET',
   })
   return res
 }
@@ -52,17 +83,17 @@ async function createFbaShipments (products) {
       notionCartonTemplateId: warehouse.notionCartonTemplateId,
       cartonQty: Math.ceil(restock.fba/warehouse.cartonUnitQty) + 1
   }))
-  const res = await call(`fba-shipments`, {
+  const res = await call(`notion/fba-shipments`, {
     method: 'POST',
-    params: shipments
+    body: shipments
   })
   return res
 }
 
 async function createManifest (shipments) {
-  const res = await call(`fba-manifest`, {
+  const res = await call(`amazon/sp/manifest`, {
     method: 'POST',
-    params: shipments
+    body: shipments
   })
   const base64Txt = res.body
   const link = document.createElement('a')
@@ -71,12 +102,53 @@ async function createManifest (shipments) {
   link.click()
 }
 
+async function shippoGetRates (body) {
+  const res = await call(`shippo/rates`, {
+    method: 'POST',
+    body
+  })
+  return res
+}
+
+async function shippoPurchaseLabel (body) {
+  const res = await call(`shippo/label`, {
+    method: 'POST',
+    body
+  })
+  return res
+}
+
+async function shippoGetLabels (rateId) {
+  const res = await call(`shippo/label/${rateId}`, {
+    method: 'GET'
+  })
+  return res
+}
+
+async function mergePdfs (body) {
+  const res = await call(`shippo/merge-pdfs`, {
+    method: 'POST',
+    body
+  })
+  const link = document.createElement('a')
+  link.href = `data:application/pdf;base64,${res.body}`
+  link.download = 'postage.pdf'
+  link.click()
+  return res
+}
+
 const api = {
   call,
-  queryNotionDatabase,
+  notionQueryDatabase,
+  notionGetPage,
+  notionGetRelations,
   getRecs,
   createFbaShipments,
-  createManifest
+  createManifest,
+  shippoGetRates,
+  shippoPurchaseLabel,
+  shippoGetLabels,
+  mergePdfs
 }
 
 export default api

@@ -1,13 +1,14 @@
-import { CardColumns } from 'react-bootstrap'
+import { SimpleGrid } from '@mantine/core'
 
 import InventoryProductCard from './InventoryProductCard'
 
-
 function InventoryRestockRecs ({ products }) {
   return (
-    <CardColumns className='mb-4'>
-      {products.map((product, i) => (<InventoryProductCard key={i} product={product} />))}
-    </CardColumns>
+    <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
+      {products.map((product, i) => (
+        <InventoryProductCard key={i} product={product} />
+      ))}
+    </SimpleGrid>
   )
 }
 
