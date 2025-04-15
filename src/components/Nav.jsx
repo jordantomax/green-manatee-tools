@@ -41,8 +41,8 @@ function AppNav() {
           </Button>
           <Button
             component={Link}
-            to="/inventory-recommendations"
-            variant={location.pathname === '/inventory-recommendations' ? 'light' : 'subtle'}
+            to="/inventory"
+            variant={location.pathname === '/inventory' ? 'light' : 'subtle'}
             fullWidth
             justify="start"
           >

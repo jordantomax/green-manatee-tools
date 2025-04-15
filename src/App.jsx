@@ -42,7 +42,7 @@ function AppContent() {
           <Route path='/' element={<Navigate to="/postage" replace />} />
           <Route path='postage' element={<Postage />} />
           <Route path='shipping' element={<Shipping />} />
-          <Route path='inventory-recommendations' element={<Inventory />} />
+          <Route path='inventory' element={<Inventory />} />
         </Routes>
       </AppShell.Main>
     </AppShell>
