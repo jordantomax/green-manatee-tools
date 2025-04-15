@@ -12,7 +12,6 @@ import {
 import { setLocalData, getLocalData } from '../utils/storage'
 import api from '../utils/api'
 import InventoryRestockRecs from '../components/InventoryRestockRecs'
-import InventoryCreateFbaShipments from '../components/InventoryCreateFbaShipments'
 
 function Inventory () {
   const [isLoading, setIsLoading] = useState(false)
@@ -50,8 +49,6 @@ function Inventory () {
           >
             Get Recommendations
           </Button>
-
-          <InventoryCreateFbaShipments restock={data && data.restockNeeded} />
         </Group>
 
         {data ? (
