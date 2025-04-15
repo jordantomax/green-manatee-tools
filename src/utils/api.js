@@ -67,25 +67,20 @@ async function getRecs () {
   return res
 }
 
-async function createFbaShipments (products) {
-  const shipments = products
-    .reduce((acc, product) => {
-      if (
-        product.restock?.needFbaRestock &&
-        product.warehouse?.notionProductId
-      ) {
-        acc.push(product)
-      }
-      return acc
-    }, [])
-    .map(({ warehouse, restock  }) => ({
-      notionProductId: warehouse.notionProductId,
-      notionCartonTemplateId: warehouse.notionCartonTemplateId,
-      cartonQty: Math.ceil(restock.fba/warehouse.cartonUnitQty) + 1
-  }))
-  const res = await call(`notion/fba-shipments`, {
+async function createFbaShipment (product) {
+  if (!product.restock?.needFbaRestock || !product.warehouse?.notionProductId) {
+    return null
+  }
+
+  const shipment = {
+    notionProductId: product.warehouse.notionProductId,
+    notionCartonTemplateId: product.warehouse.notionCartonTemplateId,
+    cartonQty: Math.ceil(product.restock.fba/product.warehouse.cartonUnitQty) + 1
+  }
+
+  const res = await call(`notion/fba-shipment`, {
     method: 'POST',
-    body: shipments
+    body: shipment
   })
   return res
 }
@@ -143,7 +138,7 @@ const api = {
   notionGetPage,
   notionGetRelations,
   getRecs,
-  createFbaShipments,
+  createFbaShipment,
   createManifest,
   shippoGetRates,
   shippoPurchaseLabel,
