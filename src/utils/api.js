@@ -3,6 +3,12 @@ import { deepToCamelCase } from './deepMap'
 
 const API_URL = import.meta.env.VITE_API_URL
 
+let errorHandler = null
+
+export function setErrorHandler(handler) {
+  errorHandler = handler
+}
+
 async function call (path, _options = {}) {
   const { method, params, body } = _options
   const tokens = await getSavedTokens()
@@ -24,8 +30,25 @@ async function call (path, _options = {}) {
     options.body = JSON.stringify(body)
   }
 
-  const res = await fetch(url, options).then(res => res.json())
-  return deepToCamelCase(res)
+  try {
+    const response = await fetch(url, options)
+    const data = await response.json()
+    
+    if (!response.ok) {
+      const error = new Error(data.message || 'API request failed')
+      error.status = response.status
+      error.data = data
+      
+      throw error
+    }
+    
+    return deepToCamelCase(data)
+  } catch (error) {
+    if (errorHandler && !error.status) {
+      errorHandler(error)
+    }
+    throw error
+  }
 }
 
 async function notionQueryDatabase (databaseId, body={}) {
@@ -67,25 +90,20 @@ async function getRecs () {
   return res
 }
 
-async function createFbaShipments (products) {
-  const shipments = products
-    .reduce((acc, product) => {
-      if (
-        product.restock?.needFbaRestock &&
-        product.warehouse?.notionProductId
-      ) {
-        acc.push(product)
-      }
-      return acc
-    }, [])
-    .map(({ warehouse, restock  }) => ({
-      notionProductId: warehouse.notionProductId,
-      notionCartonTemplateId: warehouse.notionCartonTemplateId,
-      cartonQty: Math.ceil(restock.fba/warehouse.cartonUnitQty) + 1
-  }))
-  const res = await call(`notion/fba-shipments`, {
+async function createFbaShipment (product) {
+  if (!product.restock?.needFbaRestock || !product.warehouse?.notionProductId) {
+    return null
+  }
+
+  const shipment = {
+    notionProductId: product.warehouse.notionProductId,
+    notionCartonTemplateId: product.warehouse.notionCartonTemplateId,
+    cartonQty: Math.ceil(product.restock.fba/product.warehouse.cartonUnitQty) + 1
+  }
+
+  const res = await call(`notion/fba-shipment`, {
     method: 'POST',
-    body: shipments
+    body: shipment
   })
   return res
 }
@@ -143,7 +161,7 @@ const api = {
   notionGetPage,
   notionGetRelations,
   getRecs,
-  createFbaShipments,
+  createFbaShipment,
   createManifest,
   shippoGetRates,
   shippoPurchaseLabel,
