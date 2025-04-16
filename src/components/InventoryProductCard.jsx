@@ -25,8 +25,11 @@ function InventoryProductCard ({ product }) {
   const [isLoading, setIsLoading] = useState(false)
   async function createFbaShipment () {
     setIsLoading(true)
-    await api.createFbaShipment(product)
-    setIsLoading(false)
+    try {
+      await api.createFbaShipment(product)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
