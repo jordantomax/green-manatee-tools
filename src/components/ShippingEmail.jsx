@@ -11,22 +11,22 @@ function ShippingEmail ({ shipments }) {
     const [processedShipments, setProcessedShipments] = useState([])
     const [shipmentDates, setShipmentDates] = useState([])
     const [modalOpened, setModalOpened] = useState(false)
-    const [io, setIo] = useState('outbound')
+    const [inboundOutbound, setInboundOutbound] = useState('outbound')
     const [isCopying, setIsCopying] = useState(false)
     const [isCopied, setIsCopied] = useState(false)
     const { showError } = useError()
 
     useEffect(() => {
-        setSubject(`${io.toUpperCase()}: ${shipmentDates.map(d => `PO-${d}`).join(', ')}`)
-    }, [io, shipmentDates])
+        setSubject(`${inboundOutbound.toUpperCase()}: ${shipmentDates.map(d => `PO-${d}`).join(', ')}`)
+    }, [inboundOutbound, shipmentDates])
 
     useEffect(() => {
-        if (io === 'outbound') {
+        if (inboundOutbound === 'outbound') {
             if (processedShipments.find(s => s.inStock < 0)) {
                 showError(new Error('Not enough inventory for some shipments'))
             }
         }
-    }, [io, processedShipments])
+    }, [inboundOutbound, processedShipments])
 
     const imageToBase64 = async (imageUrl) => {
         try {
@@ -147,9 +147,9 @@ function ShippingEmail ({ shipments }) {
         >
             <Stack gap="lg">
                 <SegmentedControl
-                    value={io}
+                    value={inboundOutbound}
                     onChange={(value) => {
-                        setIo(value)
+                    setInboundOutbound(value)
                     }}
                     data={[
                         { label: 'Outbound', value: 'outbound' },
