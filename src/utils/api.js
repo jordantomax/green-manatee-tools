@@ -3,6 +3,12 @@ import { deepToCamelCase } from './deepMap'
 
 const API_URL = import.meta.env.VITE_API_URL
 
+let globalErrorHandler = null
+
+export function setErrorHandler(handler) {
+  globalErrorHandler = handler
+}
+
 async function call (path, _options = {}) {
   const { method, params, body } = _options
   const tokens = await getSavedTokens()
@@ -24,8 +30,29 @@ async function call (path, _options = {}) {
     options.body = JSON.stringify(body)
   }
 
-  const res = await fetch(url, options).then(res => res.json())
-  return deepToCamelCase(res)
+  try {
+    const response = await fetch(url, options)
+    const data = await response.json()
+    
+    if (!response.ok) {
+      const error = new Error(data.message || 'API request failed')
+      error.status = response.status
+      error.data = data
+      
+      if (globalErrorHandler) {
+        globalErrorHandler(error)
+      }
+      
+      throw error
+    }
+    
+    return deepToCamelCase(data)
+  } catch (error) {
+    if (globalErrorHandler && !error.status) {
+      globalErrorHandler(error)
+    }
+    throw error
+  }
 }
 
 async function notionQueryDatabase (databaseId, body={}) {

@@ -13,6 +13,7 @@ import Nav from './components/Nav'
 import Postage from './views/Postage'
 import Inventory from './views/Inventory'
 import Shipping from './views/Shipping'
+import ErrorNotification from './components/ErrorNotification'
 
 function AppContent() {
   const auth = React.useContext(AuthContext)
@@ -55,6 +56,7 @@ export default function App () {
       <BrowserRouter>
         <AuthProvider>
           <AppContent />
+          <ErrorNotification />
         </AuthProvider>
       </BrowserRouter>
     </MantineProvider>
