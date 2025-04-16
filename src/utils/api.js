@@ -3,10 +3,10 @@ import { deepToCamelCase } from './deepMap'
 
 const API_URL = import.meta.env.VITE_API_URL
 
-let globalErrorHandler = null
+let errorHandler = null
 
 export function setErrorHandler(handler) {
-  globalErrorHandler = handler
+  errorHandler = handler
 }
 
 async function call (path, _options = {}) {
@@ -39,17 +39,13 @@ async function call (path, _options = {}) {
       error.status = response.status
       error.data = data
       
-      if (globalErrorHandler) {
-        globalErrorHandler(error)
-      }
-      
       throw error
     }
     
     return deepToCamelCase(data)
   } catch (error) {
-    if (globalErrorHandler && !error.status) {
-      globalErrorHandler(error)
+    if (errorHandler && !error.status) {
+      errorHandler(error)
     }
     throw error
   }

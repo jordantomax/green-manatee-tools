@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Button, Modal, Text, Stack, Group, CopyButton, Box, Image, SegmentedControl, Paper, Title } from '@mantine/core'
 import { IconCopy } from '@tabler/icons-react'
+
 import api from '../utils/api'
+import { useError } from '../contexts/Error'
 
 function ShippingEmail ({ shipments }) {
     const [isWritingEmail, setIsWritingEmail] = useState(false)
@@ -9,13 +11,22 @@ function ShippingEmail ({ shipments }) {
     const [processedShipments, setProcessedShipments] = useState([])
     const [shipmentDates, setShipmentDates] = useState([])
     const [modalOpened, setModalOpened] = useState(false)
-    const [emailType, setEmailType] = useState('outbound')
+    const [io, setIo] = useState('outbound')
     const [isCopying, setIsCopying] = useState(false)
     const [isCopied, setIsCopied] = useState(false)
-    
+    const { showError } = useError()
+
     useEffect(() => {
-        setSubject(`${emailType.toUpperCase()}: ${shipmentDates.map(d => `PO-${d}`).join(', ')}`)
-    }, [emailType, shipmentDates])
+        setSubject(`${io.toUpperCase()}: ${shipmentDates.map(d => `PO-${d}`).join(', ')}`)
+    }, [io, shipmentDates])
+
+    useEffect(() => {
+        if (io === 'outbound') {
+            if (processedShipments.find(s => s.inStock < 0)) {
+                showError(new Error('Not enough inventory for some shipments'))
+            }
+        }
+    }, [io, processedShipments])
 
     const imageToBase64 = async (imageUrl) => {
         try {
@@ -73,32 +84,33 @@ function ShippingEmail ({ shipments }) {
             const date = shipment.properties.date.date.start
             if (!sDates.includes(date)) sDates.push(date)
 
-            const [product, destination, cartonTemplate] = await api.notionGetRelations(shipment, ['product', 'destination', 'cartonTemplate'])
-            const d = destination ? destination[0] ? destination[0] : null : null
-            const ct = cartonTemplate ? cartonTemplate[0] ? cartonTemplate[0] : null : null
-
-            for (const p of product) {
-                if (p && p.properties) {
-                    const productImage = p.properties.image?.files?.[0]?.file?.url
-                    let base64Image = null
-                    if (productImage) {
-                        base64Image = await imageToBase64(productImage)
-                    }
-                    console.log(ct)
-                    sData.push({
-                        id: shipment.properties.id.title[0].plainText,
-                        number: shipment.properties.number.number,
-                        numCases: shipment.properties.numCartons.number,
-                        totalUnitQty: shipment.properties.units.formula.number,
-                        caseUnitQty: ct?.properties?.unitQty?.number || 'N/A',
-                        caseGrossWeightLb: ct?.properties?.grossWeightLb?.formula.number || 'N/A',
-                        shippingMethod: shipment.properties.method?.select?.name || 'N/A',
-                        trackingNumbers: shipment.properties.trackingNumbers?.richText?.[0]?.plainText || 'N/A',
-                        base64Image,
-                        productSku: p.properties.sku?.title?.[0]?.plainText || 'N/A',
-                        destinationName: d?.properties?.name?.title?.[0]?.plainText || 'N/A'
-                    })
+            const [products, runs, destinations, templates] = await api.notionGetRelations(shipment, ['product', 'run', 'destination', 'cartonTemplate'])
+            const product = products?.[0]
+            const run = runs?.[0]
+            const destination = destinations?.[0]
+            const cartonTemplate = templates?.[0]
+            
+            if (product?.properties) {
+                const productImage = product.properties.image?.files?.[0]?.file?.url
+                let base64Image = null
+                if (productImage) {
+                    base64Image = await imageToBase64(productImage)
                 }
+
+                sData.push({
+                    id: shipment.properties.id.title[0].plainText,
+                    number: shipment.properties.number.number,
+                    numCases: shipment.properties.numCartons.number,
+                    totalUnitQty: shipment.properties.units.formula.number,
+                    caseUnitQty: cartonTemplate?.properties?.unitQty?.number || 'N/A',
+                    caseGrossWeightLb: cartonTemplate?.properties?.grossWeightLb?.formula.number || 'N/A',
+                    shippingMethod: shipment.properties.method?.select?.name || 'N/A',
+                    trackingNumbers: shipment.properties.trackingNumbers?.richText?.[0]?.plainText || 'N/A',
+                    base64Image,
+                    productSku: product.properties.sku?.title?.[0]?.plainText || 'N/A',
+                    destinationName: destination?.properties?.name?.title?.[0]?.plainText || 'N/A',
+                    inStock: run?.properties?.inStock?.formula?.number || -1
+                })
             }
         }
         sData.sort((a, b) => a.number < b.number ? -1 : 1 )
@@ -135,9 +147,9 @@ function ShippingEmail ({ shipments }) {
         >
             <Stack gap="lg">
                 <SegmentedControl
-                    value={emailType}
+                    value={io}
                     onChange={(value) => {
-                        setEmailType(value)
+                        setIo(value)
                     }}
                     data={[
                         { label: 'Outbound', value: 'outbound' },

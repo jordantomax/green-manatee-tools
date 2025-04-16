@@ -1,22 +1,27 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   AuthProvider,
-  AuthConsumer,
   AuthContext
 } from './contexts/Auth'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { MantineProvider, AppShell } from '@mantine/core'
 
 import { theme } from './utils/theme'
+import { ErrorProvider, useError } from './contexts/Error'
+import { setErrorHandler } from './utils/api'
 import Auth from './views/Auth'
 import Nav from './components/Nav'
 import Postage from './views/Postage'
 import Inventory from './views/Inventory'
 import Shipping from './views/Shipping'
-import ErrorNotification from './components/ErrorNotification'
 
 function AppContent() {
   const auth = React.useContext(AuthContext)
+  const { showError } = useError()
+
+  useEffect(() => {
+    setErrorHandler(showError)
+  }, [showError])
 
   if (auth.isLoggedIn === null) {
     return <div>Loading...</div>
@@ -55,8 +60,9 @@ export default function App () {
     <MantineProvider theme={theme}>
       <BrowserRouter>
         <AuthProvider>
-          <AppContent />
-          <ErrorNotification />
+          <ErrorProvider>
+            <AppContent />
+          </ErrorProvider>
         </AuthProvider>
       </BrowserRouter>
     </MantineProvider>
