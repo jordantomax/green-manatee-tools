@@ -66,7 +66,6 @@ function Postage () {
     setIsLoadingShipment(true)
     try {
       const shipment = shipments[0]
-      console.log('shipments', shipments)
       const origin = await api.getResource('origin', shipment.properties.origin.id)
       const destination = await api.getResource('destination', shipment.properties.destination.id)
       const cartonTemplate = await api.getResource('cartonTemplate', shipment.properties.cartonTemplate.id)

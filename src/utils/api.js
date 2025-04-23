@@ -3,7 +3,7 @@ import { getSavedTokens } from './auth'
 const API_URL = import.meta.env.VITE_API_URL
 
 const RESOURCE_ALIASES = {
-  'locations': ['location', 'origin', 'destination'],
+  'locations': ['location', 'locations', 'origin', 'destination'],
   'products': ['product'],
   'runs': ['run'], 
   'carton-templates': ['cartonTemplate'],
@@ -80,19 +80,14 @@ async function getResource (resource, pageId) {
 }
 
 async function getResources (obj, relationNames) {
-  const relations = await Promise.all(
-    relationNames.map(async (prop) => {
-      if (!obj.properties[prop] || obj.properties[prop].relation.length <= 0) return null
-
-      return Promise.all(
-        obj.properties[prop].relation.map(async (r) => {
-          if (!r.id) return null
-          return getResource(prop, r.id)
-        })
-      )
+  const resources = await Promise.all(
+    relationNames.map(async (relationName) => {
+      const relation = obj.properties[relationName]
+      if (!relation || !relation.id) return null
+      return getResource(relationName, relation.id)
     })
   )
-  return relations
+  return resources
 }
 
 async function getRecs () {

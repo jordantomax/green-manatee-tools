@@ -13,7 +13,6 @@ function Address ({ address, name, handleChange, label }) {
 
   useEffect(() => {
     if (locations) {
-      console.log(locations)
       const newOptions = locations
         .filter(location => 
           location.properties.name.value.toLowerCase().includes(search.toLowerCase().trim())
