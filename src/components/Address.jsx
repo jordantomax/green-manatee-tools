@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { Button, Stack, TextInput, Group, Title, Combobox, useCombobox, ActionIcon, Tooltip, Box } from '@mantine/core'
 import { IconRefresh } from '@tabler/icons-react'
 
-import { NOTION_LOCATIONS_DB_ID } from '../constants'
-import { setLocalData, getLocalData } from '../utils/storage'
-import notion from '../utils/notion'
-import api from '../utils/api'
+import { setLocalData, getLocalData } from '@/utils/storage'
+import api from '@/utils/api'
 
 function Address ({ address, name, handleChange, label }) {
   const [isLoading, setIsLoading] = useState(false)
@@ -17,10 +15,10 @@ function Address ({ address, name, handleChange, label }) {
     if (locations) {
       const newOptions = locations
         .filter(location => 
-          notion.getProp(location.properties.name).toLowerCase().includes(search.toLowerCase().trim())
+          location.properties.name.value.toLowerCase().includes(search.toLowerCase().trim())
         )
         .map((location) => {
-          const locationName = notion.getProp(location.properties.name)
+          const locationName = location.properties.name.value
           return (
             <Combobox.Option 
               value={location.id} 
@@ -39,7 +37,7 @@ function Address ({ address, name, handleChange, label }) {
     let locations = getLocalData('notionLocations')
     setIsLoading(true)
     if (!locations || forceUpdate) {
-      locations = await api.notionQueryDatabase(NOTION_LOCATIONS_DB_ID, {
+      locations = await api.queryResources('locations', {
         filter_properties: ['name'],
         filter_value: search
       })
@@ -66,7 +64,7 @@ function Address ({ address, name, handleChange, label }) {
     Object.keys(p)
       .filter(key => key !== 'id')
       .forEach(field => {
-        const value = notion.getProp(p[field])
+        const value = p[field].value
         if (value) {
           handleChange({ 
             target: { 

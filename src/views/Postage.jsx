@@ -11,18 +11,18 @@ import {
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 
-import api from '../utils/api'
-import { setLocalData, getLocalData } from '../utils/storage'
-import { addressFactory, parcelFactory, customsFactory } from '../factories'
-import notion from '../utils/notion'
-import Address from '../components/Address'
-import Parcels from '../components/Parcels'
-import RateParcels from '../components/RateParcels'
-import Rates from '../components/Rates'
-import PurchasedRate from '../components/PurchasedRate'
-import NotionShipments from '../components/NotionShipments'
-import Customs from '../components/Postage/Customs'
-import Hazmat from '../components/Postage/Hazmat'
+import api from '@/utils/api'
+import { setLocalData, getLocalData } from '@/utils/storage'
+import { addressFactory, parcelFactory, customsFactory } from '@/factories'
+import notion from '@/utils/notion'
+import Address from '@/components/Address'
+import Parcels from '@/components/Parcels'
+import RateParcels from '@/components/RateParcels'
+import Rates from '@/components/Rates'
+import PurchasedRate from '@/components/PurchasedRate'
+import NotionShipments from '@/components/NotionShipments'
+import Customs from '@/components/Postage/Customs'
+import Hazmat from '@/components/Postage/Hazmat'
 
 function Postage () {
   const [rateParcels, setRateParcels] = useState(getLocalData('shipment')?.rateParcels || [])
@@ -67,24 +67,32 @@ function Postage () {
     setIsLoadingShipment(true)
     try {
       const shipment = shipments[0]
-      const [origin, destination, cartonTemplate] = await Promise.all(
-        ['origin', 'destination', 'cartonTemplate'].map(async (prop) => {
-          const relation = shipment.properties[prop]?.relation
-          if (!relation || relation.length === 0) return null
-          const page = await api.notionGetPage(relation[0].id)
-          return page
-        })
-      )
+      console.log('shipments', shipments)
+      const origin = await api.getResource('origin', shipment.properties.origin.id)
+      const destination = await api.getResource('destination', shipment.properties.destination.id)
+      const cartonTemplate = await api.getResource('cartonTemplate', shipment.properties.cartonTemplate.id)
 
-      const addressProps = ['company', 'name', 'street1', 'city', 'state', 'zip', 'country', 'phone', 'email']
-      const addressFromBase = origin ? notion.getProps(origin, addressProps) : {}
-      const addressToBase = destination ? notion.getProps(destination, addressProps) : {}
-      const parcelBase = cartonTemplate ? notion.getProps(cartonTemplate, ['grossWeightLb', 'heightIn', 'lengthIn', 'widthIn'], { grossWeightLb: 'weight', heightIn: 'height', lengthIn: 'length', widthIn: 'width' }) : {}
+      // Helper function to extract address properties
+      const getAddressProps = (page) => {
+        if (!page) return {}
+        const props = ['company', 'name', 'street1', 'city', 'state', 'zip', 'country', 'phone', 'email']
+        return props.reduce((acc, prop) => {
+          acc[prop] = page.properties[prop]?.value || ''
+          return acc
+        }, {})
+      }
 
-      const addressFrom = Object.assign({}, addressFactory(), addressFromBase)
-      const addressTo = Object.assign({}, addressFactory(), addressToBase)
-      const parcel = Object.assign({}, parcelFactory(), parcelBase)
-      parcel.quantity = shipment.properties.numCartons?.number || 1
+      const addressFrom = Object.assign({}, addressFactory(), getAddressProps(origin))
+      const addressTo = Object.assign({}, addressFactory(), getAddressProps(destination))
+      
+      const { grossWeightLb, heightIn, lengthIn, widthIn } = cartonTemplate?.properties || {}
+      const parcel = Object.assign({}, parcelFactory(), {
+        weight: grossWeightLb?.value,
+        height: heightIn?.value,
+        length: lengthIn?.value,
+        width: widthIn?.value
+      })
+      parcel.quantity = shipment.properties.numCartons?.value || 1
 
       form.setValues({
         ...form.values,

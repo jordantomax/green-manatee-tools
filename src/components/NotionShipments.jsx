@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Stack, Checkbox, Group, Text, Paper, Button, Modal, Table, Badge } from '@mantine/core'
+import { Stack, Checkbox, Group, Text, Button, Modal, Table, Badge } from '@mantine/core'
 import { IconRefresh } from '@tabler/icons-react'
 
-import { setLocalData, getLocalData } from '../utils/storage'
-import { NOTION_SHIPMENTS_DB_ID } from '../constants'
-import api from '../utils/api'
+import { setLocalData, getLocalData } from '@/utils/storage'
+import api from '@/utils/api'
 
 function NotionShipments ({ children, inline = false }) {
   const [isLoading, setIsLoading] = useState(false)
@@ -31,7 +30,7 @@ function NotionShipments ({ children, inline = false }) {
       }
 
       if (!data || forceUpdate) {
-        data = await api.notionQueryDatabase(NOTION_SHIPMENTS_DB_ID, body)
+        data = await api.queryResources('shipments', body)
         setLocalData('notionShipments', data)
       }
       setData(data)
@@ -107,22 +106,22 @@ function NotionShipments ({ children, inline = false }) {
             {data.map(shipment => (
               <Table.Tr 
                 key={shipment.id}
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleCheck(shipment)}
-              >
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => handleCheck(shipment)}
+                >
                 <Table.Td>
                   <Checkbox
                     checked={shipments.find(s => s.id === shipment.id) || false}
                     onChange={() => handleCheck(shipment)}
                   />
                 </Table.Td>
-                <Table.Td>{shipment.properties?.id?.title[0]?.plainText}</Table.Td>
+                <Table.Td>{shipment.properties?.id?.value || 'No ID'}</Table.Td>
                 <Table.Td>
                   <Badge 
-                    color={shipment.properties?.Delivered?.checkbox ? 'green' : 'gray'}
+                    color={shipment.properties?.Delivered?.value ? 'green' : 'gray'}
                     variant='light'
                   >
-                    {shipment.properties?.Delivered?.checkbox ? 'Delivered' : 'Pending'}
+                    {shipment.properties?.Delivered?.value ? 'Delivered' : 'Pending'}
                   </Badge>
                 </Table.Td>
               </Table.Tr>

@@ -3,7 +3,7 @@ import { Stack, TextInput, Group, Title, Button, Paper, Grid } from '@mantine/co
 import { IconPlus, IconTrash } from '@tabler/icons-react'
 import capitalize from 'lodash/capitalize'
 
-import camelToSentenceCase from '../utils/camelToSentenceCase'
+import camelToSentenceCase from '@/utils/camelToSentenceCase'
 
 function ItemGroup ({
   name,

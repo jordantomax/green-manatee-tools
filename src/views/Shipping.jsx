@@ -1,10 +1,10 @@
+import React from 'react'
 import { useState } from 'react'
-import { Container, Alert, Title, Paper, Button, Group } from '@mantine/core'
-import { IconAlertCircle } from '@tabler/icons-react'
+import { Container, Title, Paper, Group } from '@mantine/core'
 
-import NotionShipments from '../components/NotionShipments'
-import ShippingManifest from '../components/ShippingManifest'
-import ShippingEmail from '../components/ShippingEmail'
+import NotionShipments from '@/components/NotionShipments'
+import ShippingManifest from '@/components/ShippingManifest'
+import ShippingEmail from '@/components/ShippingEmail'
 
 function Shipments () {
   const [ errorMessage, setErrorMessage ] = useState(null)

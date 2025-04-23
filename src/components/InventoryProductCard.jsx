@@ -1,3 +1,4 @@
+import React from 'react'
 import { useState } from 'react'
 import {
   Card,
@@ -9,8 +10,8 @@ import {
 } from '@mantine/core'
 import { IconChevronRight } from '@tabler/icons-react'
 
-import api from '../utils/api'
-import { useError } from '../contexts/Error'
+import api from '@/utils/api'
+import { useError } from '@/contexts/Error'
 
 function Sales ({ sales }) {
   return sales.map((period, i) => {

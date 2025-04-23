@@ -1,8 +1,8 @@
 import React from 'react'
 import { Stack, TextInput, Group, Title, Text, Paper } from '@mantine/core'
 
-import { customsItemFactory } from '../../factories'
-import ItemGroup from '../ItemGroup'
+import { customsItemFactory } from '@/factories'
+import ItemGroup from '@/components/ItemGroup'
 
 function Customs ({ data, handleChange }) {
   function handleItemChange (value) {

@@ -1,7 +1,23 @@
 import { getSavedTokens } from './auth'
-import { deepToCamelCase } from './deepMap'
 
 const API_URL = import.meta.env.VITE_API_URL
+
+const RESOURCE_ALIASES = {
+  'locations': ['location', 'origin', 'destination'],
+  'products': ['product'],
+  'runs': ['run'], 
+  'carton-templates': ['cartonTemplate'],
+  'shipments': ['shipment', 'shipments']
+}
+
+const RESOURCE_ENDPOINTS = Object.entries(RESOURCE_ALIASES).reduce((acc, [endpoint, aliases]) => {
+  aliases.forEach(alias => acc[alias] = endpoint)
+  return acc
+}, {})
+
+function resourceUrl(resource) {
+  return RESOURCE_ENDPOINTS[resource] || `${resource}s`
+}
 
 let errorHandler = null
 
@@ -33,7 +49,6 @@ async function call (path, _options = {}) {
   try {
     const response = await fetch(url, options)
     const data = await response.json()
-    
     if (!response.ok) {
       const error = new Error(data.message || 'API request failed')
       error.status = response.status
@@ -42,7 +57,7 @@ async function call (path, _options = {}) {
       throw error
     }
     
-    return deepToCamelCase(data)
+    return data
   } catch (error) {
     if (errorHandler && !error.status) {
       errorHandler(error)
@@ -51,30 +66,28 @@ async function call (path, _options = {}) {
   }
 }
 
-async function notionQueryDatabase (databaseId, body={}) {
-  const res = await call(`notion/database/${databaseId}`, {
+async function queryResources (resource, body={}) {
+  return call(`${resourceUrl(resource)}`, {
     method: 'POST',
     body
   })
-  return res.results
 }
 
-async function notionGetPage (pageId) {
-  const res = await call(`notion/page/${pageId}`, {
+async function getResource (resource, pageId) {
+  return call(`${resourceUrl(resource)}/${pageId}`, {
     method: 'GET'
   })
-  return res
 }
 
-async function notionGetRelations (obj, relationNames) {
+async function getResources (obj, relationNames) {
   const relations = await Promise.all(
     relationNames.map(async (prop) => {
       if (!obj.properties[prop] || obj.properties[prop].relation.length <= 0) return null
 
-      return await Promise.all(
+      return Promise.all(
         obj.properties[prop].relation.map(async (r) => {
           if (!r.id) return null
-          return await notionGetPage(r.id)
+          return getResource(prop, r.id)
         })
       )
     })
@@ -82,12 +95,10 @@ async function notionGetRelations (obj, relationNames) {
   return relations
 }
 
-
 async function getRecs () {
-  const res = await call(`recommendations`, {
+  return call(`recommendations`, {
     method: 'GET',
   })
-  return res
 }
 
 async function createFbaShipment (product) {
@@ -101,11 +112,10 @@ async function createFbaShipment (product) {
     cartonQty: Math.ceil(product.restock.fba/product.warehouse.cartonUnitQty) + 1
   }
 
-  const res = await call(`notion/fba-shipment`, {
+  return call(`notion/fba-shipment`, {
     method: 'POST',
     body: shipment
   })
-  return res
 }
 
 async function createManifest (shipments) {
@@ -121,26 +131,23 @@ async function createManifest (shipments) {
 }
 
 async function shippoGetRates (body) {
-  const res = await call(`shippo/rates`, {
+  return call(`shippo/rates`, {
     method: 'POST',
     body
   })
-  return res
 }
 
 async function shippoPurchaseLabel (body) {
-  const res = await call(`shippo/label`, {
+  return call(`shippo/label`, {
     method: 'POST',
     body
   })
-  return res
 }
 
 async function shippoGetLabels (rateId) {
-  const res = await call(`shippo/label/${rateId}`, {
+  return call(`shippo/label/${rateId}`, {
     method: 'GET'
   })
-  return res
 }
 
 async function mergePdfs (body) {
@@ -156,10 +163,9 @@ async function mergePdfs (body) {
 }
 
 const api = {
-  call,
-  notionQueryDatabase,
-  notionGetPage,
-  notionGetRelations,
+  queryResources,
+  getResource,
+  getResources,
   getRecs,
   createFbaShipment,
   createManifest,

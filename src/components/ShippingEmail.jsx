@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { Button, Modal, Text, Stack, Group, CopyButton, Box, Image, SegmentedControl, Paper, Title } from '@mantine/core'
 import { IconCopy } from '@tabler/icons-react'
 
-import api from '../utils/api'
-import { useError } from '../contexts/Error'
+import api from '@/utils/api'
+import { useError } from '@/contexts/Error'
 
 function ShippingEmail ({ shipments }) {
     const [isWritingEmail, setIsWritingEmail] = useState(false)
@@ -78,13 +78,17 @@ function ShippingEmail ({ shipments }) {
     async function writeEmail (shipments) {
         const sData = []
         const sDates = []
+        console.log('shipments', shipments)
 
         for (let i = 0; i < shipments.length; i++) {
             const shipment = shipments[i]
-            const date = shipment.properties.date.date.start
+            const date = shipment.properties.date.start
             if (!sDates.includes(date)) sDates.push(date)
 
-            const [products, runs, destinations, templates] = await api.notionGetRelations(shipment, ['product', 'run', 'destination', 'cartonTemplate'])
+            const [products, runs, destinations, templates] = await api.getResources(
+              shipment, 
+              ['product', 'run', 'destination', 'cartonTemplate']
+            )
             const product = products?.[0]
             const run = runs?.[0]
             const destination = destinations?.[0]

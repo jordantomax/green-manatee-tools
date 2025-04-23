@@ -4,7 +4,7 @@ import {
   getSavedTokens,
   setSavedTokens,
   removeSavedTokens
-} from '../utils/auth'
+} from '@/utils/auth'
 
 export const AuthContext = createContext({
   token: null,
