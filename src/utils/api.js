@@ -107,7 +107,7 @@ async function createFbaShipment (product) {
     cartonQty: Math.ceil(product.restock.fba/product.warehouse.cartonUnitQty) + 1
   }
 
-  return call(`notion/fba-shipment`, {
+  return call(`shipments/fba`, {
     method: 'POST',
     body: shipment
   })
