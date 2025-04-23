@@ -3,7 +3,7 @@ import isPlainObject from 'lodash/isPlainObject'
 import isArray from 'lodash/isArray'
 import { Grid, Text, Anchor } from '@mantine/core'
 
-import camelToSentenceCase from '../utils/camelToSentenceCase'
+import camelToSentenceCase from '@/utils/camelToSentenceCase'
 
 function DataList ({ obj, mask, imageMask, linkMask }) {
   return Object.entries(obj).map(([key, value], j) => {

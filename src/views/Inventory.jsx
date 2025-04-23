@@ -8,9 +8,9 @@ import {
   Group
 } from '@mantine/core'
 
-import { setLocalData, getLocalData } from '../utils/storage'
-import api from '../utils/api'
-import InventoryRestockRecs from '../components/InventoryRestockRecs'
+import { setLocalData, getLocalData } from '@/utils/storage'
+import api from '@/utils/api'
+import InventoryRestockRecs from '@/components/InventoryRestockRecs'
 
 function Inventory () {
   const [isLoading, setIsLoading] = useState(false)

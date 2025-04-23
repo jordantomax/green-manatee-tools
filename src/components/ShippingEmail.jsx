@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { Button, Modal, Text, Stack, Group, CopyButton, Box, Image, SegmentedControl, Paper, Title } from '@mantine/core'
 import { IconCopy } from '@tabler/icons-react'
 
-import api from '../utils/api'
-import { useError } from '../contexts/Error'
+import api from '@/utils/api'
+import { useError } from '@/contexts/Error'
 
 function ShippingEmail ({ shipments }) {
     const [isWritingEmail, setIsWritingEmail] = useState(false)
@@ -81,41 +81,47 @@ function ShippingEmail ({ shipments }) {
 
         for (let i = 0; i < shipments.length; i++) {
             const shipment = shipments[i]
-            const date = shipment.properties.date.date.start
+            const date = shipment.properties.date.start
             if (!sDates.includes(date)) sDates.push(date)
 
-            const [products, runs, destinations, templates] = await api.notionGetRelations(shipment, ['product', 'run', 'destination', 'cartonTemplate'])
-            const product = products?.[0]
-            const run = runs?.[0]
-            const destination = destinations?.[0]
-            const cartonTemplate = templates?.[0]
-            
-            if (product?.properties) {
-                const productImage = product.properties.image?.files?.[0]?.file?.url
-                let base64Image = null
-                if (productImage) {
-                    base64Image = await imageToBase64(productImage)
-                }
+            try {
+                const [product, run, destination, cartonTemplate] = await api.getResources(
+                  shipment, 
+                  ['product', 'run', 'destination', 'cartonTemplate']
+                )
+                
+                if (product?.properties) {
+                    const productImage = product.properties.image?.files?.[0]?.file?.url
+                    let base64Image = null
+                    if (productImage) {
+                        base64Image = await imageToBase64(productImage)
+                    }
 
-                sData.push({
-                    id: shipment.properties.id.title[0].plainText,
-                    number: shipment.properties.number.number,
-                    numCases: shipment.properties.numCartons.number,
-                    totalUnitQty: shipment.properties.units.formula.number,
-                    caseUnitQty: cartonTemplate?.properties?.unitQty?.number || 'N/A',
-                    caseGrossWeightLb: cartonTemplate?.properties?.grossWeightLb?.formula.number || 'N/A',
-                    shippingMethod: shipment.properties.method?.select?.name || 'N/A',
-                    trackingNumbers: shipment.properties.trackingNumbers?.richText?.[0]?.plainText || 'N/A',
-                    base64Image,
-                    productSku: product.properties.sku?.title?.[0]?.plainText || 'N/A',
-                    destinationName: destination?.properties?.name?.title?.[0]?.plainText || 'N/A',
-                    inStock: run?.properties?.inStock?.formula?.number || -1
-                })
+                    sData.push({
+                        id: shipment.properties.id.value,
+                        numCases: shipment.properties.numCartons.value,
+                        totalUnitQty: shipment.properties.units.value,
+                        caseUnitQty: cartonTemplate?.properties?.unitQty?.value,
+                        caseGrossWeightLb: cartonTemplate?.properties?.grossWeightLb?.value,
+                        shippingMethod: shipment.properties.method?.select?.value,
+                        trackingNumbers: shipment.properties.trackingNumbers?.value,
+                        base64Image,
+                        productSku: product.properties.sku?.value,
+                        destinationName: destination?.properties?.name?.value,
+                        inStock: run?.properties?.inStock?.value || -1
+                    })
+                }
+            } catch (error) {
+                console.error('Error processing shipment:', error)
             }
         }
-        sData.sort((a, b) => a.number < b.number ? -1 : 1 )
-        setProcessedShipments(sData)
-        setShipmentDates(sDates)
+        
+        if (sData.length > 0) {
+            setProcessedShipments(sData)
+            setShipmentDates(sDates)
+        } else {
+            throw new Error('No valid shipments found to process')
+        }
     }
 
     return (
@@ -198,7 +204,7 @@ function ShippingEmail ({ shipments }) {
                             {processedShipments.map((s, i) => (
                                 <Box key={i} mb="md">
                                     <Stack>
-                                        <Title order={4}>Shipment #{s.number}</Title>
+                                        <Title order={4}>{s.id}</Title>
                                         <Box>
                                             {s.base64Image && (
                                                 <Box mb="xs">

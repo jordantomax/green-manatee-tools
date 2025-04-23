@@ -11,7 +11,7 @@ import {
   Image
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { AuthContext } from '../contexts/Auth'
+import { AuthContext } from '@/contexts/Auth'
 
 function Auth () {
   const auth = React.useContext(AuthContext)

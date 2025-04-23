@@ -1,7 +1,7 @@
 import React from 'react'
 import { AppShell, Group, Button, Text, Stack, Image, Avatar, Menu } from '@mantine/core'
 import { Link, useLocation } from 'react-router-dom'
-import { AuthContext } from '../contexts/Auth'
+import { AuthContext } from '@/contexts/Auth'
 import { IconChevronDown, IconUserFilled } from '@tabler/icons-react'
 
 function AppNav() {
@@ -41,8 +41,8 @@ function AppNav() {
           </Button>
           <Button
             component={Link}
-            to="/inventory-recommendations"
-            variant={location.pathname === '/inventory-recommendations' ? 'light' : 'subtle'}
+            to="/inventory"
+            variant={location.pathname === '/inventory' ? 'light' : 'subtle'}
             fullWidth
             justify="start"
           >

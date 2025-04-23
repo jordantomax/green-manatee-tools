@@ -1,7 +1,7 @@
 import React from 'react'
 import { Stack, Title, Paper } from '@mantine/core'
 
-import { parcelFactory } from '../factories'
+import { parcelFactory } from '@/factories'
 import ItemGroup from './ItemGroup'
 
 function Parcels ({
