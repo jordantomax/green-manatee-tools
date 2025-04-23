@@ -16,17 +16,18 @@ function Shipments ({ children, inline = false }) {
     setIsLoading(true)
     try {
       let data = getLocalData('shipments')
-      let body = {}
-
-      if (!includeDelivered) {
-        body = {
-          filter: {
-            property: 'Delivered',
-            checkbox: {
-              equals: false
-            }
+      const body = !includeDelivered ? {
+        filter: {
+          property: 'Delivered',
+          checkbox: {
+            equals: false
           }
         }
+      } : {
+        sorts: [{
+          property: 'Delivered',
+          direction: 'ascending'
+        }]
       }
 
       if (!data || forceUpdate) {
@@ -118,10 +119,10 @@ function Shipments ({ children, inline = false }) {
                 <Table.Td>{shipment.properties?.id?.value || 'No ID'}</Table.Td>
                 <Table.Td>
                   <Badge 
-                    color={shipment.properties?.Delivered?.value ? 'green' : 'gray'}
+                    color={shipment.properties?.delivered?.value ? 'green' : 'gray'}
                     variant='light'
                   >
-                    {shipment.properties?.Delivered?.value ? 'Delivered' : 'Pending'}
+                    {shipment.properties?.delivered?.value ? 'Delivered' : 'Pending'}
                   </Badge>
                 </Table.Td>
               </Table.Tr>
