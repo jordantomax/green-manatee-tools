@@ -5,7 +5,7 @@ import { IconRefresh } from '@tabler/icons-react'
 import { setLocalData, getLocalData } from '@/utils/storage'
 import api from '@/utils/api'
 
-function NotionShipments ({ children, inline = false }) {
+function Shipments ({ children, inline = false }) {
   const [isLoading, setIsLoading] = useState(false)
   const [data, setData] = useState(null)
   const [shipments, setShipments] = useState([])
@@ -15,7 +15,7 @@ function NotionShipments ({ children, inline = false }) {
   async function getShipments (forceUpdate) {
     setIsLoading(true)
     try {
-      let data = getLocalData('notionShipments')
+      let data = getLocalData('shipments')
       let body = {}
 
       if (!includeDelivered) {
@@ -31,7 +31,7 @@ function NotionShipments ({ children, inline = false }) {
 
       if (!data || forceUpdate) {
         data = await api.queryResources('shipments', body)
-        setLocalData('notionShipments', data)
+        setLocalData('shipments', data)
       }
       setData(data)
     } catch (error) {
@@ -152,4 +152,4 @@ function NotionShipments ({ children, inline = false }) {
   )
 }
 
-export default NotionShipments
+export default Shipments

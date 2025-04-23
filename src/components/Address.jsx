@@ -13,6 +13,7 @@ function Address ({ address, name, handleChange, label }) {
 
   useEffect(() => {
     if (locations) {
+      console.log(locations)
       const newOptions = locations
         .filter(location => 
           location.properties.name.value.toLowerCase().includes(search.toLowerCase().trim())
@@ -34,7 +35,7 @@ function Address ({ address, name, handleChange, label }) {
   }, [locations, search])
 
   async function getLocations(forceUpdate = false) {
-    let locations = getLocalData('notionLocations')
+    let locations = getLocalData('locations')
     setIsLoading(true)
     if (!locations || forceUpdate) {
       locations = await api.queryResources('locations', {
@@ -43,7 +44,7 @@ function Address ({ address, name, handleChange, label }) {
       })
     }
     setIsLoading(false)
-    setLocalData('notionLocations', locations)
+    setLocalData('locations', locations)
     setLocations(locations)
   }
   

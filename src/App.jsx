@@ -2,18 +2,18 @@ import React, { useEffect } from 'react'
 import {
   AuthProvider,
   AuthContext
-} from './contexts/Auth'
+} from '@/contexts/Auth'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { MantineProvider, AppShell } from '@mantine/core'
 
-import { theme } from './utils/theme'
-import { ErrorProvider, useError } from './contexts/Error'
-import { setErrorHandler } from './utils/api'
-import Auth from './views/Auth'
-import Nav from './components/Nav'
-import Postage from './views/Postage'
-import Inventory from './views/Inventory'
-import Shipping from './views/Shipping'
+import { theme } from '@/utils/theme'
+import { ErrorProvider, useError } from '@/contexts/Error'
+import { setErrorHandler } from '@/utils/api'
+import Auth from '@/views/Auth'
+import Nav from '@/components/Nav'
+import Postage from '@/views/Postage'
+import Inventory from '@/views/Inventory'
+import Shipping from '@/views/Shipping'
 
 function AppContent() {
   const auth = React.useContext(AuthContext)

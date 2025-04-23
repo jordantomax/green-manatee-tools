@@ -19,7 +19,7 @@ import Parcels from '@/components/Parcels'
 import RateParcels from '@/components/RateParcels'
 import Rates from '@/components/Rates'
 import PurchasedRate from '@/components/PurchasedRate'
-import NotionShipments from '@/components/NotionShipments'
+import Shipments from '@/components/Shipments'
 import Customs from '@/components/Postage/Customs'
 import Hazmat from '@/components/Postage/Hazmat'
 
@@ -62,7 +62,7 @@ function Postage () {
     setPurchasedRate(rate)
   }
 
-  async function handleSelectNotionShipment (shipments) {
+  async function handleSelectShipment (shipments) {
     setIsLoadingShipment(true)
     try {
       const shipment = shipments[0]
@@ -166,7 +166,7 @@ function Postage () {
       <Grid gutter="xl">
         <Grid.Col span={{ base: 12, sm: 6 }}>
           <Box pb="md">
-            <NotionShipments>
+            <Shipments>
               {({ shipments, setOpened }) => (
                 <Button 
                   loading={isLoadingShipment}
@@ -176,7 +176,7 @@ function Postage () {
                       return
                     }
                     try {
-                      await handleSelectNotionShipment(shipments)
+                      await handleSelectShipment(shipments)
                       setOpened(false)
                     } catch (error) {
                       console.error('Error selecting shipment:', error)
@@ -184,10 +184,10 @@ function Postage () {
                   }}
                   disabled={shipments.length === 0}
                 >
-                  Select Notion Shipment
+                  Select Shipment
                 </Button>
               )}
-            </NotionShipments>
+            </Shipments>
           </Box>
 
             <form onSubmit={form.onSubmit(handleSubmit)}>
