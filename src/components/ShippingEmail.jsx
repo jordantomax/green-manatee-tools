@@ -49,7 +49,7 @@ function ShippingEmail ({ shipments }) {
         try {
             const htmlContent = processedShipments.map(s => `
                 <div style="margin-bottom: 20px;">
-                    <h3>SHIPMENT #${s.number}</h3>
+                    <h3>${s.id}</h3>
                     ${s.base64Image ? `<img src="${s.base64Image}" alt="${s.productSku}" style="max-width: 200px; margin: 10px 0;" />` : ''}
                     <p><strong>SKU:</strong> ${s.productSku}</p>
                     <p><strong>Destination:</strong> ${s.destinationName}</p>
