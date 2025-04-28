@@ -77,6 +77,7 @@ function ShippingEmail ({ shipments }) {
     async function writeEmail (shipments) {
         const sData = []
         const sDates = []
+        let hasProcessedAnyShipment = false
 
         for (let i = 0; i < shipments.length; i++) {
             const shipment = shipments[i]
@@ -84,21 +85,28 @@ function ShippingEmail ({ shipments }) {
             if (!sDates.includes(date)) sDates.push(date)
 
             try {
-                const [product, run, destination, cartonTemplate] = await api.getResources(
-                  shipment, 
-                  ['product', 'run', 'destination', 'cartonTemplate']
+                const resources = await Promise.all(
+                    ['product', 'run', 'destination', 'cartonTemplate'].map(async (prop) => {
+                        const id = shipment.properties[prop]?.id
+                        if (!id) {
+                            throw new Error(`Shipment ${shipment.properties.id.value} is missing ${prop} ID`)
+                        }
+                        return await api.getResource(prop, id)
+                    })
                 )
+                const [product, run, destination, cartonTemplate] = resources
+
+                if (!cartonTemplate) {
+                    showError(new Error(`Shipment ${shipment.properties.id.value} is missing a carton template`))
+                    continue
+                }
                 
                 if (product?.properties) {
+                    hasProcessedAnyShipment = true
                     const productImage = product.properties.image?.files?.[0]?.file?.url
                     let base64Image = null
                     if (productImage) {
                         base64Image = await imageToBase64(productImage)
-                    }
-
-                    if (!cartonTemplate) {
-                        showError(new Error(`Shipment ${shipment.properties.id.value} is missing a carton template`))
-                        continue
                     }
 
                     sData.push({
@@ -123,7 +131,7 @@ function ShippingEmail ({ shipments }) {
         if (sData.length > 0) {
             setProcessedShipments(sData)
             setShipmentDates(sDates)
-        } else {
+        } else if (hasProcessedAnyShipment) {
             showError(new Error("No valid shipments found to process"))
         }
     }

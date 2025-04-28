@@ -16,6 +16,9 @@ function ShippingManifest({ shipments }) {
       const [run, product, cartonTemplate] = await Promise.all(
         ['run', 'product', 'cartonTemplate'].map(async (prop) => {
           const id = shipment.properties[prop]?.id
+          if (!id) {
+            throw new Error(`Shipment ${shipment.properties.id.value} is missing ${prop} ID`)
+          }
           return await api.getResource(prop, id)
         })
       )
