@@ -23,7 +23,7 @@ function ShippingEmail ({ shipments }) {
     useEffect(() => {
         if (inboundOutbound === 'outbound') {
             if (processedShipments.find(s => s.inStock < 0)) {
-                showError(new Error('Not enough inventory for some shipments'))
+                showError("Not enough inventory for some shipments")
             }
         }
     }, [inboundOutbound, processedShipments])
@@ -39,7 +39,7 @@ function ShippingEmail ({ shipments }) {
                 reader.readAsDataURL(blob)
             })
         } catch (error) {
-            console.error('Error converting image to base64:', error)
+            showError("Error converting image to base64: " + error)
             return null
         }
     }
@@ -68,8 +68,7 @@ function ShippingEmail ({ shipments }) {
             setIsCopied(true)
             setTimeout(() => setIsCopied(false), 1000)
         } catch (error) {
-            console.error('Error copying to clipboard:', error)
-            alert('Failed to copy to clipboard. Please try again.')
+            showError("Error copying to clipboard: " + error)
         } finally {
             setIsCopying(false)
         }
@@ -97,10 +96,15 @@ function ShippingEmail ({ shipments }) {
                         base64Image = await imageToBase64(productImage)
                     }
 
+                    if (!cartonTemplate) {
+                        showError(`Shipment ${shipment.properties.id.value} is missing a carton template`)
+                        continue
+                    }
+
                     sData.push({
                         id: shipment.properties.id.value,
                         numCases: shipment.properties.numCartons.value,
-                        totalUnitQty: shipment.properties.units.value,
+                        totalUnitQty: shipment.properties.flowUnits.value,
                         caseUnitQty: cartonTemplate?.properties?.unitQty?.value,
                         caseGrossWeightLb: cartonTemplate?.properties?.grossWeightLb?.value,
                         shippingMethod: shipment.properties.method?.select?.value,
@@ -112,7 +116,7 @@ function ShippingEmail ({ shipments }) {
                     })
                 }
             } catch (error) {
-                console.error('Error processing shipment:', error)
+                showError("Error processing shipment: " + error)
             }
         }
         
@@ -120,7 +124,7 @@ function ShippingEmail ({ shipments }) {
             setProcessedShipments(sData)
             setShipmentDates(sDates)
         } else {
-            throw new Error('No valid shipments found to process')
+            showError("No valid shipments found to process")
         }
     }
 
@@ -136,7 +140,7 @@ function ShippingEmail ({ shipments }) {
                     await writeEmail(shipments)
                     setModalOpened(true)
                 } catch (error) {
-                    alert('Error writing email: ' + error.message)
+                    showError("Error writing email: " + error)
                 } finally {
                     setIsWritingEmail(false)
                 }
