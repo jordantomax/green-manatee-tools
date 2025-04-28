@@ -20,12 +20,12 @@ function ShippingManifest({ shipments }) {
         })
       )
       if (!cartonTemplate) {
-        showError("Shipment has no carton template. Carton templates are required to generate manifest weight and dimensions.")
+        showError(new Error("Shipment has no carton template. Carton templates are required to generate manifest weight and dimensions."))
         return
       }
 
       if (!run) {
-        showError("Shipment has no production run. If this was intentional, disregard this message.")
+        showError(new Error("Shipment has no production run. If this was intentional, disregard this message."))
       }
 
       const exp = run?.properties?.exp?.start

@@ -23,7 +23,7 @@ function ShippingEmail ({ shipments }) {
     useEffect(() => {
         if (inboundOutbound === 'outbound') {
             if (processedShipments.find(s => s.inStock < 0)) {
-                showError("Not enough inventory for some shipments")
+                showError(new Error("Not enough inventory for some shipments"))
             }
         }
     }, [inboundOutbound, processedShipments])
@@ -39,7 +39,7 @@ function ShippingEmail ({ shipments }) {
                 reader.readAsDataURL(blob)
             })
         } catch (error) {
-            showError("Error converting image to base64: " + error)
+            showError(new Error("Error converting image to base64: " + error))
             return null
         }
     }
@@ -68,7 +68,7 @@ function ShippingEmail ({ shipments }) {
             setIsCopied(true)
             setTimeout(() => setIsCopied(false), 1000)
         } catch (error) {
-            showError("Error copying to clipboard: " + error)
+            showError(new Error("Error copying to clipboard: " + error))
         } finally {
             setIsCopying(false)
         }
@@ -97,7 +97,7 @@ function ShippingEmail ({ shipments }) {
                     }
 
                     if (!cartonTemplate) {
-                        showError(`Shipment ${shipment.properties.id.value} is missing a carton template`)
+                        showError(new Error(`Shipment ${shipment.properties.id.value} is missing a carton template`))
                         continue
                     }
 
@@ -116,7 +116,7 @@ function ShippingEmail ({ shipments }) {
                     })
                 }
             } catch (error) {
-                showError("Error processing shipment: " + error)
+                showError(new Error("Error processing shipment: " + error))
             }
         }
         
@@ -124,7 +124,7 @@ function ShippingEmail ({ shipments }) {
             setProcessedShipments(sData)
             setShipmentDates(sDates)
         } else {
-            showError("No valid shipments found to process")
+            showError(new Error("No valid shipments found to process"))
         }
     }
 
@@ -140,7 +140,7 @@ function ShippingEmail ({ shipments }) {
                     await writeEmail(shipments)
                     setModalOpened(true)
                 } catch (error) {
-                    showError("Error writing email: " + error)
+                    showError(new Error("Error writing email: " + error))
                 } finally {
                     setIsWritingEmail(false)
                 }
