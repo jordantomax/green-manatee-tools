@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { Button } from '@mantine/core'
 
 import api from '@/utils/api'
+import { useError } from '@/contexts/Error'
 
 function ShippingManifest({ shipments }) {
   const [ isCreatingManifest, setIsCreatingManifest ] = useState(false)
+  const { showError } = useError()
 
   async function createManifest (shipments) {
     const shipmentsMassaged = []
@@ -14,16 +16,19 @@ function ShippingManifest({ shipments }) {
       const [run, product, cartonTemplate] = await Promise.all(
         ['run', 'product', 'cartonTemplate'].map(async (prop) => {
           const id = shipment.properties[prop]?.id
+          if (!id) {
+            throw new Error(`Shipment ${shipment.properties.id.value} is missing ${prop} ID`)
+          }
           return await api.getResource(prop, id)
         })
       )
       if (!cartonTemplate) {
-        alert("Shipment has no carton template. Carton templates are required to generate manifest weight and dimensions.")
+        showError(new Error("Shipment has no carton template. Carton templates are required to generate manifest weight and dimensions."))
         return
       }
 
       if (!run) {
-        console.warn("Shipment has no production run. If this was intentional, disregard this message.")
+        showError(new Error("Shipment has no production run. If this was intentional, disregard this message."))
       }
 
       const exp = run?.properties?.exp?.start
@@ -31,7 +36,7 @@ function ShippingManifest({ shipments }) {
       const massagedExp = exp ? `${exp.slice(5, 7)}/${exp.slice(8, 10)}/${exp.slice(0, 4)}` : null
 
       shipmentsMassaged.push({
-        totalUnits: shipment.properties.units.value,
+        totalUnits: shipment.properties.flowUnits.value,
         numCartons: shipment.properties.numCartons.value,
         sku: product.properties.sku.value,
         cartonWeight: cartonTemplate.properties.grossWeightLb.value,
@@ -55,7 +60,7 @@ function ShippingManifest({ shipments }) {
         try {
           await createManifest(shipments)
         } catch (error) {
-          console.error('Error selecting shipments:', error)
+          showError(error)
         } finally {
           setIsCreatingManifest(false)
         }

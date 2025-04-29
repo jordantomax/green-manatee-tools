@@ -23,7 +23,7 @@ function ShippingEmail ({ shipments }) {
     useEffect(() => {
         if (inboundOutbound === 'outbound') {
             if (processedShipments.find(s => s.inStock < 0)) {
-                showError(new Error('Not enough inventory for some shipments'))
+                showError(new Error("Not enough inventory for some shipments"))
             }
         }
     }, [inboundOutbound, processedShipments])
@@ -39,7 +39,7 @@ function ShippingEmail ({ shipments }) {
                 reader.readAsDataURL(blob)
             })
         } catch (error) {
-            console.error('Error converting image to base64:', error)
+            showError(new Error("Error converting image to base64: " + error))
             return null
         }
     }
@@ -68,8 +68,7 @@ function ShippingEmail ({ shipments }) {
             setIsCopied(true)
             setTimeout(() => setIsCopied(false), 1000)
         } catch (error) {
-            console.error('Error copying to clipboard:', error)
-            alert('Failed to copy to clipboard. Please try again.')
+            showError(new Error("Error copying to clipboard: " + error))
         } finally {
             setIsCopying(false)
         }
@@ -78,6 +77,7 @@ function ShippingEmail ({ shipments }) {
     async function writeEmail (shipments) {
         const sData = []
         const sDates = []
+        let hasProcessedAnyShipment = false
 
         for (let i = 0; i < shipments.length; i++) {
             const shipment = shipments[i]
@@ -85,12 +85,24 @@ function ShippingEmail ({ shipments }) {
             if (!sDates.includes(date)) sDates.push(date)
 
             try {
-                const [product, run, destination, cartonTemplate] = await api.getResources(
-                  shipment, 
-                  ['product', 'run', 'destination', 'cartonTemplate']
+                const resources = await Promise.all(
+                    ['product', 'run', 'destination', 'cartonTemplate'].map(async (prop) => {
+                        const id = shipment.properties[prop]?.id
+                        if (!id) {
+                            throw new Error(`Shipment ${shipment.properties.id.value} is missing ${prop} ID`)
+                        }
+                        return await api.getResource(prop, id)
+                    })
                 )
+                const [product, run, destination, cartonTemplate] = resources
+
+                if (!cartonTemplate) {
+                    showError(new Error(`Shipment ${shipment.properties.id.value} is missing a carton template`))
+                    continue
+                }
                 
                 if (product?.properties) {
+                    hasProcessedAnyShipment = true
                     const productImage = product.properties.image?.files?.[0]?.file?.url
                     let base64Image = null
                     if (productImage) {
@@ -100,7 +112,7 @@ function ShippingEmail ({ shipments }) {
                     sData.push({
                         id: shipment.properties.id.value,
                         numCases: shipment.properties.numCartons.value,
-                        totalUnitQty: shipment.properties.units.value,
+                        totalUnitQty: shipment.properties.flowUnits.value,
                         caseUnitQty: cartonTemplate?.properties?.unitQty?.value,
                         caseGrossWeightLb: cartonTemplate?.properties?.grossWeightLb?.value,
                         shippingMethod: shipment.properties.method?.select?.value,
@@ -112,15 +124,15 @@ function ShippingEmail ({ shipments }) {
                     })
                 }
             } catch (error) {
-                console.error('Error processing shipment:', error)
+                showError(new Error("Error processing shipment: " + error))
             }
         }
         
         if (sData.length > 0) {
             setProcessedShipments(sData)
             setShipmentDates(sDates)
-        } else {
-            throw new Error('No valid shipments found to process')
+        } else if (hasProcessedAnyShipment) {
+            showError(new Error("No valid shipments found to process"))
         }
     }
 
@@ -136,7 +148,7 @@ function ShippingEmail ({ shipments }) {
                     await writeEmail(shipments)
                     setModalOpened(true)
                 } catch (error) {
-                    alert('Error writing email: ' + error.message)
+                    showError(new Error("Error writing email: " + error))
                 } finally {
                     setIsWritingEmail(false)
                 }

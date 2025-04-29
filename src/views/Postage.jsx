@@ -11,6 +11,7 @@ import {
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 
+import { useError } from '@/contexts/Error'
 import api from '@/utils/api'
 import { setLocalData, getLocalData } from '@/utils/storage'
 import { addressFactory, parcelFactory, customsFactory } from '@/factories'
@@ -30,6 +31,7 @@ function Postage () {
   const [isLoadingRates, setIsLoadingRates] = useState(false)
   const [isLoadingShipment, setIsLoadingShipment] = useState(false)
   const savedInput = getLocalData('input') || {}
+  const { showError } = useError()
 
   const form = useForm({
     initialValues: {
@@ -66,6 +68,20 @@ function Postage () {
     setIsLoadingShipment(true)
     try {
       const shipment = shipments[0]
+
+      if (!shipment.properties.origin) {
+        showError(new Error("No shipments found"))
+        return
+      }
+      if (!shipment.properties.destination) {
+        showError(new Error("No destination found"))
+        return
+      }
+      if (!shipment.properties.cartonTemplate) {
+        showError(new Error("No carton template found"))
+        return
+      }
+
       const origin = await api.getResource('origin', shipment.properties.origin.id)
       const destination = await api.getResource('destination', shipment.properties.destination.id)
       const cartonTemplate = await api.getResource('cartonTemplate', shipment.properties.cartonTemplate.id)
