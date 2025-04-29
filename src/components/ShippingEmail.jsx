@@ -89,18 +89,13 @@ function ShippingEmail ({ shipments }) {
                     ['product', 'run', 'destination', 'cartonTemplate'].map(async (prop) => {
                         const id = shipment.properties[prop]?.id
                         if (!id) {
-                            throw new Error(`Shipment ${shipment.properties.id.value} is missing ${prop} ID`)
+                            return null
                         }
                         return await api.getResource(prop, id)
                     })
                 )
                 const [product, run, destination, cartonTemplate] = resources
 
-                if (!cartonTemplate) {
-                    showError(new Error(`Shipment ${shipment.properties.id.value} is missing a carton template`))
-                    continue
-                }
-                
                 if (product?.properties) {
                     hasProcessedAnyShipment = true
                     const productImage = product.properties.image?.files?.[0]?.file?.url
