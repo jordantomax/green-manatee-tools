@@ -98,7 +98,6 @@ function ShippingEmail ({ shipments }) {
 
                 if (!cartonTemplate) {
                     showError(new Error(`Shipment ${shipment.properties.id.value} is missing a carton template`))
-                    continue
                 }
                 
                 if (product?.properties) {
