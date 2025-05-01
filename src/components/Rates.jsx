@@ -60,7 +60,7 @@ function Rates ({ rates, setPurchasedRate }) {
                         </Group>
                         <Group>
                           <Text size="sm" fw={500} w={100}>Attributes:</Text>
-                          <Text size="sm">{rate.attributes}</Text>
+                          <Text size="sm">{rate.attributes.join(', ')}</Text>
                         </Group>
                         <Group>
                           <Text size="sm" fw={500} w={100}>Provider:</Text>
