@@ -36,7 +36,7 @@ function ShippingManifest({ shipments }) {
       const massagedExp = exp ? `${exp.slice(5, 7)}/${exp.slice(8, 10)}/${exp.slice(0, 4)}` : null
 
       shipmentsMassaged.push({
-        totalUnits: shipment.properties.flowUnits.value,
+        totalUnits: shipment.properties.units.value,
         numCartons: shipment.properties.numCartons.value,
         sku: product.properties.sku.value,
         cartonWeight: cartonTemplate.properties.grossWeightLb.value,

@@ -107,7 +107,7 @@ function ShippingEmail ({ shipments }) {
                     sData.push({
                         id: shipment.properties.id.value,
                         numCases: shipment.properties.numCartons.value,
-                        totalUnitQty: shipment.properties.flowUnits.value,
+                        totalUnitQty: shipment.properties.units.value,
                         caseUnitQty: cartonTemplate?.properties?.unitQty?.value,
                         caseGrossWeightLb: cartonTemplate?.properties?.grossWeightLb?.value,
                         shippingMethod: shipment.properties.method?.select?.value,
