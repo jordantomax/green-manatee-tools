@@ -10,7 +10,10 @@ function PurchasedRate ({ rate }) {
   const rateId = React.useRef(null)
 
   React.useEffect(() => {
-    if (!rate?.rate || rateId.current === rate.rate) return
+    const newRateId = rate?.rate
+
+    if (!newRateId) return setLabels([])
+    if (rateId.current === newRateId) return
 
     rateId.current = rate.rate
     api.shippoGetLabels(rateId.current)
