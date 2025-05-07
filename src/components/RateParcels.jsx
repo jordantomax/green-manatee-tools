@@ -1,8 +1,8 @@
 import React from 'react'
 import { Title, Paper, Text, Stack, Box } from '@mantine/core'
 
-import { rateParcelMask } from '../utils/dataMasks'
-import DataList from '../components/DataList'
+import { rateParcelMask } from '@/utils/dataMasks'
+import DataList from '@/components/DataList'
 
 function RateParcels ({ parcels }) {
   return (

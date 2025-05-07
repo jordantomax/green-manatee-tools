@@ -12,6 +12,12 @@ export default defineConfig(() => {
     plugins: [react()],
     server: {
       port: 4000
-    }
+    },
+    resolve: {
+      alias: {
+        '@': '/src',
+        '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs'
+      },
+    },
   }
 })

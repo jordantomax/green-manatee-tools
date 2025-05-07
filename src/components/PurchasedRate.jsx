@@ -2,7 +2,7 @@ import React from 'react'
 import { Paper, Title, Stack, Button, Text, Group, Card } from '@mantine/core'
 import { IconDownload } from '@tabler/icons-react'
 
-import api from '../utils/api'
+import api from '@/utils/api'
 
 function PurchasedRate ({ rate }) {
   const [labels, setLabels] = React.useState([])
@@ -10,7 +10,10 @@ function PurchasedRate ({ rate }) {
   const rateId = React.useRef(null)
 
   React.useEffect(() => {
-    if (!rate?.rate || rateId.current === rate.rate) return
+    const newRateId = rate?.rate
+
+    if (!newRateId) return setLabels([])
+    if (rateId.current === newRateId) return
 
     rateId.current = rate.rate
     api.shippoGetLabels(rateId.current)

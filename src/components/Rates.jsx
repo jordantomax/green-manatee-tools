@@ -2,7 +2,7 @@ import React from 'react'
 import { Paper, Stack, Button, Text, Title, Group, Image } from '@mantine/core'
 import { useForm } from '@mantine/form'
 
-import api from '../utils/api'
+import api from '@/utils/api'
 
 function Rates ({ rates, setPurchasedRate }) {
   const [isLoading, setIsLoading] = React.useState(false)
@@ -60,7 +60,7 @@ function Rates ({ rates, setPurchasedRate }) {
                         </Group>
                         <Group>
                           <Text size="sm" fw={500} w={100}>Attributes:</Text>
-                          <Text size="sm">{rate.attributes}</Text>
+                          <Text size="sm">{rate.attributes.join(', ')}</Text>
                         </Group>
                         <Group>
                           <Text size="sm" fw={500} w={100}>Provider:</Text>

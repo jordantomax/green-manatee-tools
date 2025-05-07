@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Button, Modal, Text, Stack, Group, CopyButton, Box, Image, SegmentedControl, Paper, Title } from '@mantine/core'
 import { IconCopy } from '@tabler/icons-react'
-import api from '../utils/api'
+
+import api from '@/utils/api'
+import { useError } from '@/contexts/Error'
 
 function ShippingEmail ({ shipments }) {
     const [isWritingEmail, setIsWritingEmail] = useState(false)
@@ -9,13 +11,22 @@ function ShippingEmail ({ shipments }) {
     const [processedShipments, setProcessedShipments] = useState([])
     const [shipmentDates, setShipmentDates] = useState([])
     const [modalOpened, setModalOpened] = useState(false)
-    const [emailType, setEmailType] = useState('outbound')
+    const [inboundOutbound, setInboundOutbound] = useState('outbound')
     const [isCopying, setIsCopying] = useState(false)
     const [isCopied, setIsCopied] = useState(false)
-    
+    const { showError } = useError()
+
     useEffect(() => {
-        setSubject(`${emailType.toUpperCase()}: ${shipmentDates.map(d => `PO-${d}`).join(', ')}`)
-    }, [emailType, shipmentDates])
+        setSubject(`${inboundOutbound.toUpperCase()}: ${shipmentDates.map(d => `PO-${d}`).join(', ')}`)
+    }, [inboundOutbound, shipmentDates])
+
+    useEffect(() => {
+        if (inboundOutbound === 'outbound') {
+            if (processedShipments.find(s => s.inStock < 0)) {
+                showError(new Error("Not enough inventory for some shipments"))
+            }
+        }
+    }, [inboundOutbound, processedShipments])
 
     const imageToBase64 = async (imageUrl) => {
         try {
@@ -28,7 +39,7 @@ function ShippingEmail ({ shipments }) {
                 reader.readAsDataURL(blob)
             })
         } catch (error) {
-            console.error('Error converting image to base64:', error)
+            showError(new Error("Error converting image to base64: " + error))
             return null
         }
     }
@@ -38,7 +49,7 @@ function ShippingEmail ({ shipments }) {
         try {
             const htmlContent = processedShipments.map(s => `
                 <div style="margin-bottom: 20px;">
-                    <h3>SHIPMENT #${s.number}</h3>
+                    <h3>${s.id}</h3>
                     ${s.base64Image ? `<img src="${s.base64Image}" alt="${s.productSku}" style="max-width: 200px; margin: 10px 0;" />` : ''}
                     <p><strong>SKU:</strong> ${s.productSku}</p>
                     <p><strong>Destination:</strong> ${s.destinationName}</p>
@@ -57,8 +68,7 @@ function ShippingEmail ({ shipments }) {
             setIsCopied(true)
             setTimeout(() => setIsCopied(false), 1000)
         } catch (error) {
-            console.error('Error copying to clipboard:', error)
-            alert('Failed to copy to clipboard. Please try again.')
+            showError(new Error("Error copying to clipboard: " + error))
         } finally {
             setIsCopying(false)
         }
@@ -67,43 +77,58 @@ function ShippingEmail ({ shipments }) {
     async function writeEmail (shipments) {
         const sData = []
         const sDates = []
+        let hasProcessedAnyShipment = false
 
         for (let i = 0; i < shipments.length; i++) {
             const shipment = shipments[i]
-            const date = shipment.properties.date.date.start
+            const date = shipment.properties.date.start
             if (!sDates.includes(date)) sDates.push(date)
 
-            const [product, destination, cartonTemplate] = await api.notionGetRelations(shipment, ['product', 'destination', 'cartonTemplate'])
-            const d = destination ? destination[0] ? destination[0] : null : null
-            const ct = cartonTemplate ? cartonTemplate[0] ? cartonTemplate[0] : null : null
+            try {
+                const resources = await Promise.all(
+                    ['product', 'run', 'destination', 'cartonTemplate'].map(async (prop) => {
+                        const id = shipment.properties[prop]?.id
+                        if (!id) {
+                            return null
+                        }
+                        return await api.getResource(prop, id)
+                    })
+                )
+                const [product, run, destination, cartonTemplate] = resources
 
-            for (const p of product) {
-                if (p && p.properties) {
-                    const productImage = p.properties.image?.files?.[0]?.file?.url
+                if (product?.properties) {
+                    hasProcessedAnyShipment = true
+                    const productImage = product.properties.image?.files?.[0]?.file?.url
                     let base64Image = null
                     if (productImage) {
                         base64Image = await imageToBase64(productImage)
                     }
-                    console.log(ct)
+
                     sData.push({
-                        id: shipment.properties.id.title[0].plainText,
-                        number: shipment.properties.number.number,
-                        numCases: shipment.properties.numCartons.number,
-                        totalUnitQty: shipment.properties.units.formula.number,
-                        caseUnitQty: ct?.properties?.unitQty?.number || 'N/A',
-                        caseGrossWeightLb: ct?.properties?.grossWeightLb?.formula.number || 'N/A',
-                        shippingMethod: shipment.properties.method?.select?.name || 'N/A',
-                        trackingNumbers: shipment.properties.trackingNumbers?.richText?.[0]?.plainText || 'N/A',
+                        id: shipment.properties.id.value,
+                        numCases: shipment.properties.numCartons.value,
+                        totalUnitQty: shipment.properties.units.value,
+                        caseUnitQty: cartonTemplate?.properties?.unitQty?.value,
+                        caseGrossWeightLb: cartonTemplate?.properties?.grossWeightLb?.value,
+                        shippingMethod: shipment.properties.method?.select?.value,
+                        trackingNumbers: shipment.properties.trackingNumbers?.value,
                         base64Image,
-                        productSku: p.properties.sku?.title?.[0]?.plainText || 'N/A',
-                        destinationName: d?.properties?.name?.title?.[0]?.plainText || 'N/A'
+                        productSku: product.properties.sku?.value,
+                        destinationName: destination?.properties?.name?.value,
+                        inStock: run?.properties?.inStock?.value || -1
                     })
                 }
+            } catch (error) {
+                showError(new Error("Error processing shipment: " + error))
             }
         }
-        sData.sort((a, b) => a.number < b.number ? -1 : 1 )
-        setProcessedShipments(sData)
-        setShipmentDates(sDates)
+        
+        if (sData.length > 0) {
+            setProcessedShipments(sData)
+            setShipmentDates(sDates)
+        } else if (hasProcessedAnyShipment) {
+            showError(new Error("No valid shipments found to process"))
+        }
     }
 
     return (
@@ -118,7 +143,7 @@ function ShippingEmail ({ shipments }) {
                     await writeEmail(shipments)
                     setModalOpened(true)
                 } catch (error) {
-                    alert('Error writing email: ' + error.message)
+                    showError(new Error("Error writing email: " + error))
                 } finally {
                     setIsWritingEmail(false)
                 }
@@ -135,9 +160,9 @@ function ShippingEmail ({ shipments }) {
         >
             <Stack gap="lg">
                 <SegmentedControl
-                    value={emailType}
+                    value={inboundOutbound}
                     onChange={(value) => {
-                        setEmailType(value)
+                    setInboundOutbound(value)
                     }}
                     data={[
                         { label: 'Outbound', value: 'outbound' },
@@ -186,7 +211,7 @@ function ShippingEmail ({ shipments }) {
                             {processedShipments.map((s, i) => (
                                 <Box key={i} mb="md">
                                     <Stack>
-                                        <Title order={4}>Shipment #{s.number}</Title>
+                                        <Title order={4}>{s.id}</Title>
                                         <Box>
                                             {s.base64Image && (
                                                 <Box mb="xs">

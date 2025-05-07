@@ -1,16 +1,17 @@
+import React from 'react'
 import { useState } from 'react'
 import {
   Card,
   Text,
   Button,
-  Badge,
   Title,
   Table,
   Box
 } from '@mantine/core'
 import { IconChevronRight } from '@tabler/icons-react'
 
-import api from '../utils/api'
+import api from '@/utils/api'
+import { useError } from '@/contexts/Error'
 
 function Sales ({ sales }) {
   return sales.map((period, i) => {
@@ -23,10 +24,17 @@ function Sales ({ sales }) {
 
 function InventoryProductCard ({ product }) {
   const [isLoading, setIsLoading] = useState(false)
+  const { showError } = useError()
+
   async function createFbaShipment () {
     setIsLoading(true)
-    await api.createFbaShipments([product])
-    setIsLoading(false)
+    try {
+      await api.createFbaShipment(product)
+    } catch (error) {
+      showError(error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

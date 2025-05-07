@@ -2,45 +2,38 @@ import React, { useState } from 'react'
 import {
   Container,
   Button,
-  Alert,
   Badge,
   Title,
   Stack,
   Group
 } from '@mantine/core'
 
-import { setLocalData, getLocalData } from '../utils/storage'
-import api from '../utils/api'
-import InventoryRestockRecs from '../components/InventoryRestockRecs'
-import InventoryCreateFbaShipments from '../components/InventoryCreateFbaShipments'
+import { setLocalData, getLocalData } from '@/utils/storage'
+import api from '@/utils/api'
+import InventoryRestockRecs from '@/components/InventoryRestockRecs'
 
 function Inventory () {
   const [isLoading, setIsLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState(null)
   const [data, setData] = useState(getLocalData('inventoryRecs'))
   const [datetime, setDatetime] = useState(new Date(getLocalData('inventoryRecsDatetime')))
 
   async function getRecommendations () {
-    if (errorMessage) setErrorMessage(null)
     setIsLoading(true)
-    const data = await api.getRecs()
-    setIsLoading(false)
-    setLocalData('inventoryRecs', data)
-    setData(data)
-    const date = new Date()
-    setLocalData('inventoryRecsDatetime', date)
-    setDatetime(date)
+    try {
+      const data = await api.getRecs()
+      setLocalData('inventoryRecs', data)
+      setData(data)
+      const date = new Date()
+      setLocalData('inventoryRecsDatetime', date)
+      setDatetime(date)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
     <Container size="md" py="xl">
       <Stack spacing="xl">
-        {errorMessage && (
-          <Alert color="red" title="Error">
-            {errorMessage}
-          </Alert>
-        )}
-
         <Title order={2}>Inventory Manager</Title>
 
         <Group>
@@ -50,8 +43,6 @@ function Inventory () {
           >
             Get Recommendations
           </Button>
-
-          <InventoryCreateFbaShipments restock={data && data.restockNeeded} />
         </Group>
 
         {data ? (
