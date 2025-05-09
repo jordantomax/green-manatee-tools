@@ -157,6 +157,25 @@ async function mergePdfs (body) {
   return res
 }
 
+async function getAdsReports() {
+  return call('amazon/ads/reports', {
+    method: 'GET'
+  })
+}
+
+async function getAdsReport(reportId) {
+  return call(`amazon/ads/report/${reportId}`, {
+    method: 'GET'
+  })
+}
+
+async function createAdsReport(reportType) {
+  return call('amazon/ads/reports', {
+    method: 'POST',
+    body: { reportType }
+  })
+}
+
 const api = {
   queryResources,
   getResource,
@@ -167,7 +186,10 @@ const api = {
   shippoGetRates,
   shippoPurchaseLabel,
   shippoGetLabels,
-  mergePdfs
+  mergePdfs,
+  getAdsReports,
+  createAdsReport,
+  getAdsReport
 }
 
 export default api

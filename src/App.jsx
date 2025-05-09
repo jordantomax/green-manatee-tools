@@ -14,6 +14,7 @@ import Nav from '@/components/Nav'
 import Postage from '@/views/Postage'
 import Inventory from '@/views/Inventory'
 import Shipping from '@/views/Shipping'
+import Ads from '@/views/Ads'
 
 function AppContent() {
   const auth = React.useContext(AuthContext)
@@ -49,6 +50,7 @@ function AppContent() {
           <Route path='postage' element={<Postage />} />
           <Route path='shipping' element={<Shipping />} />
           <Route path='inventory' element={<Inventory />} />
+          <Route path='ads' element={<Ads />} />
         </Routes>
       </AppShell.Main>
     </AppShell>

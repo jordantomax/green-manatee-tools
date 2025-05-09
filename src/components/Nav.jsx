@@ -48,6 +48,15 @@ function AppNav() {
           >
             Inventory
           </Button>
+          <Button
+            component={Link}
+            to="/ads"
+            variant={location.pathname === '/ads' ? 'light' : 'subtle'}
+            fullWidth
+            justify="start"
+          >
+            Ads
+          </Button>
         </Stack>
 
         <Stack gap="xs">
