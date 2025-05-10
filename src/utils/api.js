@@ -59,9 +59,7 @@ async function call (path, _options = {}) {
     
     return data
   } catch (error) {
-    if (errorHandler && !error.status) {
-      errorHandler(error)
-    }
+    if (errorHandler) errorHandler(error)
     throw error
   }
 }
@@ -164,15 +162,15 @@ async function getAdsReports() {
 }
 
 async function getAdsReport(reportId) {
-  return call(`amazon/ads/report/${reportId}`, {
+  return call(`amazon/ads/reports/${reportId}`, {
     method: 'GET'
   })
 }
 
-async function createAdsReport(reportType) {
+async function createAdsReport(body) {
   return call('amazon/ads/reports', {
     method: 'POST',
-    body: { reportType }
+    body
   })
 }
 
