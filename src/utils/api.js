@@ -167,10 +167,22 @@ async function getAdsReport(reportId) {
   })
 }
 
+async function getTaggedAdsReport(reportId) {
+  return call(`amazon/ads/reports/${reportId}/tags`, {
+    method: 'GET'
+  })
+}
+
 async function createAdsReport(body) {
   return call('amazon/ads/reports', {
     method: 'POST',
     body
+  })
+}
+
+async function deleteAdsReport(reportId) {
+  return call(`amazon/ads/reports/${reportId}`, {
+    method: 'DELETE'
   })
 }
 
@@ -187,7 +199,9 @@ const api = {
   mergePdfs,
   getAdsReports,
   createAdsReport,
-  getAdsReport
+  getAdsReport,
+  getTaggedAdsReport,
+  deleteAdsReport
 }
 
 export default api

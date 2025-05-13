@@ -1,40 +1,18 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Title, Paper, Select, Button, Stack, Group, Text, Table } from '@mantine/core'
-import { DateInput } from '@mantine/dates'
-import { useForm } from '@mantine/form'
-import { IconRefresh } from '@tabler/icons-react'
+import { Container, Title, Paper, Button, Stack, Group, Text, Table, Menu, Modal } from '@mantine/core'
+import { IconRefresh, IconDotsVertical, IconTrash, IconPlus } from '@tabler/icons-react'
 import api from '@/utils/api'
+import CreateReport from '@/components/amazon/CreateReport'
 
 function Ads() {
   const [isLoading, setIsLoading] = useState(false)
   const [reports, setReports] = useState([])
   const [loadingReports, setLoadingReports] = useState({})
+  const [createModalOpen, setCreateModalOpen] = useState(false)
 
   useEffect(() => {
     handleRefreshReports()
   }, [])
-
-  const yesterday = new Date()
-  yesterday.setDate(yesterday.getDate() - 1)
-  const yesterdayStr = yesterday.toISOString().split('T')[0]
-
-  const oneMonthAgo = new Date()
-  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
-  oneMonthAgo.setDate(oneMonthAgo.getDate() - 1)
-  const oneMonthAgoStr = oneMonthAgo.toISOString().split('T')[0]
-
-  const form = useForm({
-    initialValues: {
-      reportType: '',
-      startDate: oneMonthAgoStr,
-      endDate: yesterdayStr
-    },
-    validate: {
-      reportType: (value) => (!value ? 'Report type is required' : null),
-      startDate: (value) => (!value ? 'Start date is required' : null),
-      endDate: (value) => (!value ? 'End date is required' : null)
-    }
-  })
 
   const handleRefreshReports = async () => {
     setIsLoading(true)
@@ -43,22 +21,31 @@ function Ads() {
     setIsLoading(false)
   }
 
-  const handleCreateReport = async (values) => {
-    setIsLoading(true)
-    await api.createAdsReport(values)
-    await handleRefreshReports()
-    setIsLoading(false)
-  }
-
   const handleGetReport = async (report) => {
     setLoadingReports(prev => ({ ...prev, [report.id]: true }))
     try {
       const updatedReport = await api.getAdsReport(report.id)
-      console.log('Original report:', report)
-      console.log('Updated report:', updatedReport)
       setReports(prev => prev.map(r => r.id === report.id ? updatedReport : r))
+      console.log('Updated report:', updatedReport)
     } finally {
       setLoadingReports(prev => ({ ...prev, [report.id]: false }))
+    }
+  }
+  
+  const handleGetTaggedReport = async (report) => {
+    const tagged = await api.getTaggedAdsReport(report.id)
+    console.log('Tagged:', tagged.result)
+  }
+
+  const handleDeleteReport = async (report) => {
+    if (window.confirm('Are you sure you want to delete this report?')) {
+      setIsLoading(true)
+      try {
+        await api.deleteAdsReport(report.id)
+        await handleRefreshReports()
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -68,51 +55,33 @@ function Ads() {
         <Stack gap="md">
           <Group justify="space-between">
             <Title order={2}>Ads Reports</Title>
-            <Button
-              variant="light"
-              onClick={handleRefreshReports}
-              loading={isLoading}
-              leftSection={<IconRefresh size={16} />}
-            >
-              Refresh
-            </Button>
+            <Group>
+              <Button
+                variant="light"
+                onClick={() => setCreateModalOpen(true)}
+                leftSection={<IconPlus size={16} />}
+              >
+                Create Report
+              </Button>
+              <Button
+                variant="light"
+                onClick={handleRefreshReports}
+                loading={isLoading}
+                leftSection={<IconRefresh size={16} />}
+              >
+                Refresh
+              </Button>
+            </Group>
           </Group>
 
-          <form onSubmit={form.onSubmit(handleCreateReport)}>
-            <Stack gap="md">
-              <Group align="flex-end">
-                <Select
-                  label="Report Type"
-                  placeholder="Select a report type"
-                  data={[
-                    { value: "spSearchTerm", label: "Sp Search Term" },
-                    { value: "spAdvertisedProduct", label: "Sp Advertised Product" }
-                  ]}
-                  style={{ width: 300 }}
-                  {...form.getInputProps('reportType')}
-                />
-                <DateInput
-                  label="Start Date"
-                  placeholder="Pick a date"
-                  style={{ width: 150 }}
-                  valueFormat="YYYY-MM-DD"
-                  value={form.values.startDate}
-                  onChange={(value) => form.setFieldValue('startDate', value)}
-                />
-                <DateInput
-                  label="End Date"
-                  placeholder="Pick a date"
-                  style={{ width: 150 }}
-                  valueFormat="YYYY-MM-DD"
-                  value={form.values.endDate}
-                  onChange={(value) => form.setFieldValue('endDate', value)}
-                />
-                <Button type="submit" loading={isLoading}>
-                  Create Report
-                </Button>
-              </Group>
-            </Stack>
-          </form>
+          <Modal
+            opened={createModalOpen}
+            onClose={() => setCreateModalOpen(false)}
+            title="Create Report"
+            size="sm"
+          >
+            <CreateReport setCreateModalOpen={setCreateModalOpen} handleRefreshReports={handleRefreshReports} />
+          </Modal>
 
           <Table>
             <Table.Thead>
@@ -134,14 +103,41 @@ function Ads() {
                   <Table.Td>{new Date(report.createdAt).toLocaleString()}</Table.Td>
                   <Table.Td>{report.status}</Table.Td>
                   <Table.Td>
-                    <Button
-                      size="xs"
-                      variant="outline"
-                      onClick={() => handleGetReport(report)}
-                      loading={loadingReports[report.id]}
-                    >
-                      {report.status === 'COMPLETED' ? 'Download Report' : 'Check Status'}
-                    </Button>
+                    <Group gap="xs">
+                      <Button
+                        size="xs"
+                        variant="outline"
+                        onClick={() => handleGetReport(report)}
+                        loading={loadingReports[report.id]}
+                      >
+                        {report.status === 'COMPLETED' ? 'Download Report' : 'Check Status'}
+                      </Button>
+                      {report.status === 'COMPLETED' && (
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          onClick={() => handleGetTaggedReport(report)}
+                        >
+                          Add Tags
+                        </Button>
+                      )}
+                      <Menu position="bottom-end" withinPortal>
+                        <Menu.Target>
+                          <Button size="xs" variant="subtle" p={0}>
+                            <IconDotsVertical size={16} />
+                          </Button>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                          <Menu.Item
+                            color="red"
+                            leftSection={<IconTrash size={14} />}
+                            onClick={() => handleDeleteReport(report)}
+                          >
+                            Delete Report
+                          </Menu.Item>
+                        </Menu.Dropdown>
+                      </Menu>
+                    </Group>
                   </Table.Td>
                 </Table.Tr>
               ))}
