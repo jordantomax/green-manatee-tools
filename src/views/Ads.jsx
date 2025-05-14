@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import api from '@/utils/api'
 import CreateReport from '@/components/amazon/CreateReport'
 import { useAsync } from '@/hooks/useAsync'
-import classes from '@/styles/Ads.module.classes'
+import classes from '@/styles/Ads.module.css'
 
 function Ads() {
   const navigate = useNavigate()

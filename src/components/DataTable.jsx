@@ -35,11 +35,20 @@ function DataTable({ data, title, columnFormats = {}, tableId }) {
   const [visibleColumns, setVisibleColumns] = useState(new Set())
   const [isStateLoaded, setIsStateLoaded] = useState(false)
 
+  // Get all unique keys from the data objects, sorted alphabetically
+  // Memoize this as it depends on `data`
+  const columns = useMemo(() => {
+    if (!data || data.length === 0) {
+      return []
+    }
+    return Object.keys(data[0] || {}).sort()
+  }, [data])
+
   // Load state from local storage on mount or when data/key changes
   useEffect(() => {
     if (!localStorageKey) {
-      if (data && data.length > 0) {
-        setVisibleColumns(new Set(Object.keys(data[0] || {})))
+      if (columns.length > 0) { // Use memoized, sorted columns
+        setVisibleColumns(new Set(columns))
       }
       setIsStateLoaded(true)
       return
@@ -63,8 +72,8 @@ function DataTable({ data, title, columnFormats = {}, tableId }) {
         if (savedState.savedActiveSorts) setActiveSorts(savedState.savedActiveSorts)
         if (savedState.savedVisibleColumns && Array.isArray(savedState.savedVisibleColumns)) {
           setVisibleColumns(new Set(savedState.savedVisibleColumns))
-        } else if (data && data.length > 0) {
-          setVisibleColumns(new Set(Object.keys(data[0] || {})))
+        } else if (columns.length > 0) { // Use memoized, sorted columns
+          setVisibleColumns(new Set(columns))
         }
         stateAppliedFromStorage = true
       }
@@ -72,11 +81,11 @@ function DataTable({ data, title, columnFormats = {}, tableId }) {
       console.error(`Failed to load table state for key "${localStorageKey}" from local storage:`, error)
     }
 
-    if (!stateAppliedFromStorage && data && data.length > 0) {
-      setVisibleColumns(new Set(Object.keys(data[0] || {})))
+    if (!stateAppliedFromStorage && columns.length > 0) { // Use memoized, sorted columns
+      setVisibleColumns(new Set(columns))
     }
     setIsStateLoaded(true)
-  }, [localStorageKey, data])
+  }, [localStorageKey, columns]) // Depend on memoized columns
 
   // Save state to local storage when it changes, but only after initial load attempt
   useEffect(() => {
@@ -102,9 +111,6 @@ function DataTable({ data, title, columnFormats = {}, tableId }) {
     )
   }
 
-  // Get all unique keys from the data objects
-  const columns = Object.keys(data[0])
-
   // Infer column types from the data
   const inferredColumnTypes = useMemo(() => {
     const types = {}
@@ -117,17 +123,27 @@ function DataTable({ data, title, columnFormats = {}, tableId }) {
 
       // Sample up to 10 values to determine type
       const sampleSize = Math.min(10, data.length)
-      const samples = data.slice(0, sampleSize).map(row => row[column])
+      const rawSamples = data.slice(0, sampleSize).map(row => row[column])
       
-      // Check if all samples are numbers
-      const allNumbers = samples.every(value => {
-        const num = Number(value)
-        return !isNaN(num) && value !== null && value !== undefined
-      })
+      const isEmptyLike = (val) => 
+        val === null || 
+        val === undefined || 
+        (typeof val === 'string' && val.trim() === '') || 
+        String(val).trim() === '-';
 
-      if (allNumbers) {
-        types[column] = { type: 'number', decimals: 2 }
+      const validSamples = rawSamples.filter(val => !isEmptyLike(val));
+
+      if (validSamples.length > 0) {
+        const allValidSamplesAreNumbers = validSamples.every(value => {
+          const num = Number(value);
+          return isFinite(num); // Checks for actual numbers, excluding NaN and Infinity
+        });
+
+        if (allValidSamplesAreNumbers) {
+          types[column] = { type: 'number', decimals: 2 }
+        }
       }
+      // If validSamples.length is 0 or not all are numbers, no numeric type is inferred here.
     })
     return types
   }, [data, columns, columnFormats])
@@ -478,10 +494,22 @@ function formatCellValue(value, column, format, row) {
   // Apply column-specific formatting if available
   if (format) {
     if (format.type === 'link') {
-      // Replace any {columnName} in the URL template with the corresponding value from the row
-      const url = format.urlTemplate.replace(/\{([^}]+)\}/g, (match, columnName) => {
-        return row[columnName] || match
-      })
+      let url = '#' // Default URL if template processing fails
+      if (typeof format.urlTemplate === 'function') {
+        try {
+          url = format.urlTemplate(value, row) // Pass value and row to the function
+        } catch (error) {
+          console.error(`Error executing urlTemplate function for column "${column}":`, error);
+        }
+      } else if (typeof format.urlTemplate === 'string') {
+        // Replace any {columnName} in the URL template with the corresponding value from the row
+        url = format.urlTemplate.replace(/\{([^}]+)\}/g, (match, columnName) => {
+          return row[columnName] !== undefined ? row[columnName] : match // Ensure row[columnName] exists
+        })
+      } else {
+        console.warn(`Invalid urlTemplate for column "${column}": Expected string or function, got ${typeof format.urlTemplate}`);
+      }
+
       return (
         <Text component="a" href={url} target="_blank" rel="noopener noreferrer" c="blue">
           {value}

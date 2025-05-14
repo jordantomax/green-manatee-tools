@@ -104,6 +104,17 @@ function AdsReport() {
                   'keywordId': {
                     type: 'link',
                     urlTemplate: 'https://advertising.amazon.com/cm/sp/campaigns/{campaignId}/ad-groups/{adGroupId}/keywords'
+                  },
+                  'keyword': {
+                    type: 'link',
+                    urlTemplate: (value) => {
+                      const asinMatch = String(value).match(/asin="([^"]+)"/);
+                      if (asinMatch && asinMatch[1]) {
+                        return `https://www.amazon.com/dp/${asinMatch[1]}`;
+                      } else {
+                        return `https://www.amazon.com/s?k=${encodeURIComponent(String(value))}`;
+                      }
+                    }
                   }
                 }}
               />
