@@ -92,11 +92,11 @@ function AdsReport() {
                   'clicks': { type: 'number', decimals: 0 },
                   'campaignId': { 
                     type: 'link',
-                    urlTemplate: 'https://advertising.amazon.com/cm/dashboard?entityId={value}&entityType=campaign'
+                    urlTemplate: 'https://advertising.amazon.com/cm/sp/campaigns/{campaignId}/ad-groups'
                   },
                   'adGroupId': {
                     type: 'link',
-                    urlTemplate: 'https://advertising.amazon.com/cm/dashboard?entityId={value}&entityType=adGroup'
+                    urlTemplate: 'https://advertising.amazon.com/cm/sp/campaigns/{campaignId}/ad-groups/{adGroupId}/ads'
                   }
                 }}
               />

@@ -381,7 +381,7 @@ function DynamicTable({ data, title, columnFormats = {} }) {
                   {visibleColumnsArray.map((column) => (
                     <Table.Td key={`${index}-${column}`} style={{ whiteSpace: 'nowrap' }}>
                       <Text size="xs">
-                        {formatCellValue(row[column], column, inferredColumnTypes[column] || columnFormats[column])}
+                        {formatCellValue(row[column], column, inferredColumnTypes[column] || columnFormats[column], row)}
                       </Text>
                     </Table.Td>
                   ))}
@@ -403,35 +403,33 @@ function formatColumnName(column) {
     .trim()
 }
 
-function formatCellValue(value, column, format) {
+function formatCellValue(value, column, format, row) {
   if (value === null || value === undefined) return '-'
   
   // Apply column-specific formatting if available
   if (format) {
     if (format.type === 'link') {
-      const id = String(value)
-      const url = format.urlTemplate.replace('{value}', id)
+      // Replace any {columnName} in the URL template with the corresponding value from the row
+      const url = format.urlTemplate.replace(/\{([^}]+)\}/g, (match, columnName) => {
+        return row[columnName] || match
+      })
       return (
         <Text component="a" href={url} target="_blank" rel="noopener noreferrer" c="blue">
-          {id}
+          {value}
         </Text>
       )
     }
     if (format.type === 'number') {
       const numValue = Number(value)
       if (!isNaN(numValue)) {
-        // Only show decimals if the number has them
-        const hasDecimals = numValue % 1 !== 0
-        const decimals = hasDecimals ? (typeof format.decimals === 'number' ? format.decimals : 2) : 0
+        const decimals = typeof format.decimals === 'number' ? format.decimals : 2
         return numValue.toFixed(decimals)
       }
     }
     if (format.type === 'currency') {
       const numValue = Number(value)
       if (!isNaN(numValue)) {
-        // Only show decimals if the number has them
-        const hasDecimals = numValue % 1 !== 0
-        const decimals = hasDecimals ? (typeof format.decimals === 'number' ? format.decimals : 2) : 0
+        const decimals = typeof format.decimals === 'number' ? format.decimals : 2
         return new Intl.NumberFormat('en-US', {
           style: 'currency',
           currency: 'USD',
@@ -443,9 +441,7 @@ function formatCellValue(value, column, format) {
     if (format.type === 'percent') {
       const numValue = Number(value)
       if (!isNaN(numValue)) {
-        // Only show decimals if the number has them
-        const hasDecimals = numValue % 1 !== 0
-        const decimals = hasDecimals ? (typeof format.decimals === 'number' ? format.decimals : 2) : 0
+        const decimals = typeof format.decimals === 'number' ? format.decimals : 2
         return `${(numValue * 100).toFixed(decimals)}%`
       }
     }
