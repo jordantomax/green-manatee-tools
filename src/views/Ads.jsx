@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Container, Title, Paper, Button, Stack, Group, Table, Menu, Modal, Loader, useMantineTheme } from '@mantine/core'
 import { IconRefresh, IconDotsVertical, IconTrash, IconPlus } from '@tabler/icons-react'
 import { useNavigate } from 'react-router-dom'
 import api from '@/utils/api'
 import CreateReport from '@/components/amazon/CreateReport'
 import { useAsync } from '@/hooks/useAsync'
-import css from '@/styles/Ads.module.css'
+import classes from '@/styles/Ads.module.classes'
 
 function Ads() {
   const navigate = useNavigate()
@@ -24,17 +24,36 @@ function Ads() {
     setReports(data)
   }
 
-  const handleGetReport = async (report) => {
+  const handleGetReport = useCallback(async (report) => {
     setLoadingReports(prev => ({ ...prev, [report.id]: true }))
     try {
       const updatedReport = await api.getAdsReport(report.id)
       setReports(prev => prev.map(r => r.id === report.id ? updatedReport : r))
-      console.log('Updated report:', updatedReport)
     } finally {
       setLoadingReports(prev => ({ ...prev, [report.id]: false }))
     }
-  }
-  
+  }, [setReports, setLoadingReports])
+
+  useEffect(() => {
+    const hasPendingReports = reports.some(report => report.status === 'PENDING')
+
+    if (!hasPendingReports) {
+      return
+    }
+
+    const intervalId = setInterval(() => {
+      reports.forEach(report => {
+        if (report.status === 'PENDING' && !loadingReports[report.id]) {
+          handleGetReport(report)
+        }
+      })
+    }, 30000)
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [reports, loadingReports, handleGetReport])
+
   const handleGetTaggedReport = async (report) => {
     await run(() => api.getTaggedAdsReport(report.id))
   }
@@ -110,7 +129,7 @@ function Ads() {
                 <Table.Tr
                   key={report.id}
                   onClick={(e) => handleRowClick(report, e)}
-                  className={css.tableRowHover}
+                  className={classes.tableRowHover}
                 >
                   <Table.Td>{report.reportType}</Table.Td>
                   <Table.Td>{report.startDate.split('T')[0]}</Table.Td>

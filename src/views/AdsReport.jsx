@@ -5,6 +5,7 @@ import { IconChevronRight } from '@tabler/icons-react'
 import api from '@/utils/api'
 import DataTable from '@/components/DataTable'
 import { useAsync } from '@/hooks/useAsync'
+import classes from '@/styles/AdsReport.module.css'
 
 function AdsReport() {
   const { id } = useParams()
@@ -47,6 +48,7 @@ function AdsReport() {
       component="button"
       onClick={() => item.href !== '#' && navigate(item.href)}
       data-active={item.href === '#'}
+      className={classes.breadcrumbAnchor}
     >
       {item.title}
     </Anchor>
@@ -98,6 +100,10 @@ function AdsReport() {
                   'adGroupId': {
                     type: 'link',
                     urlTemplate: 'https://advertising.amazon.com/cm/sp/campaigns/{campaignId}/ad-groups/{adGroupId}/ads'
+                  },
+                  'keywordId': {
+                    type: 'link',
+                    urlTemplate: 'https://advertising.amazon.com/cm/sp/campaigns/{campaignId}/ad-groups/{adGroupId}/keywords'
                   }
                 }}
               />
