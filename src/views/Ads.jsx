@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Title, Paper, Button, Stack, Group, Text, Table, Menu, Modal } from '@mantine/core'
+import { Container, Title, Paper, Button, Stack, Group, Table, Menu, Modal } from '@mantine/core'
 import { IconRefresh, IconDotsVertical, IconTrash, IconPlus } from '@tabler/icons-react'
+import { useNavigate } from 'react-router-dom'
 import api from '@/utils/api'
 import CreateReport from '@/components/amazon/CreateReport'
+import { useAsync } from '@/hooks/useAsync'
 
 function Ads() {
-  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
   const [reports, setReports] = useState([])
   const [loadingReports, setLoadingReports] = useState({})
   const [createModalOpen, setCreateModalOpen] = useState(false)
+  const { isLoading, run } = useAsync()
 
   useEffect(() => {
     handleRefreshReports()
   }, [])
 
   const handleRefreshReports = async () => {
-    setIsLoading(true)
-    const data = await api.getAdsReports()
+    const data = await run(api.getAdsReports)
     setReports(data)
-    setIsLoading(false)
   }
 
   const handleGetReport = async (report) => {
@@ -33,19 +34,13 @@ function Ads() {
   }
   
   const handleGetTaggedReport = async (report) => {
-    const tagged = await api.getTaggedAdsReport(report.id)
-    console.log('Tagged:', tagged.result)
+    await run(() => api.getTaggedAdsReport(report.id))
   }
 
   const handleDeleteReport = async (report) => {
     if (window.confirm('Are you sure you want to delete this report?')) {
-      setIsLoading(true)
-      try {
-        await api.deleteAdsReport(report.id)
-        await handleRefreshReports()
-      } finally {
-        setIsLoading(false)
-      }
+      await run(() => { api.deleteAdsReport(report.id) })
+      await handleRefreshReports()
     }
   }
 
@@ -107,10 +102,13 @@ function Ads() {
                       <Button
                         size="xs"
                         variant="outline"
-                        onClick={() => handleGetReport(report)}
+                        onClick={() => report.status === 'COMPLETED' 
+                          ? navigate(`/ads/${report.id}`)
+                          : handleGetReport(report)
+                        }
                         loading={loadingReports[report.id]}
                       >
-                        {report.status === 'COMPLETED' ? 'Download Report' : 'Check Status'}
+                        {report.status === 'COMPLETED' ? 'View Data' : 'Check Status'}
                       </Button>
                       {report.status === 'COMPLETED' && (
                         <Button
@@ -118,7 +116,7 @@ function Ads() {
                           variant="outline"
                           onClick={() => handleGetTaggedReport(report)}
                         >
-                          Add Tags
+                          Tag
                         </Button>
                       )}
                       <Menu position="bottom-end" withinPortal>

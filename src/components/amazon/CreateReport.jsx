@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Select, Button, Group, Stack, Box } from '@mantine/core'
 import { DateInput } from '@mantine/dates'
 import { useForm } from '@mantine/form'
+import api from '@/utils/api'
 
 const CreateReport = ({ setCreateModalOpen, handleRefreshReports }) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -80,7 +81,7 @@ const CreateReport = ({ setCreateModalOpen, handleRefreshReports }) => {
             />
           </Group>
 
-          <Button w="100%" mt="md" type="submit" loading={isLoading}>
+          <Button w="100%" mt="lg" type="submit" loading={isLoading}>
             Create Report
           </Button>
         </Group>

@@ -10,10 +10,17 @@ function SearchableSelect({
   isLoading,
   placeholder = "Search...",
   width = 250,
-  refreshable = true
+  refreshable = true,
+  buttonProps = {}
 }) {
   const [search, setSearch] = useState('')
   const [filteredOptions, setFilteredOptions] = useState([])
+
+  useEffect(() => {
+    if (refreshable && onRefresh) {
+      onRefresh()
+    }
+  }, [])
 
   useEffect(() => {
     const filtered = options.filter(option => 
@@ -50,6 +57,7 @@ function SearchableSelect({
           disabled={isLoading}
           loading={isLoading}
           onClick={combobox.toggleDropdown}
+          {...buttonProps}
         >
           {label}
         </Button>
