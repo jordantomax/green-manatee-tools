@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Title, Paper, Button, Stack, Group, Table, Menu, Modal } from '@mantine/core'
+import { Container, Title, Paper, Button, Stack, Group, Table, Menu, Modal, Loader, useMantineTheme } from '@mantine/core'
 import { IconRefresh, IconDotsVertical, IconTrash, IconPlus } from '@tabler/icons-react'
 import { useNavigate } from 'react-router-dom'
 import api from '@/utils/api'
 import CreateReport from '@/components/amazon/CreateReport'
 import { useAsync } from '@/hooks/useAsync'
+import css from '@/styles/Ads.module.css'
 
 function Ads() {
   const navigate = useNavigate()
+  const theme = useMantineTheme()
   const [reports, setReports] = useState([])
   const [loadingReports, setLoadingReports] = useState({})
   const [createModalOpen, setCreateModalOpen] = useState(false)
@@ -43,6 +45,20 @@ function Ads() {
       await handleRefreshReports()
     }
   }
+
+  const handleRowClick = (report, event) => {
+    if (event.target.closest('button, a, [role="menuitem"], input, select, textarea')) {
+      return;
+    }
+
+    if (report.status === 'COMPLETED') {
+      navigate(`/ads/${report.id}`);
+    } else {
+      if (!loadingReports[report.id]) {
+        handleGetReport(report);
+      }
+    }
+  };
 
   return (
     <Container size="md" py="xl">
@@ -91,37 +107,44 @@ function Ads() {
             </Table.Thead>
             <Table.Tbody>
               {reports.map((report) => (
-                <Table.Tr key={report.id}>
+                <Table.Tr
+                  key={report.id}
+                  onClick={(e) => handleRowClick(report, e)}
+                  className={css.tableRowHover}
+                >
                   <Table.Td>{report.reportType}</Table.Td>
                   <Table.Td>{report.startDate.split('T')[0]}</Table.Td>
                   <Table.Td>{report.endDate.split('T')[0]}</Table.Td>
                   <Table.Td>{new Date(report.createdAt).toLocaleString()}</Table.Td>
-                  <Table.Td>{report.status}</Table.Td>
+                  <Table.Td>
+                    {loadingReports[report.id] && report.status !== 'COMPLETED' ? (
+                      <Loader size="xs" />
+                    ) : (
+                      report.status
+                    )}
+                  </Table.Td>
                   <Table.Td>
                     <Group gap="xs">
-                      <Button
-                        size="xs"
-                        variant="outline"
-                        onClick={() => report.status === 'COMPLETED' 
-                          ? navigate(`/ads/${report.id}`)
-                          : handleGetReport(report)
-                        }
-                        loading={loadingReports[report.id]}
-                      >
-                        {report.status === 'COMPLETED' ? 'View Data' : 'Check Status'}
-                      </Button>
                       {report.status === 'COMPLETED' && (
                         <Button
                           size="xs"
                           variant="outline"
-                          onClick={() => handleGetTaggedReport(report)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleGetTaggedReport(report);
+                          }}
                         >
                           Tag
                         </Button>
                       )}
                       <Menu position="bottom-end" withinPortal>
                         <Menu.Target>
-                          <Button size="xs" variant="subtle" p={0}>
+                          <Button 
+                            size="xs" 
+                            variant="subtle" 
+                            p={0} 
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <IconDotsVertical size={16} />
                           </Button>
                         </Menu.Target>
@@ -129,7 +152,10 @@ function Ads() {
                           <Menu.Item
                             color="red"
                             leftSection={<IconTrash size={14} />}
-                            onClick={() => handleDeleteReport(report)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteReport(report);
+                            }}
                           >
                             Delete Report
                           </Menu.Item>
