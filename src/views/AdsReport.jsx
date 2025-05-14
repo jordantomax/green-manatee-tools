@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Container, Title, Paper, Stack, Group, Text, Loader, Breadcrumbs, Anchor } from '@mantine/core'
 import { IconChevronRight } from '@tabler/icons-react'
 import api from '@/utils/api'
-import DynamicTable from '@/components/DynamicTable'
+import DataTable from '@/components/DataTable'
 import { useAsync } from '@/hooks/useAsync'
 
 function AdsReport() {
@@ -83,9 +83,10 @@ function AdsReport() {
             </Stack>
 
             {report.status === 'COMPLETED' && report.result && (
-              <DynamicTable 
+              <DataTable 
                 data={report.result} 
                 title="Report Data"
+                tableId={`ads-report-${id}`}
                 columnFormats={{
                   'acosClicks7d': { type: 'number', decimals: 2 },
                   'roasClicks7d': { type: 'number', decimals: 2 },

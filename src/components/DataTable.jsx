@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import { 
   Table, 
   Text, 
@@ -17,13 +17,82 @@ import {
 } from '@mantine/core'
 import { IconSortAscending, IconSortDescending, IconX, IconPlus, IconColumns, IconEye } from '@tabler/icons-react'
 import SearchableSelect from './SearchableSelect'
+import { getLocalData, setLocalData } from '@/utils/storage'
 
-function DynamicTable({ data, title, columnFormats = {} }) {
+function DataTable({ data, title, columnFormats = {}, tableId }) {
+  const localStorageKey = useMemo(() => {
+    if (!tableId) {
+      console.warn("DataTable: 'tableId' prop is missing. Table persistence disabled for this instance.")
+      return null
+    }
+    return `dataTableState-${tableId}`
+  }, [tableId])
+
   const [filters, setFilters] = useState([])
   const [sorts, setSorts] = useState([])
   const [activeFilters, setActiveFilters] = useState({})
   const [activeSorts, setActiveSorts] = useState({})
-  const [visibleColumns, setVisibleColumns] = useState(new Set(Object.keys(data?.[0] || {})))
+  const [visibleColumns, setVisibleColumns] = useState(new Set())
+  const [isStateLoaded, setIsStateLoaded] = useState(false)
+
+  // Load state from local storage on mount or when data/key changes
+  useEffect(() => {
+    if (!localStorageKey) {
+      if (data && data.length > 0) {
+        setVisibleColumns(new Set(Object.keys(data[0] || {})))
+      }
+      setIsStateLoaded(true)
+      return
+    }
+
+    let stateAppliedFromStorage = false
+    try {
+      const savedState = getLocalData(localStorageKey)
+      if (savedState) {
+        if (savedState.savedFilters && Array.isArray(savedState.savedFilters)) {
+          setFilters(savedState.savedFilters)
+          // Also update activeFilters based on the loaded filters
+          const newActiveFilters = {}
+          savedState.savedFilters.forEach(filter => {
+            if (filter.operator && filter.value) {
+              newActiveFilters[filter.column] = filter
+            }
+          })
+          setActiveFilters(newActiveFilters)
+        }
+        if (savedState.savedActiveSorts) setActiveSorts(savedState.savedActiveSorts)
+        if (savedState.savedVisibleColumns && Array.isArray(savedState.savedVisibleColumns)) {
+          setVisibleColumns(new Set(savedState.savedVisibleColumns))
+        } else if (data && data.length > 0) {
+          setVisibleColumns(new Set(Object.keys(data[0] || {})))
+        }
+        stateAppliedFromStorage = true
+      }
+    } catch (error) {
+      console.error(`Failed to load table state for key "${localStorageKey}" from local storage:`, error)
+    }
+
+    if (!stateAppliedFromStorage && data && data.length > 0) {
+      setVisibleColumns(new Set(Object.keys(data[0] || {})))
+    }
+    setIsStateLoaded(true)
+  }, [localStorageKey, data])
+
+  // Save state to local storage when it changes, but only after initial load attempt
+  useEffect(() => {
+    if (!localStorageKey || !isStateLoaded) return // Don't save if persistence disabled or initial load not done
+
+    try {
+      const stateToSave = {
+        savedFilters: filters,
+        savedActiveSorts: activeSorts,
+        savedVisibleColumns: Array.from(visibleColumns)
+      }
+      setLocalData(localStorageKey, stateToSave)
+    } catch (error) {
+      console.error(`Failed to save table state for key "${localStorageKey}" to local storage:`, error)
+    }
+  }, [filters, activeSorts, visibleColumns, localStorageKey, isStateLoaded]) // Add isStateLoaded
 
   if (!data || !Array.isArray(data) || data.length === 0) {
     return (
@@ -454,4 +523,4 @@ function formatCellValue(value, column, format, row) {
   return value.toString()
 }
 
-export default DynamicTable 
+export default DataTable 
