@@ -19,7 +19,7 @@ import { IconSortAscending, IconSortDescending, IconX, IconPlus, IconColumns, Ic
 import SearchableSelect from './SearchableSelect'
 import { getLocalData, setLocalData } from '@/utils/storage'
 
-function DataTable({ data, title, columnFormats = {}, tableId }) {
+function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns = [] }) {
   const localStorageKey = useMemo(() => {
     if (!tableId) {
       console.warn("DataTable: 'tableId' prop is missing. Table persistence disabled for this instance.")
@@ -114,6 +114,8 @@ function DataTable({ data, title, columnFormats = {}, tableId }) {
   // Infer column types from the data
   const inferredColumnTypes = useMemo(() => {
     const types = {}
+    const currencySet = new Set(currencyColumns); // Use renamed prop
+
     columns.forEach(column => {
       // Skip if format is already specified
       if (columnFormats[column]) {
@@ -140,13 +142,25 @@ function DataTable({ data, title, columnFormats = {}, tableId }) {
         });
 
         if (allValidSamplesAreNumbers) {
-          types[column] = { type: 'number', decimals: 2 }
+          if (currencySet.has(column)) { // Check against the renamed prop-based set
+            types[column] = { type: 'currency', decimals: 2 };
+          } else {
+            const allAreIntegers = validSamples.every(value => {
+              const num = Number(value);
+              return Number.isInteger(num);
+            });
+
+            if (allAreIntegers) {
+              types[column] = { type: 'number', decimals: 0 };
+            } else {
+              types[column] = { type: 'number', decimals: 2 }; 
+            }
+          }
         }
       }
-      // If validSamples.length is 0 or not all are numbers, no numeric type is inferred here.
     })
     return types
-  }, [data, columns, columnFormats])
+  }, [data, columns, columnFormats, currencyColumns]) // Use renamed prop in dependencies
 
   // Get available columns for filtering (excluding already filtered columns)
   const availableColumns = useMemo(() => 
@@ -408,7 +422,7 @@ function DataTable({ data, title, columnFormats = {}, tableId }) {
           </Group>
         )}
 
-        <ScrollArea>
+        <Table.ScrollContainer type="native">
           <Table highlightOnHover size="sm">
             <Table.Thead>
               <Table.Tr>
@@ -474,7 +488,7 @@ function DataTable({ data, title, columnFormats = {}, tableId }) {
               ))}
             </Table.Tbody>
           </Table>
-        </ScrollArea>
+        </Table.ScrollContainer>
       </Stack>
     </Paper>
   )

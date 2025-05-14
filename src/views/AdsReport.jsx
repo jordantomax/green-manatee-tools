@@ -53,42 +53,18 @@ function AdsReport() {
       {item.title}
     </Anchor>
   ))
+  
+  console.log(report)
 
   return (
     <Container size="md" py="xl">
-      <Stack gap="md">
-        <Breadcrumbs separator={<IconChevronRight size={16} />}>
-          {items}
-        </Breadcrumbs>
-
-        <Paper withBorder p="lg">
-          <Stack gap="md">
-            <Title order={2}>Report Details</Title>
-
-            <Stack gap="xs">
-              <Group>
-                <Text fw={500}>Type:</Text>
-                <Text>{report.reportType}</Text>
-              </Group>
-              <Group>
-                <Text fw={500}>Date Range:</Text>
-                <Text>{report.startDate.split('T')[0]} to {report.endDate.split('T')[0]}</Text>
-              </Group>
-              <Group>
-                <Text fw={500}>Status:</Text>
-                <Text>{report.status}</Text>
-              </Group>
-              <Group>
-                <Text fw={500}>Created:</Text>
-                <Text>{new Date(report.createdAt).toLocaleString()}</Text>
-              </Group>
-            </Stack>
 
             {report.status === 'COMPLETED' && report.result && (
               <DataTable 
                 data={report.result} 
                 title="Report Data"
                 tableId={`ads-report-${id}`}
+                currencyColumns={['cost', 'costPerClick', 'sales7d', 'sales14d', 'sales30d']}
                 columnFormats={{
                   'acosClicks7d': { type: 'number', decimals: 2 },
                   'roasClicks7d': { type: 'number', decimals: 2 },
@@ -119,9 +95,6 @@ function AdsReport() {
                 }}
               />
             )}
-          </Stack>
-        </Paper>
-      </Stack>
     </Container>
   )
 }
