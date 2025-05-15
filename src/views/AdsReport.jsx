@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { Container, Title, Paper, Stack, Group, Text, Loader, Breadcrumbs, Anchor } from '@mantine/core'
 import { IconChevronRight } from '@tabler/icons-react'
 import api from '@/utils/api'
@@ -10,8 +10,28 @@ import classes from '@/styles/AdsReport.module.css'
 function AdsReport() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams();
   const [report, setReport] = useState(null)
   const { isLoading, run } = useAsync()
+
+  // Pagination from query params
+  const currentPage = parseInt(searchParams.get('page') || '1', 10)
+  const pageSize = parseInt(searchParams.get('pageSize') || '100', 10)
+  const handlePageChange = (page) => {
+    setSearchParams(prev => {
+      const params = new URLSearchParams(prev)
+      params.set('page', page)
+      return params
+    })
+  }
+  const handlePageSizeChange = (size) => {
+    setSearchParams(prev => {
+      const params = new URLSearchParams(prev)
+      params.set('pageSize', size)
+      params.set('page', 1) // Reset to first page on size change
+      return params
+    })
+  }
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -92,10 +112,10 @@ function AdsReport() {
                 tableId={`ads-report-${id}`}
                 currencyColumns={['cost', 'costPerClick', 'sales7d', 'sales14d', 'sales30d']}
                 columnFormats={{
-                  'acosClicks7d': { type: 'number', decimals: 2 },
+                  '/^acos/': { type: 'percent', decimals: 1 },
                   'roasClicks7d': { type: 'number', decimals: 2 },
                   'clicks': { type: 'number', decimals: 0 },
-                  'campaignId': {
+                  'campaignId': { 
                     type: 'link',
                     urlTemplate: 'https://advertising.amazon.com/cm/sp/campaigns/{campaignId}/ad-groups'
                   },
@@ -119,6 +139,11 @@ function AdsReport() {
                     }
                   }
                 }}
+                paginationFromQueryParams
+                currentPage={currentPage}
+                pageSize={pageSize}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
               />
             )}
           </Stack>

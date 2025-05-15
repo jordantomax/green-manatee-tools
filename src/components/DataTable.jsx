@@ -3,7 +3,6 @@ import {
   Table, 
   Text, 
   Paper, 
-  ScrollArea, 
   Group, 
   Stack, 
   Select, 
@@ -13,13 +12,13 @@ import {
   Menu,
   Checkbox,
   Button,
-  Badge
+  Pagination
 } from '@mantine/core'
 import { IconSortAscending, IconSortDescending, IconX, IconPlus, IconColumns, IconEye } from '@tabler/icons-react'
 import SearchableSelect from './SearchableSelect'
 import { getLocalData, setLocalData } from '@/utils/storage'
 
-function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns = [] }) {
+function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns = [], paginationFromQueryParams = false, currentPage: propCurrentPage, pageSize: propPageSize, onPageChange, onPageSizeChange }) {
   const localStorageKey = useMemo(() => {
     if (!tableId) {
       console.warn("DataTable: 'tableId' prop is missing. Table persistence disabled for this instance.")
@@ -34,6 +33,9 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
   const [activeSorts, setActiveSorts] = useState({})
   const [visibleColumns, setVisibleColumns] = useState(new Set())
   const [isStateLoaded, setIsStateLoaded] = useState(false)
+  // Internal pagination state (used if not using query params)
+  const [internalCurrentPage, setInternalCurrentPage] = useState(1)
+  const [internalPageSize, setInternalPageSize] = useState(100)
 
   // Get all unique keys from the data objects, sorted alphabetically
   // Memoize this as it depends on `data`
@@ -75,6 +77,11 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
         } else if (columns.length > 0) { // Use memoized, sorted columns
           setVisibleColumns(new Set(columns))
         }
+        // Only restore pagination state if not using query params
+        if (!paginationFromQueryParams) {
+          if (typeof savedState.savedCurrentPage === 'number') setInternalCurrentPage(savedState.savedCurrentPage)
+          if (typeof savedState.savedPageSize === 'number') setInternalPageSize(savedState.savedPageSize)
+        }
         stateAppliedFromStorage = true
       }
     } catch (error) {
@@ -85,7 +92,7 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
       setVisibleColumns(new Set(columns))
     }
     setIsStateLoaded(true)
-  }, [localStorageKey, columns]) // Depend on memoized columns
+  }, [localStorageKey, columns, paginationFromQueryParams]) // Depend on memoized columns and mode
 
   // Save state to local storage when it changes, but only after initial load attempt
   useEffect(() => {
@@ -95,13 +102,25 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
       const stateToSave = {
         savedFilters: filters,
         savedActiveSorts: activeSorts,
-        savedVisibleColumns: Array.from(visibleColumns)
+        savedVisibleColumns: Array.from(visibleColumns),
+      }
+      // Only save pagination state if not using query params
+      if (!paginationFromQueryParams) {
+        stateToSave.savedCurrentPage = internalCurrentPage
+        stateToSave.savedPageSize = internalPageSize
       }
       setLocalData(localStorageKey, stateToSave)
     } catch (error) {
       console.error(`Failed to save table state for key "${localStorageKey}" to local storage:`, error)
     }
-  }, [filters, activeSorts, visibleColumns, localStorageKey, isStateLoaded]) // Add isStateLoaded
+  }, [filters, activeSorts, visibleColumns, localStorageKey, isStateLoaded, paginationFromQueryParams, internalCurrentPage, internalPageSize])
+
+  // Reset currentPage to 1 when filters, sorts, or pageSize change (only for internal state)
+  useEffect(() => {
+    if (!paginationFromQueryParams) {
+      setInternalCurrentPage(1)
+    }
+  }, [filters, activeSorts, internalPageSize, paginationFromQueryParams])
 
   if (!data || !Array.isArray(data) || data.length === 0) {
     return (
@@ -114,15 +133,38 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
   // Infer column types from the data
   const inferredColumnTypes = useMemo(() => {
     const types = {}
-    const currencySet = new Set(currencyColumns); // Use renamed prop
+    const currencySet = new Set(currencyColumns);
 
     columns.forEach(column => {
-      // Skip if format is already specified
+      // 1. Direct columnFormats prop takes precedence (exact match)
       if (columnFormats[column]) {
         types[column] = columnFormats[column]
         return
       }
 
+      // 2. Pattern-based formats: check for RegExp keys in columnFormats
+      for (const key of Object.keys(columnFormats)) {
+        // If the key is a RegExp (not a string), test it
+        const maybeRegex = key;
+        let regex = null;
+        // Try to parse string keys that look like regexes (e.g., /^acos/)
+        if (maybeRegex instanceof RegExp) {
+          regex = maybeRegex;
+        } else {
+          // Try to parse string keys that look like regexes
+          try {
+            if (maybeRegex.startsWith('/') && maybeRegex.endsWith('/')) {
+              regex = new RegExp(maybeRegex.slice(1, -1));
+            }
+          } catch (e) {}
+        }
+        if (regex && regex.test(column)) {
+          types[column] = columnFormats[key];
+          return;
+        }
+      }
+
+      // 3. Currency columns
       // Sample up to 10 values to determine type
       const sampleSize = Math.min(10, data.length)
       const rawSamples = data.slice(0, sampleSize).map(row => row[column])
@@ -142,7 +184,7 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
         });
 
         if (allValidSamplesAreNumbers) {
-          if (currencySet.has(column)) { // Check against the renamed prop-based set
+          if (currencySet.has(column)) {
             types[column] = { type: 'currency', decimals: 2 };
           } else {
             const allAreIntegers = validSamples.every(value => {
@@ -160,7 +202,7 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
       }
     })
     return types
-  }, [data, columns, columnFormats, currencyColumns]) // Use renamed prop in dependencies
+  }, [data, columns, columnFormats, currencyColumns])
 
   // Get available columns for filtering (excluding already filtered columns)
   const availableColumns = useMemo(() => 
@@ -207,7 +249,8 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
             return false
           }
 
-          if (filter.type === 'number') {
+          // Treat percent as number for filtering
+          if (filter.type === 'number' || filter.type === 'percent') {
             const numValue = Number(cellValue)
             const filterValue = Number(filter.value)
             
@@ -258,7 +301,8 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
   }, [data, activeFilters, activeSorts])
 
   const handleAddFilter = useCallback((column) => {
-    const type = inferredColumnTypes[column]?.type || 'text'
+    let type = inferredColumnTypes[column]?.type || 'text'
+    if (type === 'percent') type = 'number'
     setFilters(prev => [...prev, { column, type }])
   }, [inferredColumnTypes])
 
@@ -316,6 +360,20 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
     })
   }, [])
 
+  // Pagination logic
+  const totalRows = processedData.length;
+  // Use props if in query param mode, otherwise use internal state
+  const currentPage = paginationFromQueryParams ? propCurrentPage : internalCurrentPage;
+  const pageSize = paginationFromQueryParams ? propPageSize : internalPageSize;
+  const setCurrentPage = paginationFromQueryParams ? onPageChange : setInternalCurrentPage;
+  const setPageSize = paginationFromQueryParams ? onPageSizeChange : setInternalPageSize;
+  const totalPages = Math.max(1, Math.ceil(totalRows / pageSize));
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
+    return processedData.slice(start, end);
+  }, [processedData, currentPage, pageSize]);
+
   return (
     <Paper withBorder p="md">
       <Stack gap="md">
@@ -369,9 +427,9 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
             {filters.map((filter, index) => (
               <Stack key={index} gap={4}>
                 <Group gap={4} wrap="nowrap">
-                  <Badge variant="light" size="sm" radius="sm">
+                  <Text size="xs" fw={700} style={{ lineHeight: 1.2 }}>
                     {formatColumnName(filter.column)}
-                  </Badge>
+                  </Text>
                   <ActionIcon
                     variant="subtle"
                     color="red"
@@ -385,7 +443,7 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
                   <Select
                     value={filter.operator}
                     onChange={(value) => handleFilterChange(index, 'operator', value)}
-                    data={filter.type === 'number' 
+                    data={filter.type === 'number' || filter.type === 'percent'
                       ? [
                           { value: 'equals', label: '=' },
                           { value: 'greater', label: '>' },
@@ -397,15 +455,15 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
                         ]
                     }
                     size="xs"
-                    style={{ width: 70 }}
+                    style={{ maxWidth: 100 }}
                   />
-                  {filter.type === 'number' ? (
+                  {(filter.type === 'number' || filter.type === 'percent') ? (
                     <NumberInput
                       value={filter.value || ''}
                       onChange={(value) => handleFilterChange(index, 'value', value)}
                       placeholder="Value"
                       size="xs"
-                      style={{ width: 70 }}
+                      style={{ maxWidth: 100 }}
                     />
                   ) : (
                     <TextInput
@@ -413,7 +471,7 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
                       onChange={(e) => handleFilterChange(index, 'value', e.target.value)}
                       placeholder="Value"
                       size="xs"
-                      style={{ width: 70 }}
+                      style={{ maxWidth: 200 }}
                     />
                   )}
                 </Group>
@@ -475,7 +533,7 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {processedData.map((row, index) => (
+              {paginatedData.map((row, index) => (
                 <Table.Tr key={index}>
                   {visibleColumnsArray.map((column) => (
                     <Table.Td key={`${index}-${column}`} style={{ whiteSpace: 'nowrap' }}>
@@ -489,6 +547,24 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
             </Table.Tbody>
           </Table>
         </Table.ScrollContainer>
+        {/* Pagination controls */}
+        <Group justify="space-between" align="center" mt="md">
+          <Pagination
+            value={currentPage}
+            onChange={setCurrentPage}
+            total={totalPages}
+            size="sm"
+            withEdges
+            disabled={totalPages <= 1}
+          />
+          <Select
+            value={String(pageSize)}
+            onChange={val => { setPageSize(Number(val)); }}
+            data={['10', '25', '50', '100'].map(n => ({ value: n, label: `${n} / page` }))}
+            size="xs"
+            style={{ width: 150 }}
+          />
+        </Group>
       </Stack>
     </Paper>
   )
@@ -553,7 +629,7 @@ function formatCellValue(value, column, format, row) {
       const numValue = Number(value)
       if (!isNaN(numValue)) {
         const decimals = typeof format.decimals === 'number' ? format.decimals : 2
-        return `${(numValue * 100).toFixed(decimals)}%`
+        return `${numValue.toFixed(decimals)}%`
       }
     }
   }

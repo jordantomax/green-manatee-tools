@@ -47,7 +47,8 @@ const CreateReport = ({ setCreateModalOpen, handleRefreshReports }) => {
             placeholder="Select a report type"
             data={[
               { value: "spSearchTerm", label: "SP Search Term" },
-              { value: "spAdvertisedProduct", label: "SP Advertised Product" }
+              { value: "spAdvertisedProduct", label: "SP Advertised Product" },
+              { value: "spTargeting", label: "SP Targeting" }
             ]}
             style={{ width: '100%' }}
             {...form.getInputProps('reportType')}
