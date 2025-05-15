@@ -20,7 +20,7 @@ function Ads() {
   }, [])
 
   const handleRefreshReports = async () => {
-    const data = await run(api.getAdsReports)
+    const data = await run(async () => await api.getAdsReports())
     setReports(data)
   }
 
@@ -55,12 +55,12 @@ function Ads() {
   }, [reports, loadingReports, handleGetReport])
 
   const handleGetTaggedReport = async (report) => {
-    await run(() => api.getTaggedAdsReport(report.id))
+    await run(async () => await api.getTaggedAdsReport(report.id))
   }
 
   const handleDeleteReport = async (report) => {
     if (window.confirm('Are you sure you want to delete this report?')) {
-      await run(() => { api.deleteAdsReport(report.id) })
+      await run(async () => await api.deleteAdsReport(report.id))
       await handleRefreshReports()
     }
   }

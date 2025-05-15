@@ -35,7 +35,7 @@ function AdsReport() {
 
   useEffect(() => {
     const fetchReport = async () => {
-      const data = await run(() => api.getAdsReport(id))
+      const data = await run(async () => await api.getAdsReport(id))
       setReport(data)
     }
     fetchReport()

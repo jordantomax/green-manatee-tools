@@ -5,9 +5,12 @@ export function useAsync() {
 
   const run = useCallback(async (asyncFunction) => {
     setIsLoading(true)
-    const result = await asyncFunction()
-    setIsLoading(false)
-    return result
+    try {
+      const result = await asyncFunction()
+      return result
+    } finally {
+      setIsLoading(false)
+    }
   }, [])
 
   return {

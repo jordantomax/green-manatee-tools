@@ -3,9 +3,10 @@ import { Select, Button, Group, Stack, Box } from '@mantine/core'
 import { DateInput } from '@mantine/dates'
 import { useForm } from '@mantine/form'
 import api from '@/utils/api'
+import { useAsync } from '@/hooks/useAsync'
 
 const CreateReport = ({ setCreateModalOpen, handleRefreshReports }) => {
-  const [isLoading, setIsLoading] = useState(false)
+  const { isLoading, run } = useAsync()
   const yesterday = new Date()
   yesterday.setDate(yesterday.getDate() - 1)
   const yesterdayStr = yesterday.toISOString().split('T')[0]
@@ -31,11 +32,11 @@ const CreateReport = ({ setCreateModalOpen, handleRefreshReports }) => {
   })
 
   const handleCreateReport = async (values) => {
-    setIsLoading(true)
-    await api.createAdsReport(values)
-    await handleRefreshReports()
-    setIsLoading(false)
-    setCreateModalOpen(false)
+    await run(async () => {
+      await api.createAdsReport(values)
+      await handleRefreshReports()
+      setCreateModalOpen(false)
+    })
   }
 
   return (
