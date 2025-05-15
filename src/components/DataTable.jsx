@@ -17,6 +17,8 @@ import {
 import { IconSortAscending, IconSortDescending, IconX, IconPlus, IconColumns, IconEye } from '@tabler/icons-react'
 import SearchableSelect from './SearchableSelect'
 import { getLocalData, setLocalData } from '@/utils/storage'
+import classes from '@/styles/DataTable.module.css'
+import startCase from 'lodash-es/startCase'
 
 function DataTable({
   data,
@@ -416,8 +418,12 @@ function DataTable({
           <Table highlightOnHover size="sm">
             <Table.Thead>
               <Table.Tr>
-                {visibleColumnsArray.map(column => (
-                  <Table.Th key={column} style={{ whiteSpace: 'nowrap' }}>
+                {visibleColumnsArray.map((column, colIdx) => (
+                  <Table.Th
+                    key={column}
+                    className={colIdx === 0 ? classes.stickyCol : undefined}
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
                     <Menu position="bottom-start" withinPortal>
                       <Menu.Target>
                         <Group gap="xs" wrap="nowrap">
@@ -454,8 +460,12 @@ function DataTable({
             <Table.Tbody>
               {paginatedData.map((row, index) => (
                 <Table.Tr key={index}>
-                  {visibleColumnsArray.map(column => (
-                    <Table.Td key={`${index}-${column}`} style={{ whiteSpace: 'nowrap' }}>
+                  {visibleColumnsArray.map((column, colIdx) => (
+                    <Table.Td
+                      key={`${index}-${column}`}
+                      className={colIdx === 0 ? classes.stickyCol : undefined}
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
                       <Text size="xs">
                         {formatCellValue(
                           row[column],
@@ -494,11 +504,7 @@ function DataTable({
 }
 
 function formatColumnName(column) {
-  return column
-    .split(/(?=[A-Z])/)
-    .join(' ')
-    .replace(/([A-Z])/g, ' $1')
-    .trim()
+  return startCase(column)
 }
 
 function formatCellValue(value, column, format, row) {

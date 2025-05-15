@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import cloneDeep from 'lodash/cloneDeep'
+import cloneDeep from 'lodash-es/cloneDeep'
 import {
   Container,
   Button,

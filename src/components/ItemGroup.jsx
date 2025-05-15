@@ -1,7 +1,7 @@
 import React from 'react'
 import { Stack, TextInput, Group, Title, Button, Paper, Grid } from '@mantine/core'
 import { IconPlus, IconTrash } from '@tabler/icons-react'
-import capitalize from 'lodash/capitalize'
+import capitalize from 'lodash-es/capitalize'
 
 import camelToSentenceCase from '@/utils/camelToSentenceCase'
 

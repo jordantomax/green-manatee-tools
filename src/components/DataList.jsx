@@ -1,6 +1,6 @@
 import React from 'react'
-import isPlainObject from 'lodash/isPlainObject'
-import isArray from 'lodash/isArray'
+import isPlainObject from 'lodash-es/isPlainObject'
+import isArray from 'lodash-es/isArray'
 import { Grid, Text, Anchor } from '@mantine/core'
 
 import camelToSentenceCase from '@/utils/camelToSentenceCase'
