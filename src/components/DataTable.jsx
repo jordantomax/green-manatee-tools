@@ -18,108 +18,103 @@ import { IconSortAscending, IconSortDescending, IconX, IconPlus, IconColumns, Ic
 import SearchableSelect from './SearchableSelect'
 import { getLocalData, setLocalData } from '@/utils/storage'
 
-function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns = [], paginationFromQueryParams = false, currentPage: propCurrentPage, pageSize: propPageSize, onPageChange, onPageSizeChange }) {
+function DataTable({
+  data,
+  title,
+  columnFormats = {},
+  tableId,
+  currencyColumns = [],
+  paginationFromQueryParams = false,
+  currentPage: propCurrentPage,
+  pageSize: propPageSize,
+  onPageChange,
+  onPageSizeChange,
+  columnOrder = []
+}) {
   const localStorageKey = useMemo(() => {
-    if (!tableId) {
-      console.warn("DataTable: 'tableId' prop is missing. Table persistence disabled for this instance.")
-      return null
-    }
+    if (!tableId) return null
     return `dataTableState-${tableId}`
   }, [tableId])
 
   const [filters, setFilters] = useState([])
-  const [sorts, setSorts] = useState([])
   const [activeFilters, setActiveFilters] = useState({})
   const [activeSorts, setActiveSorts] = useState({})
   const [visibleColumns, setVisibleColumns] = useState(new Set())
   const [isStateLoaded, setIsStateLoaded] = useState(false)
-  // Internal pagination state (used if not using query params)
   const [internalCurrentPage, setInternalCurrentPage] = useState(1)
   const [internalPageSize, setInternalPageSize] = useState(100)
 
-  // Get all unique keys from the data objects, sorted alphabetically
-  // Memoize this as it depends on `data`
+  // Compute columns, prioritizing columnOrder, then sorting the rest
   const columns = useMemo(() => {
-    if (!data || data.length === 0) {
-      return []
-    }
-    return Object.keys(data[0] || {}).sort()
-  }, [data])
+    if (!data || data.length === 0) return []
+    const allCols = Object.keys(data[0] || {})
+    if (!columnOrder || columnOrder.length === 0) return allCols.sort()
+    const rest = allCols.filter(col => !columnOrder.includes(col)).sort()
+    return [...columnOrder, ...rest]
+  }, [data, columnOrder])
 
-  // Load state from local storage on mount or when data/key changes
   useEffect(() => {
     if (!localStorageKey) {
-      if (columns.length > 0) { // Use memoized, sorted columns
-        setVisibleColumns(new Set(columns))
-      }
+      if (columns.length > 0) setVisibleColumns(new Set(columns))
       setIsStateLoaded(true)
       return
     }
-
     let stateAppliedFromStorage = false
-    try {
-      const savedState = getLocalData(localStorageKey)
-      if (savedState) {
-        if (savedState.savedFilters && Array.isArray(savedState.savedFilters)) {
-          setFilters(savedState.savedFilters)
-          // Also update activeFilters based on the loaded filters
-          const newActiveFilters = {}
-          savedState.savedFilters.forEach(filter => {
-            if (filter.operator && filter.value) {
-              newActiveFilters[filter.column] = filter
-            }
-          })
-          setActiveFilters(newActiveFilters)
-        }
-        if (savedState.savedActiveSorts) setActiveSorts(savedState.savedActiveSorts)
-        if (savedState.savedVisibleColumns && Array.isArray(savedState.savedVisibleColumns)) {
-          setVisibleColumns(new Set(savedState.savedVisibleColumns))
-        } else if (columns.length > 0) { // Use memoized, sorted columns
-          setVisibleColumns(new Set(columns))
-        }
-        // Only restore pagination state if not using query params
-        if (!paginationFromQueryParams) {
-          if (typeof savedState.savedCurrentPage === 'number') setInternalCurrentPage(savedState.savedCurrentPage)
-          if (typeof savedState.savedPageSize === 'number') setInternalPageSize(savedState.savedPageSize)
-        }
-        stateAppliedFromStorage = true
+    const savedState = getLocalData(localStorageKey)
+    if (savedState) {
+      if (savedState.savedFilters && Array.isArray(savedState.savedFilters)) {
+        setFilters(savedState.savedFilters)
+        const newActiveFilters = {}
+        savedState.savedFilters.forEach(filter => {
+          if (filter.operator && filter.value) {
+            newActiveFilters[filter.column] = filter
+          }
+        })
+        setActiveFilters(newActiveFilters)
       }
-    } catch (error) {
-      console.error(`Failed to load table state for key "${localStorageKey}" from local storage:`, error)
+      if (savedState.savedActiveSorts) setActiveSorts(savedState.savedActiveSorts)
+      if (savedState.savedVisibleColumns && Array.isArray(savedState.savedVisibleColumns)) {
+        setVisibleColumns(new Set(savedState.savedVisibleColumns))
+      } else if (columns.length > 0) {
+        setVisibleColumns(new Set(columns))
+      }
+      if (!paginationFromQueryParams) {
+        if (typeof savedState.savedCurrentPage === 'number') setInternalCurrentPage(savedState.savedCurrentPage)
+        if (typeof savedState.savedPageSize === 'number') setInternalPageSize(savedState.savedPageSize)
+      }
+      stateAppliedFromStorage = true
     }
-
-    if (!stateAppliedFromStorage && columns.length > 0) { // Use memoized, sorted columns
+    if (!stateAppliedFromStorage && columns.length > 0) {
       setVisibleColumns(new Set(columns))
     }
     setIsStateLoaded(true)
-  }, [localStorageKey, columns, paginationFromQueryParams]) // Depend on memoized columns and mode
+  }, [localStorageKey, columns, paginationFromQueryParams])
 
-  // Save state to local storage when it changes, but only after initial load attempt
   useEffect(() => {
-    if (!localStorageKey || !isStateLoaded) return // Don't save if persistence disabled or initial load not done
-
-    try {
-      const stateToSave = {
-        savedFilters: filters,
-        savedActiveSorts: activeSorts,
-        savedVisibleColumns: Array.from(visibleColumns),
-      }
-      // Only save pagination state if not using query params
-      if (!paginationFromQueryParams) {
-        stateToSave.savedCurrentPage = internalCurrentPage
-        stateToSave.savedPageSize = internalPageSize
-      }
-      setLocalData(localStorageKey, stateToSave)
-    } catch (error) {
-      console.error(`Failed to save table state for key "${localStorageKey}" to local storage:`, error)
+    if (!localStorageKey || !isStateLoaded) return
+    const stateToSave = {
+      savedFilters: filters,
+      savedActiveSorts: activeSorts,
+      savedVisibleColumns: Array.from(visibleColumns),
     }
-  }, [filters, activeSorts, visibleColumns, localStorageKey, isStateLoaded, paginationFromQueryParams, internalCurrentPage, internalPageSize])
-
-  // Reset currentPage to 1 when filters, sorts, or pageSize change (only for internal state)
-  useEffect(() => {
     if (!paginationFromQueryParams) {
-      setInternalCurrentPage(1)
+      stateToSave.savedCurrentPage = internalCurrentPage
+      stateToSave.savedPageSize = internalPageSize
     }
+    setLocalData(localStorageKey, stateToSave)
+  }, [
+    filters,
+    activeSorts, 
+    visibleColumns, 
+    localStorageKey, 
+    isStateLoaded, 
+    paginationFromQueryParams, 
+    internalCurrentPage, 
+    internalPageSize
+  ])
+
+  useEffect(() => {
+    if (!paginationFromQueryParams) setInternalCurrentPage(1)
   }, [filters, activeSorts, internalPageSize, paginationFromQueryParams])
 
   if (!data || !Array.isArray(data) || data.length === 0) {
@@ -130,37 +125,22 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
     )
   }
 
-  // Infer column types from the data
   const inferredColumnTypes = useMemo(() => {
     const types = {}
-    const currencySet = new Set(currencyColumns);
-
+    const currencySet = new Set(currencyColumns)
     columns.forEach(column => {
-      // 1. Direct columnFormats prop takes precedence (exact match)
       if (columnFormats[column]) {
         types[column] = columnFormats[column]
         return
       }
-
-      // 2. Pattern-based formats: check for RegExp keys in columnFormats
       for (const key of Object.keys(columnFormats)) {
-        // If the key is a RegExp (not a string), test it
-        const maybeRegex = key;
-        let regex = null;
-        // Try to parse string keys that look like regexes (e.g., /^acos/)
-        if (maybeRegex instanceof RegExp) {
-          regex = maybeRegex;
-        } else {
-          // Try to parse string keys that look like regexes
-          try {
-            if (maybeRegex.startsWith('/') && maybeRegex.endsWith('/')) {
-              regex = new RegExp(maybeRegex.slice(1, -1));
-            }
-          } catch (e) {}
+        let regex = null
+        if (key.startsWith('/') && key.endsWith('/')) {
+          regex = new RegExp(key.slice(1, -1))
         }
         if (regex && regex.test(column)) {
-          types[column] = columnFormats[key];
-          return;
+          types[column] = columnFormats[key]
+          return
         }
       }
 
@@ -178,25 +158,13 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
       const validSamples = rawSamples.filter(val => !isEmptyLike(val));
 
       if (validSamples.length > 0) {
-        const allValidSamplesAreNumbers = validSamples.every(value => {
-          const num = Number(value);
-          return isFinite(num); // Checks for actual numbers, excluding NaN and Infinity
-        });
-
+        const allValidSamplesAreNumbers = validSamples.every(value => isFinite(Number(value)))
         if (allValidSamplesAreNumbers) {
           if (currencySet.has(column)) {
-            types[column] = { type: 'currency', decimals: 2 };
+            types[column] = { type: 'currency', decimals: 2 }
           } else {
-            const allAreIntegers = validSamples.every(value => {
-              const num = Number(value);
-              return Number.isInteger(num);
-            });
-
-            if (allAreIntegers) {
-              types[column] = { type: 'number', decimals: 0 };
-            } else {
-              types[column] = { type: 'number', decimals: 2 }; 
-            }
+            const allAreIntegers = validSamples.every(value => Number.isInteger(Number(value)))
+            types[column] = allAreIntegers ? { type: 'number', decimals: 0 } : { type: 'number', decimals: 2 }
           }
         }
       }
@@ -204,61 +172,38 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
     return types
   }, [data, columns, columnFormats, currencyColumns])
 
-  // Get available columns for filtering (excluding already filtered columns)
-  const availableColumns = useMemo(() => 
-    columns.filter(column => !filters.some(f => f.column === column))
-  , [columns, filters])
+  const availableColumns = useMemo(
+    () => columns.filter(column => !filters.some(f => f.column === column)),
+    [columns, filters]
+  )
 
-  // Memoize visible columns array to prevent unnecessary recalculations
-  const visibleColumnsArray = useMemo(() => 
-    columns.filter(column => visibleColumns.has(column))
-  , [columns, visibleColumns])
+  const visibleColumnsArray = useMemo(
+    () => columns.filter(column => visibleColumns.has(column)),
+    [columns, visibleColumns]
+  )
 
-  const handleToggleColumn = useCallback((column) => {
+  const handleToggleColumn = useCallback(column => {
     setVisibleColumns(prev => {
       const next = new Set(prev)
-      if (next.has(column)) {
-        next.delete(column)
-      } else {
-        next.add(column)
-      }
+      if (next.has(column)) next.delete(column)
+      else next.add(column)
       return next
     })
   }, [])
 
-  // Apply filters and sorts to the data
   const processedData = useMemo(() => {
-    // If no filters or sorts are active, return the original data
-    if (Object.keys(activeFilters).length === 0 && Object.keys(activeSorts).length === 0) {
-      return data
-    }
-
+    if (Object.keys(activeFilters).length === 0 && Object.keys(activeSorts).length === 0) return data
     let result = [...data]
-
-    // Apply filters
     if (Object.keys(activeFilters).length > 0) {
       result = result.filter(row => {
-        // Check all active filters
         return Object.entries(activeFilters).every(([column, filter]) => {
           if (!filter.value) return true
-
           const cellValue = row[column]
-          
-          // Skip null/undefined/empty values unless explicitly filtering for them
-          if (cellValue === null || cellValue === undefined || cellValue === '') {
-            return false
-          }
-
-          // Treat percent as number for filtering
+          if (cellValue === null || cellValue === undefined || cellValue === '') return false
           if (filter.type === 'number' || filter.type === 'percent') {
             const numValue = Number(cellValue)
             const filterValue = Number(filter.value)
-            
-            // Skip if the value isn't a valid number
-            if (isNaN(numValue)) {
-              return false
-            }
-
+            if (isNaN(numValue)) return false
             switch (filter.operator) {
               case 'equals': return numValue === filterValue
               case 'greater': return numValue > filterValue
@@ -271,20 +216,14 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
         })
       })
     }
-
-    // Apply sorts
     if (Object.keys(activeSorts).length > 0) {
       result.sort((a, b) => {
-        // Check each sort in order
         for (const [column, sort] of Object.entries(activeSorts)) {
           const aValue = a[column]
           const bValue = b[column]
           const multiplier = sort.direction === 'asc' ? 1 : -1
-          
-          // Handle null/undefined values in sorting
           if (aValue === null || aValue === undefined) return 1 * multiplier
           if (bValue === null || bValue === undefined) return -1 * multiplier
-          
           if (typeof aValue === 'number' && typeof bValue === 'number') {
             const diff = aValue - bValue
             if (diff !== 0) return diff * multiplier
@@ -296,43 +235,37 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
         return 0
       })
     }
-
     return result
   }, [data, activeFilters, activeSorts])
 
-  // Pagination logic (move this block up before any useCallback that uses setCurrentPage)
-  const totalRows = processedData.length;
-  // Use props if in query param mode, otherwise use internal state
-  const currentPage = paginationFromQueryParams ? propCurrentPage : internalCurrentPage;
-  const pageSize = paginationFromQueryParams ? propPageSize : internalPageSize;
-  const setCurrentPage = paginationFromQueryParams ? onPageChange : setInternalCurrentPage;
-  const setPageSize = paginationFromQueryParams ? onPageSizeChange : setInternalPageSize;
-  const totalPages = Math.max(1, Math.ceil(totalRows / pageSize));
+  const totalRows = processedData.length
+  const currentPage = paginationFromQueryParams ? propCurrentPage : internalCurrentPage
+  const pageSize = paginationFromQueryParams ? propPageSize : internalPageSize
+  const setCurrentPage = paginationFromQueryParams ? onPageChange : setInternalCurrentPage
+  const setPageSize = paginationFromQueryParams ? onPageSizeChange : setInternalPageSize
+  const totalPages = Math.max(1, Math.ceil(totalRows / pageSize))
   const paginatedData = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    const end = start + pageSize;
-    return processedData.slice(start, end);
-  }, [processedData, currentPage, pageSize]);
+    const start = (currentPage - 1) * pageSize
+    const end = start + pageSize
+    return processedData.slice(start, end)
+  }, [processedData, currentPage, pageSize])
 
-  const handleAddFilter = useCallback((column) => {
+  const handleAddFilter = useCallback(column => {
     let type = inferredColumnTypes[column]?.type || 'text'
     if (type === 'percent') type = 'number'
     setFilters(prev => [...prev, { column, type }])
     setCurrentPage(1)
   }, [inferredColumnTypes, setCurrentPage])
 
-  const handleRemoveFilter = useCallback((index) => {
+  const handleRemoveFilter = useCallback(index => {
     setFilters(prev => {
       const newFilters = [...prev]
       newFilters.splice(index, 1)
-      
-      // Remove from active filters if exists
       const column = prev[index].column
       setActiveFilters(prev => {
         const { [column]: removed, ...rest } = prev
         return rest
       })
-      
       return newFilters
     })
     setCurrentPage(1)
@@ -342,8 +275,6 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
     setFilters(prev => {
       const newFilters = [...prev]
       newFilters[index] = { ...newFilters[index], [field]: value }
-      
-      // Update active filters
       const filter = newFilters[index]
       setActiveFilters(prev => {
         if (filter.operator && filter.value) {
@@ -356,7 +287,6 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
           return rest
         }
       })
-      
       return newFilters
     })
     if (typeof setCurrentPage === 'function') setCurrentPage(1)
@@ -364,12 +294,10 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
 
   const handleSort = useCallback((column, direction) => {
     setActiveSorts(prev => {
-      // If clicking the same direction, remove the sort
       if (prev[column]?.direction === direction) {
         const { [column]: removed, ...rest } = prev
         return rest
       }
-
       return {
         ...prev,
         [column]: { direction }
@@ -445,25 +373,26 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
                 <Group gap={4} wrap="nowrap">
                   <Select
                     value={filter.operator}
-                    onChange={(value) => handleFilterChange(index, 'operator', value)}
-                    data={filter.type === 'number' || filter.type === 'percent'
-                      ? [
-                          { value: 'equals', label: '=' },
-                          { value: 'greater', label: '>' },
-                          { value: 'less', label: '<' }
-                        ]
-                      : [
-                          { value: 'contains', label: 'Contains' },
-                          { value: 'equals', label: 'Equals' }
-                        ]
+                    onChange={value => handleFilterChange(index, 'operator', value)}
+                    data={
+                      filter.type === 'number' || filter.type === 'percent'
+                        ? [
+                            { value: 'equals', label: '=' },
+                            { value: 'greater', label: '>' },
+                            { value: 'less', label: '<' }
+                          ]
+                        : [
+                            { value: 'contains', label: 'Contains' },
+                            { value: 'equals', label: 'Equals' }
+                          ]
                     }
                     size="xs"
                     style={{ maxWidth: 100 }}
                   />
-                  {(filter.type === 'number' || filter.type === 'percent') ? (
+                  {filter.type === 'number' || filter.type === 'percent' ? (
                     <NumberInput
                       value={filter.value || ''}
-                      onChange={(value) => handleFilterChange(index, 'value', value)}
+                      onChange={value => handleFilterChange(index, 'value', value)}
                       placeholder="Value"
                       size="xs"
                       style={{ maxWidth: 100 }}
@@ -471,7 +400,7 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
                   ) : (
                     <TextInput
                       value={filter.value || ''}
-                      onChange={(e) => handleFilterChange(index, 'value', e.target.value)}
+                      onChange={e => handleFilterChange(index, 'value', e.target.value)}
                       placeholder="Value"
                       size="xs"
                       style={{ maxWidth: 200 }}
@@ -487,7 +416,7 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
           <Table highlightOnHover size="sm">
             <Table.Thead>
               <Table.Tr>
-                {visibleColumnsArray.map((column) => (
+                {visibleColumnsArray.map(column => (
                   <Table.Th key={column} style={{ whiteSpace: 'nowrap' }}>
                     <Menu position="bottom-start" withinPortal>
                       <Menu.Target>
@@ -496,11 +425,7 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
                             {formatColumnName(column)}
                           </Text>
                           {activeSorts[column] && (
-                            <ActionIcon
-                              variant="subtle"
-                              color="blue"
-                              size="xs"
-                            >
+                            <ActionIcon variant="subtle" color="blue" size="xs">
                               {activeSorts[column].direction === 'asc' ? (
                                 <IconSortAscending size={14} />
                               ) : (
@@ -511,22 +436,13 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
                         </Group>
                       </Menu.Target>
                       <Menu.Dropdown>
-                        <Menu.Item
-                          leftSection={<IconSortAscending size={14} />}
-                          onClick={() => handleSort(column, 'asc')}
-                        >
+                        <Menu.Item leftSection={<IconSortAscending size={14} />} onClick={() => handleSort(column, 'asc')}>
                           Sort Ascending
                         </Menu.Item>
-                        <Menu.Item
-                          leftSection={<IconSortDescending size={14} />}
-                          onClick={() => handleSort(column, 'desc')}
-                        >
+                        <Menu.Item leftSection={<IconSortDescending size={14} />} onClick={() => handleSort(column, 'desc')}>
                           Sort Descending
                         </Menu.Item>
-                        <Menu.Item
-                          leftSection={<IconEye size={14} />}
-                          onClick={() => handleToggleColumn(column)}
-                        >
+                        <Menu.Item leftSection={<IconEye size={14} />} onClick={() => handleToggleColumn(column)}>
                           Hide Column
                         </Menu.Item>
                       </Menu.Dropdown>
@@ -538,10 +454,15 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
             <Table.Tbody>
               {paginatedData.map((row, index) => (
                 <Table.Tr key={index}>
-                  {visibleColumnsArray.map((column) => (
+                  {visibleColumnsArray.map(column => (
                     <Table.Td key={`${index}-${column}`} style={{ whiteSpace: 'nowrap' }}>
                       <Text size="xs">
-                        {formatCellValue(row[column], column, inferredColumnTypes[column] || columnFormats[column], row)}
+                        {formatCellValue(
+                          row[column],
+                          column,
+                          inferredColumnTypes[column] || columnFormats[column],
+                          row
+                        )}
                       </Text>
                     </Table.Td>
                   ))}
@@ -550,7 +471,6 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
             </Table.Tbody>
           </Table>
         </Table.ScrollContainer>
-        {/* Pagination controls */}
         <Group justify="space-between" align="center" mt="md">
           <Pagination
             value={currentPage}
@@ -562,7 +482,7 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
           />
           <Select
             value={String(pageSize)}
-            onChange={val => { setPageSize(Number(val)); }}
+            onChange={val => setPageSize(Number(val))}
             data={['10', '25', '50', '100'].map(n => ({ value: n, label: `${n} / page` }))}
             size="xs"
             style={{ width: 150 }}
@@ -583,26 +503,16 @@ function formatColumnName(column) {
 
 function formatCellValue(value, column, format, row) {
   if (value === null || value === undefined) return '-'
-  
-  // Apply column-specific formatting if available
   if (format) {
     if (format.type === 'link') {
-      let url = '#' // Default URL if template processing fails
+      let url = '#'
       if (typeof format.urlTemplate === 'function') {
-        try {
-          url = format.urlTemplate(value, row) // Pass value and row to the function
-        } catch (error) {
-          console.error(`Error executing urlTemplate function for column "${column}":`, error);
-        }
+        url = format.urlTemplate(value, row)
       } else if (typeof format.urlTemplate === 'string') {
-        // Replace any {columnName} in the URL template with the corresponding value from the row
         url = format.urlTemplate.replace(/\{([^}]+)\}/g, (match, columnName) => {
-          return row[columnName] !== undefined ? row[columnName] : match // Ensure row[columnName] exists
+          return row[columnName] !== undefined ? row[columnName] : match
         })
-      } else {
-        console.warn(`Invalid urlTemplate for column "${column}": Expected string or function, got ${typeof format.urlTemplate}`);
       }
-
       return (
         <Text component="a" href={url} target="_blank" rel="noopener noreferrer" c="blue">
           {value}
@@ -636,8 +546,6 @@ function formatCellValue(value, column, format, row) {
       }
     }
   }
-
-  // Default formatting
   if (typeof value === 'boolean') return value ? 'Yes' : 'No'
   if (value instanceof Date) return value.toLocaleString()
   if (typeof value === 'object') return JSON.stringify(value)

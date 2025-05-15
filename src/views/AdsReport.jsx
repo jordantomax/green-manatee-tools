@@ -137,6 +137,7 @@ function AdsReport() {
                     }
                   }
                 }}
+                columnOrder={['keyword']}
                 paginationFromQueryParams
                 currentPage={currentPage}
                 pageSize={pageSize}
