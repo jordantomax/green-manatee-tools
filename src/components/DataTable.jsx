@@ -300,11 +300,26 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
     return result
   }, [data, activeFilters, activeSorts])
 
+  // Pagination logic (move this block up before any useCallback that uses setCurrentPage)
+  const totalRows = processedData.length;
+  // Use props if in query param mode, otherwise use internal state
+  const currentPage = paginationFromQueryParams ? propCurrentPage : internalCurrentPage;
+  const pageSize = paginationFromQueryParams ? propPageSize : internalPageSize;
+  const setCurrentPage = paginationFromQueryParams ? onPageChange : setInternalCurrentPage;
+  const setPageSize = paginationFromQueryParams ? onPageSizeChange : setInternalPageSize;
+  const totalPages = Math.max(1, Math.ceil(totalRows / pageSize));
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
+    return processedData.slice(start, end);
+  }, [processedData, currentPage, pageSize]);
+
   const handleAddFilter = useCallback((column) => {
     let type = inferredColumnTypes[column]?.type || 'text'
     if (type === 'percent') type = 'number'
     setFilters(prev => [...prev, { column, type }])
-  }, [inferredColumnTypes])
+    setCurrentPage(1)
+  }, [inferredColumnTypes, setCurrentPage])
 
   const handleRemoveFilter = useCallback((index) => {
     setFilters(prev => {
@@ -320,7 +335,8 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
       
       return newFilters
     })
-  }, [])
+    setCurrentPage(1)
+  }, [setCurrentPage])
 
   const handleFilterChange = useCallback((index, field, value) => {
     setFilters(prev => {
@@ -343,7 +359,8 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
       
       return newFilters
     })
-  }, [])
+    if (typeof setCurrentPage === 'function') setCurrentPage(1)
+  }, [setCurrentPage])
 
   const handleSort = useCallback((column, direction) => {
     setActiveSorts(prev => {
@@ -359,20 +376,6 @@ function DataTable({ data, title, columnFormats = {}, tableId, currencyColumns =
       }
     })
   }, [])
-
-  // Pagination logic
-  const totalRows = processedData.length;
-  // Use props if in query param mode, otherwise use internal state
-  const currentPage = paginationFromQueryParams ? propCurrentPage : internalCurrentPage;
-  const pageSize = paginationFromQueryParams ? propPageSize : internalPageSize;
-  const setCurrentPage = paginationFromQueryParams ? onPageChange : setInternalCurrentPage;
-  const setPageSize = paginationFromQueryParams ? onPageSizeChange : setInternalPageSize;
-  const totalPages = Math.max(1, Math.ceil(totalRows / pageSize));
-  const paginatedData = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    const end = start + pageSize;
-    return processedData.slice(start, end);
-  }, [processedData, currentPage, pageSize]);
 
   return (
     <Paper withBorder p="md">

@@ -74,8 +74,6 @@ function AdsReport() {
     </Anchor>
   ))
 
-  console.log(report)
-
   return (
     <Container size="md" py="xl">
       <Stack gap="md">
