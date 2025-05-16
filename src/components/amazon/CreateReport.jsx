@@ -33,9 +33,9 @@ const CreateReport = ({ setCreateModalOpen, handleRefreshReports }) => {
 
   const handleCreateReport = async (values) => {
     await run(async () => {
-      await api.createAdsReport(values)
-      await handleRefreshReports()
-      setCreateModalOpen(false)
+    await api.createAdsReport(values)
+    await handleRefreshReports()
+    setCreateModalOpen(false)
     })
   }
 
