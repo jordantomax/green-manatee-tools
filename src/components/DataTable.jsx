@@ -64,6 +64,7 @@ function DataTable({
     let stateAppliedFromStorage = false
     const savedState = getLocalData(localStorageKey)
     if (savedState) {
+      console.log('savedState:', savedState)
       if (savedState.savedFilters && Array.isArray(savedState.savedFilters)) {
         setFilters(savedState.savedFilters)
         const newActiveFilters = {}
@@ -90,7 +91,7 @@ function DataTable({
       setVisibleColumns(new Set(columns))
     }
     setIsStateLoaded(true)
-  }, [localStorageKey, columns, paginationFromQueryParams])
+  }, [localStorageKey, paginationFromQueryParams])
 
   useEffect(() => {
     if (!localStorageKey || !isStateLoaded) return
