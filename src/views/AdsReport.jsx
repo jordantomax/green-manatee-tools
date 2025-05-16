@@ -137,7 +137,7 @@ function AdsReport() {
                     }
                   }
                 }}
-                columnOrder={['searchTerm', 'cost', 'matchType']}
+                columnOrder={['searchTerm', 'keyword', 'matchType', 'cost']}
                 paginationFromQueryParams
                 currentPage={currentPage}
                 pageSize={pageSize}

@@ -202,7 +202,11 @@ function DataTable({
           if (!filter.value) return true
           const cellValue = row[column]
           if (cellValue === null || cellValue === undefined || cellValue === '') return false
-          if (filter.type === 'number' || filter.type === 'percent') {
+          
+          const format = inferredColumnTypes[column] || columnFormats[column];
+          const isNumeric = format?.type === 'number' || format?.type === 'percent' || format?.type === 'currency';
+          
+          if (isNumeric) {
             const numValue = Number(cellValue)
             const filterValue = Number(filter.value)
             if (isNaN(numValue)) return false
@@ -221,24 +225,32 @@ function DataTable({
     if (Object.keys(activeSorts).length > 0) {
       result.sort((a, b) => {
         for (const [column, sort] of Object.entries(activeSorts)) {
-          const aValue = a[column]
-          const bValue = b[column]
-          const multiplier = sort.direction === 'asc' ? 1 : -1
-          if (aValue === null || aValue === undefined) return 1 * multiplier
-          if (bValue === null || bValue === undefined) return -1 * multiplier
-          if (typeof aValue === 'number' && typeof bValue === 'number') {
-            const diff = aValue - bValue
-            if (diff !== 0) return diff * multiplier
+          let aValue = a[column];
+          let bValue = b[column];
+          const multiplier = sort.direction === 'asc' ? 1 : -1;
+
+          if (aValue == null) return 1 * multiplier;
+          if (bValue == null) return -1 * multiplier;
+
+          const format = inferredColumnTypes[column] || columnFormats[column];
+          const isNumeric = format?.type === 'number' || format?.type === 'percent' || format?.type === 'currency';
+          
+          if (isNumeric) {
+            aValue = Number(aValue);
+            bValue = Number(bValue);
+            if (!isNaN(aValue) && !isNaN(bValue)) {
+              if (aValue !== bValue) return (aValue - bValue) * multiplier;
+            }
           } else {
-            const diff = String(aValue).localeCompare(String(bValue))
-            if (diff !== 0) return diff * multiplier
+            const diff = String(aValue).localeCompare(String(bValue));
+            if (diff !== 0) return diff * multiplier;
           }
         }
-        return 0
-      })
+        return 0;
+      });
     }
     return result
-  }, [data, activeFilters, activeSorts])
+  }, [data, activeFilters, activeSorts, inferredColumnTypes])
 
   const totalRows = processedData.length
   const currentPage = paginationFromQueryParams ? propCurrentPage : internalCurrentPage
@@ -427,7 +439,7 @@ function DataTable({
                     <Menu position="bottom-start" withinPortal>
                       <Menu.Target>
                         <Group gap="xs" wrap="nowrap">
-                          <Text size="xs" fw={500} style={{ cursor: 'pointer' }}>
+                          <Text size="xs" fw={700} style={{ cursor: 'pointer' }}>
                             {formatColumnName(column)}
                           </Text>
                           {activeSorts[column] && (
