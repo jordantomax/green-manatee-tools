@@ -20,21 +20,70 @@ function resourceUrl(resource) {
 }
 
 let errorHandler = null
+let isRefreshing = false
+let refreshPromise = null
 
 export function setErrorHandler(handler) {
   errorHandler = handler
 }
 
+async function login(email, password) {
+  const formData = new URLSearchParams()
+  formData.append('username', email)
+  formData.append('password', password)
+
+  const response = await fetch(`${API_URL}/auth/token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: formData
+  })
+
+  if (!response.ok) {
+    throw new Error('Login failed')
+  }
+
+  return response.json()
+}
+
+async function refreshToken() {
+  if (isRefreshing) {
+    return refreshPromise
+  }
+
+  isRefreshing = true
+  refreshPromise = (async () => {
+    try {
+      const tokens = await getSavedTokens()
+      return call('auth/refresh', { 
+        method: 'POST',
+        autoRefresh: false,
+        body: {
+          refreshToken: tokens.refresh
+        }
+      })
+    } finally {
+      isRefreshing = false
+      refreshPromise = null
+    }
+  })()
+
+  return refreshPromise
+}
+
 async function call (path, _options = {}) {
-  const { method, params, body } = _options
+  const { method, params, body, autoRefresh = true } = _options
   const tokens = await getSavedTokens()
-  const key = tokens.apiKey
   const options = {
     method: method || 'GET',
     headers: {
-      'X-Api-Key': key,
       'Content-Type': 'application/json',
     }
+  }
+
+  if (tokens.access) {
+    options.headers['Authorization'] = `Bearer ${tokens.access}`
   }
 
   const url = new URL(`${API_URL}/${path}`)
@@ -47,20 +96,25 @@ async function call (path, _options = {}) {
   }
 
   try {
-    const response = await fetch(url, options)
+    let response = await fetch(url, options)
+    
+    if (response.status === 401 && tokens.access && autoRefresh) {
+      const data = await refreshToken()
+      options.headers['Authorization'] = `Bearer ${data.accessToken}`
+      response = await fetch(url, options)
+    }
+
     const data = await response.json()
     if (!response.ok) {
       const error = new Error(data.message || 'API request failed')
       error.status = response.status
       error.data = data
-      
       throw error
     }
     
     return data
   } catch (error) {
     if (errorHandler) errorHandler(error)
-    throw error
   }
 }
 
@@ -186,7 +240,15 @@ async function deleteAdsReport(reportId) {
   })
 }
 
+async function getCurrentUser() {
+  return call('auth/me', {
+    method: 'GET'
+  })
+}
+
 const api = {
+  login,
+  getCurrentUser,
   queryResources,
   getResource,
   getResources,
@@ -201,7 +263,8 @@ const api = {
   createAdsReport,
   getAdsReport,
   getTaggedAdsReport,
-  deleteAdsReport
+  deleteAdsReport,
+  refreshToken
 }
 
 export default api

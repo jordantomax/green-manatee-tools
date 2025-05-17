@@ -3,6 +3,7 @@ import {
   Container,
   Paper,
   Title,
+  TextInput,
   PasswordInput,
   Button,
   Stack,
@@ -18,21 +19,27 @@ function Auth () {
   
   const form = useForm({
     initialValues: {
-      apiKey: ''
+      email: '',
+      password: ''
     },
     validate: {
-      apiKey: (value) => (!value ? 'API key is required' : null)
+      email: (value) => (!value ? 'Email is required' : null),
+      password: (value) => (!value ? 'Password is required' : null)
     }
   })
 
-  function handleSubmit(values) {
-    auth.logIn(values)
+  async function handleSubmit(values) {
+    try {
+      await auth.logIn(values.email, values.password)
+    } catch (error) {
+      console.error('Login error:', error)
+      form.setErrors({ password: 'Invalid email or password' })
+    }
   }
 
   return (
     <Box 
       h="100vh"
-      minHeight="100vh"
       justify="center"
       py="xl"
       px="md"
@@ -52,11 +59,18 @@ function Auth () {
         
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack gap="md">
-              <PasswordInput
-                label="API Key"
-                placeholder="API key"
+              <TextInput
+                label="Email"
+                placeholder="Enter your email"
                 required
-                {...form.getInputProps('apiKey')}
+                {...form.getInputProps('email')}
+              />
+
+              <PasswordInput
+                label="Password"
+                placeholder="Enter your password"
+                required
+                {...form.getInputProps('password')}
               />
 
               <Button type="submit" fullWidth mt="md">

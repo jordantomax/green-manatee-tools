@@ -78,10 +78,7 @@ function AppNav() {
                   <IconUserFilled size={20} />
                 </Avatar>
                 <div style={{ width: '100%' }}>
-                  <Text size="sm" fw={500}>User</Text>
-                  <Text size="xs" c="dimmed" truncate="end" style={{ maxWidth: 150 }}>
-                    {auth.tokens.shippo}
-                  </Text>
+                  <Text size="sm" fw={500}>{auth.user?.email || 'User'}</Text>
                 </div>
                 <IconChevronDown 
                   size={16} 

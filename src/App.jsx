@@ -39,8 +39,7 @@ function AppContent() {
       padding="md"
       styles={{
         main: {
-          backgroundColor: 'var(--mantine-color-gray-0)',
-          minHeight: '100vh'
+          backgroundColor: 'var(--mantine-color-gray-0)'
         }
       }}
     >
