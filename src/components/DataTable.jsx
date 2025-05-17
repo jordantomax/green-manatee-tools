@@ -64,7 +64,6 @@ function DataTable({
     let stateAppliedFromStorage = false
     const savedState = getLocalData(localStorageKey)
     if (savedState) {
-      console.log('savedState:', savedState)
       if (savedState.savedFilters && Array.isArray(savedState.savedFilters)) {
         setFilters(savedState.savedFilters)
         const newActiveFilters = {}
@@ -202,13 +201,18 @@ function DataTable({
         return Object.entries(activeFilters).every(([column, filter]) => {
           if (!filter.value) return true
           const cellValue = row[column]
-          if (cellValue === null || cellValue === undefined || cellValue === '') return false
           
+          const isEmptyLike = (val) => 
+            val === null || 
+            val === undefined || 
+            (typeof val === 'string' && val.trim() === '') || 
+            String(val).trim() === '-';
+
           const format = inferredColumnTypes[column] || columnFormats[column];
           const isNumeric = format?.type === 'number' || format?.type === 'percent' || format?.type === 'currency';
           
           if (isNumeric) {
-            const numValue = Number(cellValue)
+            const numValue = isEmptyLike(cellValue) ? 0 : Number(cellValue)
             const filterValue = Number(filter.value)
             if (isNaN(numValue)) return false
             switch (filter.operator) {
@@ -218,7 +222,8 @@ function DataTable({
               default: return true
             }
           } else {
-            return String(cellValue).toLowerCase().includes(String(filter.value).toLowerCase())
+            const strValue = isEmptyLike(cellValue) ? '' : String(cellValue)
+            return strValue.toLowerCase().includes(String(filter.value).toLowerCase())
           }
         })
       })
@@ -309,13 +314,27 @@ function DataTable({
 
   const handleSort = useCallback((column, direction) => {
     setActiveSorts(prev => {
+      // If clicking the same sort direction, remove the sort
       if (prev[column]?.direction === direction) {
         const { [column]: removed, ...rest } = prev
         return rest
       }
+      
+      // Get current sort order
+      const currentOrder = Object.keys(prev)
+      
+      // If column already exists in sorts, update its direction
+      if (prev[column]) {
+        return {
+          ...prev,
+          [column]: { direction, order: prev[column].order }
+        }
+      }
+      
+      // Add new sort with next order number
       return {
         ...prev,
-        [column]: { direction }
+        [column]: { direction, order: currentOrder.length + 1 }
       }
     })
   }, [])
@@ -402,7 +421,7 @@ function DataTable({
                           ]
                     }
                     size="xs"
-                    style={{ maxWidth: 100 }}
+                    style={{ maxWidth: 120 }}
                   />
                   {filter.type === 'number' || filter.type === 'percent' ? (
                     <NumberInput
@@ -435,30 +454,68 @@ function DataTable({
                   <Table.Th
                     key={column}
                     className={colIdx === 0 ? classes.stickyCol : undefined}
-                    style={{ whiteSpace: 'nowrap' }}
+                    style={{ 
+                      whiteSpace: 'nowrap',
+                      backgroundColor: activeSorts[column] ? 'var(--mantine-color-blue-0)' : undefined,
+                      borderBottom: activeSorts[column] ? '2px solid var(--mantine-color-blue-3)' : undefined
+                    }}
                   >
                     <Menu position="bottom-start" withinPortal>
                       <Menu.Target>
                         <Group gap="xs" wrap="nowrap">
-                          <Text size="xs" fw={700} style={{ cursor: 'pointer' }}>
+                          <Text 
+                            size="xs" 
+                            fw={700} 
+                            style={{ 
+                              cursor: 'pointer',
+                              color: activeSorts[column] ? 'var(--mantine-color-blue-7)' : undefined
+                            }}
+                          >
                             {formatColumnName(column)}
                           </Text>
                           {activeSorts[column] && (
-                            <ActionIcon variant="subtle" color="blue" size="xs">
-                              {activeSorts[column].direction === 'asc' ? (
-                                <IconSortAscending size={14} />
-                              ) : (
-                                <IconSortDescending size={14} />
+                            <Group gap={2} wrap="nowrap">
+                              <ActionIcon 
+                                variant="light" 
+                                color="blue" 
+                                size="xs"
+                                style={{ 
+                                  backgroundColor: activeSorts[column].order === 1 ? 'var(--mantine-color-blue-1)' : 'transparent',
+                                  border: activeSorts[column].order === 1 ? '1px solid var(--mantine-color-blue-3)' : 'none'
+                                }}
+                              >
+                                {activeSorts[column].direction === 'asc' ? (
+                                  <IconSortAscending size={14} />
+                                ) : (
+                                  <IconSortDescending size={14} />
+                                )}
+                              </ActionIcon>
+                              {activeSorts[column].order > 1 && (
+                                <Text size="xs" c="dimmed" style={{ lineHeight: 1 }}>
+                                  {activeSorts[column].order}
+                                </Text>
                               )}
-                            </ActionIcon>
+                            </Group>
                           )}
                         </Group>
                       </Menu.Target>
                       <Menu.Dropdown>
-                        <Menu.Item leftSection={<IconSortAscending size={14} />} onClick={() => handleSort(column, 'asc')}>
+                        <Menu.Item 
+                          leftSection={<IconSortAscending size={14} />} 
+                          onClick={() => handleSort(column, 'asc')}
+                          rightSection={activeSorts[column]?.direction === 'asc' && (
+                            <Text size="xs" c="dimmed">{activeSorts[column].order}</Text>
+                          )}
+                        >
                           Sort Ascending
                         </Menu.Item>
-                        <Menu.Item leftSection={<IconSortDescending size={14} />} onClick={() => handleSort(column, 'desc')}>
+                        <Menu.Item 
+                          leftSection={<IconSortDescending size={14} />} 
+                          onClick={() => handleSort(column, 'desc')}
+                          rightSection={activeSorts[column]?.direction === 'desc' && (
+                            <Text size="xs" c="dimmed">{activeSorts[column].order}</Text>
+                          )}
+                        >
                           Sort Descending
                         </Menu.Item>
                         <Menu.Item leftSection={<IconEye size={14} />} onClick={() => handleToggleColumn(column)}>
