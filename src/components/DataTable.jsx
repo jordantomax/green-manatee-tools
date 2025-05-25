@@ -320,7 +320,6 @@ function DataTable({
         return rest
       }
       
-      // Get current sort order
       const currentOrder = Object.keys(prev)
       
       // If column already exists in sorts, update its direction
