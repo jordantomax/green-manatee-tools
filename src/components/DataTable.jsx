@@ -376,7 +376,6 @@ function DataTable({
               onSelect={handleAddFilter}
               placeholder="Search columns..."
               width={300}
-              refreshable={false}
               buttonProps={{
                 size: 'xs',
                 variant: 'light',

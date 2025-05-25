@@ -78,7 +78,6 @@ function Address ({ address, name, handleChange, label }) {
           isLoading={isLoading}
           placeholder="Search locations"
           width={250}
-          refreshable={true}
         />
       </Group>
 

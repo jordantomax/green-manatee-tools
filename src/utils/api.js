@@ -27,51 +27,6 @@ export function setErrorHandler(handler) {
   errorHandler = handler
 }
 
-async function login(email, password) {
-  const formData = new URLSearchParams()
-  formData.append('username', email)
-  formData.append('password', password)
-
-  const response = await fetch(`${API_URL}/auth/token`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: formData
-  })
-
-  if (!response.ok) {
-    throw new Error('Login failed')
-  }
-
-  return response.json()
-}
-
-async function refreshToken() {
-  if (isRefreshing) {
-    return refreshPromise
-  }
-
-  isRefreshing = true
-  refreshPromise = (async () => {
-    try {
-      const tokens = await getSavedTokens()
-      return call('auth/refresh', { 
-        method: 'POST',
-        autoRefresh: false,
-        body: {
-          refreshToken: tokens.refresh
-        }
-      })
-    } finally {
-      isRefreshing = false
-      refreshPromise = null
-    }
-  })()
-
-  return refreshPromise
-}
-
 async function call (path, _options = {}) {
   const { method, params, body, autoRefresh = true } = _options
   const tokens = await getSavedTokens()
@@ -106,16 +61,71 @@ async function call (path, _options = {}) {
 
     const data = await response.json()
     if (!response.ok) {
-      const error = new Error(data.message || 'API request failed')
+      const error = new Error(data.detail || 'API request failed')
       error.status = response.status
-      error.data = data
       throw error
     }
     
     return data
   } catch (error) {
     if (errorHandler) errorHandler(error)
+    throw error // propagate error to the caller
   }
+}
+
+async function login(email, password) {
+  const formData = new URLSearchParams()
+  formData.append('username', email)
+  formData.append('password', password)
+
+  const response = await fetch(`${API_URL}/auth/token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: formData
+  })
+
+  if (!response.ok) {
+    throw new Error('Login failed')
+  }
+
+  return response.json()
+}
+
+async function signUp(email, password) {
+  return call('auth/signup', {
+    method: 'POST',
+    body: {
+      email,
+      password
+    }
+  })
+}
+
+async function refreshToken() {
+  if (isRefreshing) {
+    return refreshPromise
+  }
+
+  isRefreshing = true
+  refreshPromise = (async () => {
+    try {
+      const tokens = await getSavedTokens()
+      return call('auth/refresh', { 
+        method: 'POST',
+        autoRefresh: false,
+        body: {
+          refreshToken: tokens.refresh
+        }
+      })
+    } finally {
+      isRefreshing = false
+      refreshPromise = null
+    }
+  })()
+
+  return refreshPromise
 }
 
 async function queryResources (resource, body={}) {
@@ -248,6 +258,8 @@ async function getCurrentUser() {
 
 const api = {
   login,
+  signUp,
+  refreshToken,
   getCurrentUser,
   queryResources,
   getResource,
@@ -263,8 +275,7 @@ const api = {
   createAdsReport,
   getAdsReport,
   getTaggedAdsReport,
-  deleteAdsReport,
-  refreshToken
+  deleteAdsReport
 }
 
 export default api

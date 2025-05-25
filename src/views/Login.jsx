@@ -9,12 +9,14 @@ import {
   Stack,
   Box,
   Group,
-  Image
+  Image,
+  Anchor
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { AuthContext } from '@/contexts/Auth'
+import { Link } from 'react-router-dom'
 
-function Auth () {
+function Login () {
   const auth = React.useContext(AuthContext)
   
   const form = useForm({
@@ -79,9 +81,13 @@ function Auth () {
             </Stack>
           </form>
         </Paper>
+
+        <Group justify="center" mt="md">
+          <Anchor component={Link} to="/signup" size="sm">Sign up</Anchor>
+        </Group>
       </Container>
     </Box>
   )
 }
 
-export default Auth
+export default Login

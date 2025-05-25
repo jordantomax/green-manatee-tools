@@ -10,17 +10,11 @@ function SearchableSelect({
   isLoading,
   placeholder = "Search...",
   width = 250,
-  refreshable = true,
   buttonProps = {}
 }) {
   const [search, setSearch] = useState('')
   const [filteredOptions, setFilteredOptions] = useState([])
-
-  useEffect(() => {
-    if (refreshable && onRefresh) {
-      onRefresh()
-    }
-  }, [])
+  const [hasRefreshed, setHasRefreshed] = useState(false)
 
   useEffect(() => {
     const filtered = options.filter(option => 
@@ -36,6 +30,10 @@ function SearchableSelect({
       setSearch('')
     },
     onDropdownOpen: () => {
+      if (!hasRefreshed && onRefresh) {
+        onRefresh()
+        setHasRefreshed(true)
+      }
       combobox.focusSearchInput()
     }
   })
@@ -70,7 +68,7 @@ function SearchableSelect({
             onChange={(event) => setSearch(event.currentTarget.value)}
             placeholder={placeholder}
           />
-          {refreshable && (
+          {onRefresh && (
             <Tooltip label="Refresh options">
               <ActionIcon 
                 variant="subtle" 

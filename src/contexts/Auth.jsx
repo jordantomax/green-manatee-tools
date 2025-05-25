@@ -10,6 +10,7 @@ export const AuthContext = createContext({
   isLoggedIn: null,
   user: null,
   logIn: (email, password) => {},
+  signUp: (email, password) => {},
   logOut: () => {},
   refreshToken: () => {}
 })
@@ -51,6 +52,10 @@ export const AuthProvider = ({ children }) => {
     setUser(data.user)
     setIsLoggedIn(true)
   }
+  
+  const signUp = async (email, password) => {
+    return await api.signUp(email, password)
+  }
 
   const logOut = async () => {
     removeSavedTokens()
@@ -72,6 +77,7 @@ export const AuthProvider = ({ children }) => {
         isLoggedIn: isLoggedIn,
         user: user,
         logIn: logIn,
+        signUp: signUp,
         logOut: logOut,
         refreshToken: refreshToken
       }}
