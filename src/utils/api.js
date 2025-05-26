@@ -22,9 +22,14 @@ function resourceUrl(resource) {
 let errorHandler = null
 let isRefreshing = false
 let refreshPromise = null
+let tokensHandler = null
 
 export function setErrorHandler(handler) {
   errorHandler = handler
+}
+
+export function setTokensHandler(handler) {
+  tokensHandler = handler
 }
 
 async function call (path, _options = {}) {
@@ -55,6 +60,7 @@ async function call (path, _options = {}) {
     
     if (response.status === 401 && tokens.access && autoRefresh) {
       const data = await refreshToken()
+      if (tokensHandler) await tokensHandler(data)
       options.headers['Authorization'] = `Bearer ${data.accessToken}`
       response = await fetch(url, options)
     }
@@ -122,10 +128,17 @@ async function refreshToken() {
     } finally {
       isRefreshing = false
       refreshPromise = null
+      // DO I NEED TO SAVE THE TOKENS HERE?
     }
   })()
 
   return refreshPromise
+}
+
+async function getCurrentUser() {
+  return call('auth/me', {
+    method: 'GET'
+  })
 }
 
 async function queryResources (resource, body={}) {
@@ -247,12 +260,6 @@ async function createAdsReport(body) {
 async function deleteAdsReport(reportId) {
   return call(`amazon/ads/reports/${reportId}`, {
     method: 'DELETE'
-  })
-}
-
-async function getCurrentUser() {
-  return call('auth/me', {
-    method: 'GET'
   })
 }
 

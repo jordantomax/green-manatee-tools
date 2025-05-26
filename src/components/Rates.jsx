@@ -50,7 +50,7 @@ function Rates ({ rates, setPurchasedRate }) {
             })
             .map((rate, i) => {
               return (
-                <Box pos="relative">
+                <Box pos="relative" key={rate.objectId}>
                   <Paper key={rate.objectId} p="md" withBorder>
                     <Stack gap="xs">
                       <Group justify="space-between" align="flex-start">

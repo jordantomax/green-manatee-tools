@@ -4,7 +4,7 @@ import {
   setSavedTokens,
   removeSavedTokens
 } from '@/utils/auth'
-import api from '@/utils/api'
+import api, { setTokensHandler } from '@/utils/api'
 
 export const AuthContext = createContext({
   isLoggedIn: null,
@@ -19,6 +19,15 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(null)
   const [user, setUser] = useState(null)
 
+  const saveTokens = async (data) => {
+    await setSavedTokens({
+      access: data.accessToken,
+      refresh: data.refreshToken
+    })
+  }
+
+  setTokensHandler(saveTokens)
+  
   const getUser = async () => {
     const tokens = await getSavedTokens()
     if (!tokens.access) {
@@ -45,10 +54,7 @@ export const AuthProvider = ({ children }) => {
 
   const logIn = async (email, password) => {
     const data = await api.login(email, password)
-    await setSavedTokens({
-      access: data.accessToken,
-      refresh: data.refreshToken
-    })
+    await saveTokens(data)
     setUser(data.user)
     setIsLoggedIn(true)
   }
@@ -65,10 +71,8 @@ export const AuthProvider = ({ children }) => {
 
   const refreshToken = async () => {
     const data = await api.refreshToken()
-    await setSavedTokens({
-      access: data.accessToken,
-      refresh: data.refreshToken
-    })
+    console.log("tokens data: ", data)
+    await saveTokens(data)
   }
 
   return (
