@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext } from 'react'
+import React, { useState, useEffect, createContext, useRef } from 'react'
 import {
   getSavedTokens,
   setSavedTokens,
@@ -18,6 +18,7 @@ export const AuthContext = createContext({
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(null)
   const [user, setUser] = useState(null)
+  const hasFetchedUser = useRef(false)
 
   const saveTokens = async (data) => {
     await setSavedTokens({
@@ -49,7 +50,10 @@ export const AuthProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    getUser()
+    if (!hasFetchedUser.current) {
+      hasFetchedUser.current = true
+      getUser()
+    }
   }, [])
 
   const logIn = async (email, password) => {
