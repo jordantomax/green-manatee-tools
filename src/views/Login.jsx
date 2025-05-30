@@ -15,9 +15,11 @@ import {
 import { useForm } from '@mantine/form'
 import { AuthContext } from '@/contexts/Auth'
 import { Link } from 'react-router-dom'
+import { useAsync } from '@/hooks/useAsync'
 
 function Login () {
   const auth = React.useContext(AuthContext)
+  const { isLoading, run } = useAsync()
   
   const form = useForm({
     initialValues: {
@@ -31,12 +33,7 @@ function Login () {
   })
 
   async function handleSubmit(values) {
-    try {
-      await auth.logIn(values.email, values.password)
-    } catch (error) {
-      console.error('Login error:', error)
-      form.setErrors({ password: 'Invalid email or password' })
-    }
+    await run(() => auth.logIn(values.email, values.password))
   }
 
   return (
@@ -65,6 +62,7 @@ function Login () {
                 label="Email"
                 placeholder="Enter your email"
                 required
+                disabled={isLoading}
                 {...form.getInputProps('email')}
               />
 
@@ -72,10 +70,11 @@ function Login () {
                 label="Password"
                 placeholder="Enter your password"
                 required
+                disabled={isLoading}
                 {...form.getInputProps('password')}
               />
 
-              <Button type="submit" fullWidth mt="md">
+              <Button type="submit" fullWidth mt="md" loading={isLoading}>
                 Log In
               </Button>
             </Stack>

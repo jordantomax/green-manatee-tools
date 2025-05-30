@@ -15,10 +15,12 @@ import {
 import { useForm } from '@mantine/form'
 import { AuthContext } from '@/contexts/Auth'
 import { Link, useNavigate } from 'react-router-dom'
+import { useAsync } from '@/hooks/useAsync'
 
 function Signup () {
   const auth = React.useContext(AuthContext)
   const navigate = useNavigate()
+  const { isLoading, run } = useAsync()
   
   const form = useForm({
     initialValues: {
@@ -32,12 +34,8 @@ function Signup () {
   })
 
   async function handleSubmit(values) {
-    try {
-      await auth.signUp(values.email, values.password)
+      await run(() => auth.signUp(values.email, values.password))
       navigate('/')
-    } catch (error) {
-      form.setErrors({ email: error.message || 'Registration failed' })
-    }
   }
 
   return (
@@ -66,6 +64,7 @@ function Signup () {
                 label="Email"
                 placeholder="Enter your email"
                 required
+                disabled={isLoading}
                 {...form.getInputProps('email')}
               />
 
@@ -73,10 +72,11 @@ function Signup () {
                 label="Password"
                 placeholder="Enter your password"
                 required
+                disabled={isLoading}
                 {...form.getInputProps('password')}
               />
 
-              <Button type="submit" fullWidth mt="md">
+              <Button type="submit" fullWidth mt="md" loading={isLoading}>
                 Sign Up
               </Button>
             </Stack>
