@@ -76,7 +76,7 @@ function Rates ({ rates, setPurchasedRate }) {
                             <Text size="sm">{rate.estimatedDays}</Text>
                           </Group>
                         </Stack>
-                        <Box pos="absolute" top={20} right={20} w={75}>
+                        <Box pos="absolute" top={20} right={20} w={50}>
                           <Image
                             src={rate.providerImage75}
                             alt={rate.provider}
