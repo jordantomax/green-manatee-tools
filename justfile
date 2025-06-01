@@ -13,6 +13,7 @@ infra *args:
         --stack-name {{ app_name }}-{{ env }} \
         --capabilities CAPABILITY_NAMED_IAM \
         --confirm-changeset \
+        --no-fail-on-empty-changeset \
         --parameter-overrides \
             Env={{ env }} \
             HostedZoneId={{ hosted_zone_id }} \
