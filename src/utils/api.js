@@ -133,7 +133,6 @@ async function refreshToken() {
     } finally {
       isRefreshing = false
       refreshPromise = null
-      // DO I NEED TO SAVE THE TOKENS HERE?
     }
   })()
 
