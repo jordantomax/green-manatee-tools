@@ -3,36 +3,42 @@ import {
   Container,
   Paper,
   Title,
+  TextInput,
   PasswordInput,
   Button,
   Stack,
   Box,
   Group,
-  Image
+  Image,
+  Anchor
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { AuthContext } from '@/contexts/Auth'
+import { Link } from 'react-router-dom'
+import { useAsync } from '@/hooks/useAsync'
 
-function Auth () {
+function Login () {
   const auth = React.useContext(AuthContext)
+  const { isLoading, run } = useAsync()
   
   const form = useForm({
     initialValues: {
-      apiKey: ''
+      email: '',
+      password: ''
     },
     validate: {
-      apiKey: (value) => (!value ? 'API key is required' : null)
+      email: (value) => (!value ? 'Email is required' : null),
+      password: (value) => (!value ? 'Password is required' : null)
     }
   })
 
-  function handleSubmit(values) {
-    auth.logIn(values)
+  async function handleSubmit(values) {
+    await run(() => auth.logIn(values.email, values.password))
   }
 
   return (
     <Box 
       h="100vh"
-      minHeight="100vh"
       justify="center"
       py="xl"
       px="md"
@@ -52,22 +58,35 @@ function Auth () {
         
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack gap="md">
-              <PasswordInput
-                label="API Key"
-                placeholder="API key"
+              <TextInput
+                label="Email"
+                placeholder="Enter your email"
                 required
-                {...form.getInputProps('apiKey')}
+                disabled={isLoading}
+                {...form.getInputProps('email')}
               />
 
-              <Button type="submit" fullWidth mt="md">
+              <PasswordInput
+                label="Password"
+                placeholder="Enter your password"
+                required
+                disabled={isLoading}
+                {...form.getInputProps('password')}
+              />
+
+              <Button type="submit" fullWidth mt="md" loading={isLoading}>
                 Log In
               </Button>
             </Stack>
           </form>
         </Paper>
+
+        <Group justify="center" mt="md">
+          <Anchor component={Link} to="/signup" size="sm">Sign up</Anchor>
+        </Group>
       </Container>
     </Box>
   )
 }
 
-export default Auth
+export default Login

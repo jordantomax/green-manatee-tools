@@ -20,21 +20,31 @@ function resourceUrl(resource) {
 }
 
 let errorHandler = null
+let isRefreshing = false
+let refreshPromise = null
+let tokensHandler = null
 
 export function setErrorHandler(handler) {
   errorHandler = handler
 }
 
+export function setTokensHandler(handler) {
+  tokensHandler = handler
+}
+
 async function call (path, _options = {}) {
-  const { method, params, body } = _options
+  const { method, params, body, autoRefresh = true, headers = {} } = _options
   const tokens = await getSavedTokens()
-  const key = tokens.apiKey
   const options = {
     method: method || 'GET',
     headers: {
-      'X-Api-Key': key,
       'Content-Type': 'application/json',
+      ...headers
     }
+  }
+
+  if (tokens.access) {
+    options.headers['Authorization'] = `Bearer ${tokens.access}`
   }
 
   const url = new URL(`${API_URL}/${path}`)
@@ -47,23 +57,92 @@ async function call (path, _options = {}) {
   }
 
   try {
-    const response = await fetch(url, options)
+    let response = await fetch(url, options)
+    
+    if (response.status === 401 && tokens.access && autoRefresh) {
+      const data = await refreshToken()
+      if (tokensHandler) await tokensHandler(data)
+      options.headers['Authorization'] = `Bearer ${data.accessToken}`
+      response = await fetch(url, options)
+    }
+
     const data = await response.json()
     if (!response.ok) {
-      const error = new Error(data.message || 'API request failed')
+      const error = new Error(data.detail || 'API request failed')
       error.status = response.status
-      error.data = data
-      
       throw error
     }
     
     return data
   } catch (error) {
-    if (errorHandler && !error.status) {
-      errorHandler(error)
-    }
-    throw error
+    if (errorHandler) errorHandler(error)
+    throw error // propagate error to the caller
   }
+}
+
+async function login(email, password) {
+  const formData = new URLSearchParams()
+  formData.append('username', email)
+  formData.append('password', password)
+
+  const response = await fetch(`${API_URL}/auth/token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: formData
+  })
+
+  if (!response.ok) {
+    throw new Error('Login failed')
+  }
+
+  return response.json()
+}
+
+async function signUp(email, password, apiKey) {
+  return call('auth/signup', {
+    method: 'POST',
+    body: {
+      email,
+      password,
+      apiKey
+    },
+    headers: {
+      'Signup-Api-Key': apiKey
+    }
+  })
+}
+
+async function refreshToken() {
+  if (isRefreshing) {
+    return refreshPromise
+  }
+
+  isRefreshing = true
+  refreshPromise = (async () => {
+    try {
+      const tokens = await getSavedTokens()
+      return call('auth/refresh', { 
+        method: 'POST',
+        autoRefresh: false,
+        body: {
+          refreshToken: tokens.refresh
+        }
+      })
+    } finally {
+      isRefreshing = false
+      refreshPromise = null
+    }
+  })()
+
+  return refreshPromise
+}
+
+async function getCurrentUser() {
+  return call('auth/me', {
+    method: 'GET'
+  })
 }
 
 async function queryResources (resource, body={}) {
@@ -157,7 +236,42 @@ async function mergePdfs (body) {
   return res
 }
 
+async function getAdsReports() {
+  return call('amazon/ads/reports', {
+    method: 'GET'
+  })
+}
+
+async function getAdsReport(reportId) {
+  return call(`amazon/ads/reports/${reportId}`, {
+    method: 'GET'
+  })
+}
+
+async function getTaggedAdsReport(reportId) {
+  return call(`amazon/ads/reports/${reportId}/tags`, {
+    method: 'GET'
+  })
+}
+
+async function createAdsReport(body) {
+  return call('amazon/ads/reports', {
+    method: 'POST',
+    body
+  })
+}
+
+async function deleteAdsReport(reportId) {
+  return call(`amazon/ads/reports/${reportId}`, {
+    method: 'DELETE'
+  })
+}
+
 const api = {
+  login,
+  signUp,
+  refreshToken,
+  getCurrentUser,
   queryResources,
   getResource,
   getResources,
@@ -167,7 +281,12 @@ const api = {
   shippoGetRates,
   shippoPurchaseLabel,
   shippoGetLabels,
-  mergePdfs
+  mergePdfs,
+  getAdsReports,
+  createAdsReport,
+  getAdsReport,
+  getTaggedAdsReport,
+  deleteAdsReport
 }
 
 export default api

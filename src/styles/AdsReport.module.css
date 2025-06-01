@@ -1,0 +1,9 @@
+.breadcrumbAnchor[data-active='true'] {
+  color: var(--mantine-color-gray-6);
+  cursor: default;
+  pointer-events: none;
+}
+
+.breadcrumbAnchor[data-active='true']:hover {
+  text-decoration: none;
+} 

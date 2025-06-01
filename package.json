@@ -3,22 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@mantine/core": "^7.17.3",
-    "@mantine/form": "^7.17.3",
-    "@mantine/hooks": "^7.17.3",
+    "@mantine/core": "^8.0.0",
+    "@mantine/dates": "^8.0.0",
+    "@mantine/form": "^8.0.0",
+    "@mantine/hooks": "^8.0.0",
     "@tabler/icons-react": "^3.31.0",
+    "@tanstack/react-virtual": "^3.13.8",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^6.0.2",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "vite",
-    "build": "vite build",
+    "start": "vite --mode dev",
+    "build": "vite build --mode $ENV",
     "serve": "vite preview"
   },
   "eslintConfig": {

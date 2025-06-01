@@ -9,11 +9,14 @@ import { MantineProvider, AppShell } from '@mantine/core'
 import { theme } from '@/utils/theme'
 import { ErrorProvider, useError } from '@/contexts/Error'
 import { setErrorHandler } from '@/utils/api'
-import Auth from '@/views/Auth'
+import Login from '@/views/Login'
+import Signup from '@/views/Signup'
 import Nav from '@/components/Nav'
 import Postage from '@/views/Postage'
 import Inventory from '@/views/Inventory'
 import Shipping from '@/views/Shipping'
+import Ads from '@/views/Ads'
+import AdsReport from '@/views/AdsReport'
 
 function AppContent() {
   const auth = React.useContext(AuthContext)
@@ -28,7 +31,12 @@ function AppContent() {
   }
 
   if (!auth.isLoggedIn) {
-    return <Auth />
+    return (
+      <Routes>
+        <Route path="/signup" element={<Signup />} />
+        <Route path="*" element={<Login />} />
+      </Routes>
+    )
   }
 
   return (
@@ -37,8 +45,7 @@ function AppContent() {
       padding="md"
       styles={{
         main: {
-          backgroundColor: 'var(--mantine-color-gray-0)',
-          minHeight: '100vh'
+          backgroundColor: 'var(--mantine-color-gray-0)'
         }
       }}
     >
@@ -49,6 +56,8 @@ function AppContent() {
           <Route path='postage' element={<Postage />} />
           <Route path='shipping' element={<Shipping />} />
           <Route path='inventory' element={<Inventory />} />
+          <Route path='ads' element={<Ads />} />
+          <Route path='ads/:id' element={<AdsReport />} />
         </Routes>
       </AppShell.Main>
     </AppShell>

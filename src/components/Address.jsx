@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Stack, TextInput, Group, Title, Combobox, useCombobox, ActionIcon, Tooltip, Box } from '@mantine/core'
-import { IconRefresh } from '@tabler/icons-react'
-
+import { Stack, TextInput, Group, Title } from '@mantine/core'
+import SearchableSelect from './SearchableSelect'
 import { setLocalData, getLocalData } from '@/utils/storage'
 import api from '@/utils/api'
 
@@ -9,29 +8,16 @@ function Address ({ address, name, handleChange, label }) {
   const [isLoading, setIsLoading] = useState(false)
   const [locations, setLocations] = useState(null)
   const [options, setOptions] = useState([])
-  const [search, setSearch] = useState('')
 
   useEffect(() => {
     if (locations) {
-      const newOptions = locations
-        .filter(location => 
-          location.properties.name.value.toLowerCase().includes(search.toLowerCase().trim())
-        )
-        .map((location) => {
-          const locationName = location.properties.name.value
-          return (
-            <Combobox.Option 
-              value={location.id} 
-              key={location.id}
-              onClick={() => combobox.selectOption(location.id)}
-            >
-              {locationName}
-            </Combobox.Option>
-          )
-        })
+      const newOptions = locations.map(location => ({
+        value: location.id,
+        label: location.properties.name.value
+      }))
       setOptions(newOptions)
     }
-  }, [locations, search])
+  }, [locations])
 
   async function getLocations(forceUpdate = false) {
     let locations = getLocalData('locations')
@@ -39,7 +25,7 @@ function Address ({ address, name, handleChange, label }) {
     if (!locations || forceUpdate) {
       locations = await api.queryResources('locations', {
         filter_properties: ['name'],
-        filter_value: search
+        filter_value: ''
       })
     }
     setIsLoading(false)
@@ -47,7 +33,10 @@ function Address ({ address, name, handleChange, label }) {
     setLocations(locations)
   }
   
-  async function handleSelect(location) {
+  async function handleSelect(locationId) {
+    const location = locations.find(l => l.id === locationId)
+    if (!location) return
+
     const p = location.properties
     
     // First reset all fields to empty strings
@@ -76,77 +65,20 @@ function Address ({ address, name, handleChange, label }) {
       })
   }
   
-  const combobox = useCombobox({
-    onDropdownClose: () => {
-      combobox.resetSelectedOption()
-      combobox.focusTarget()
-      setSearch('')
-    },
-
-    onDropdownOpen: () => {
-      combobox.focusSearchInput()
-      getLocations()
-    },
-    
-  })
-  
- return (
+  return (
     <Stack gap="md">
       <Group justify="space-between">
         <Title order={2} style={{ margin: 0 }}>{label}</Title>
     
-        <Combobox
-          store={combobox}
+        <SearchableSelect
+          label="Search Locations"
+          options={options}
+          onSelect={handleSelect}
+          onRefresh={() => getLocations(true)}
+          isLoading={isLoading}
+          placeholder="Search locations"
           width={250}
-          position="bottom-start"
-          withArrow
-          onOptionSubmit={locationId => {
-            combobox.closeDropdown()
-            const selectedLocation = locations.find(location => location.id === locationId)
-            if (selectedLocation) { handleSelect(selectedLocation) }
-          }}
-        >
-          <Combobox.Target withAriaAttributes={false}>
-            <Button
-              variant="light"
-              disabled={isLoading}
-              loading={isLoading}
-              onClick={combobox.toggleDropdown}
-            >
-              Search Locations 
-            </Button>
-          </Combobox.Target>
-
-          <Combobox.Dropdown>
-            <Box style={{ position: 'relative' }}>
-              <Combobox.Search
-                value={search}
-                onChange={(event) => setSearch(event.currentTarget.value)}
-                placeholder="Search locations"
-              />
-              <Tooltip label="Force refresh locations">
-                <ActionIcon 
-                  variant="subtle" 
-                  color="blue" 
-                  onClick={() => getLocations(true)}
-                  loading={isLoading}
-                  style={{ 
-                    position: 'absolute', 
-                    right: 5, 
-                    top: '50%', 
-                    transform: 'translateY(-50%)',
-                    zIndex: 1
-                  }}
-                >
-                  <IconRefresh size={16} />
-                </ActionIcon>
-              </Tooltip>
-            </Box>
-            <Combobox.Options style={{ maxHeight: 200, overflowY: 'auto' }}>
-              {options.length > 0 ? options : <Combobox.Empty>Nothing found</Combobox.Empty>}
-            </Combobox.Options>
-          </Combobox.Dropdown>
-        </Combobox>
+        />
       </Group>
 
       <Stack gap="md">
