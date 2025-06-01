@@ -19,8 +19,8 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "vite",
-    "build": "vite build --mode ${ENV:-staging}",
+    "start": "vite --mode dev",
+    "build": "vite build --mode $ENV",
     "serve": "vite preview"
   },
   "eslintConfig": {
