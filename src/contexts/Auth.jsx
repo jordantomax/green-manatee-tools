@@ -63,8 +63,8 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(true)
   }
   
-  const signUp = async (email, password) => {
-    return await api.signUp(email, password)
+  const signUp = async (email, password, apiKey) => {
+    return await api.signUp(email, password, apiKey)
   }
 
   const logOut = async () => {

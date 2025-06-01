@@ -33,12 +33,13 @@ export function setTokensHandler(handler) {
 }
 
 async function call (path, _options = {}) {
-  const { method, params, body, autoRefresh = true } = _options
+  const { method, params, body, autoRefresh = true, headers = {} } = _options
   const tokens = await getSavedTokens()
   const options = {
     method: method || 'GET',
     headers: {
       'Content-Type': 'application/json',
+      ...headers
     }
   }
 
@@ -99,12 +100,16 @@ async function login(email, password) {
   return response.json()
 }
 
-async function signUp(email, password) {
+async function signUp(email, password, apiKey) {
   return call('auth/signup', {
     method: 'POST',
     body: {
       email,
-      password
+      password,
+      apiKey
+    },
+    headers: {
+      'Signup-Api-Key': apiKey
     }
   })
 }

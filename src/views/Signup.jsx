@@ -25,17 +25,19 @@ function Signup () {
   const form = useForm({
     initialValues: {
       email: '',
-      password: ''
+      password: '',
+      apiKey: ''
     },
     validate: {
       email: (value) => (!value ? 'Email is required' : null),
-      password: (value) => (!value ? 'Password is required' : null)
+      password: (value) => (!value ? 'Password is required' : null),
+      apiKey: (value) => (!value ? 'API Key is required' : null)
     }
   })
 
   async function handleSubmit(values) {
-      await run(() => auth.signUp(values.email, values.password))
-      navigate('/')
+    await run(() => auth.signUp(values.email, values.password, values.apiKey))
+    navigate('/')
   }
 
   return (
@@ -74,6 +76,14 @@ function Signup () {
                 required
                 disabled={isLoading}
                 {...form.getInputProps('password')}
+              />
+
+              <PasswordInput
+                label="API Key"
+                placeholder="Enter your API key"
+                required
+                disabled={isLoading}
+                {...form.getInputProps('apiKey')}
               />
 
               <Button type="submit" fullWidth mt="md" loading={isLoading}>
