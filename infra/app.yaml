@@ -5,7 +5,7 @@ Description: Green Manatee Tools - S3 app assets, CloudFront distribution
 Parameters:
   CompanyPrefix:
     Type: String
-    Default: "gm"
+    Default: "greenmanatee"
 
   AppName:
     Type: String
