@@ -49,16 +49,16 @@ function ShippingEmail ({ shipments }) {
         try {
             const htmlContent = processedShipments.map(s => `
                 <div style="margin-bottom: 20px;">
-                    <h3>${s.id}</h3>
-                    ${s.base64Image ? `<img src="${s.base64Image}" alt="${s.productSku}" style="max-width: 200px; margin: 10px 0;" />` : ''}
-                    <p><strong>SKU:</strong> ${s.productSku}</p>
-                    <p><strong>Destination:</strong> ${s.destinationName}</p>
-                    <p><strong>Case Quantity:</strong> ${s.caseUnitQty}</p>
-                    <p><strong>Total number of cases:</strong> ${s.numCases}</p>
-                    <p><strong>Total quantity:</strong> ${s.totalUnitQty}</p>
-                    <p><strong>Case gross weight:</strong> ${s.caseGrossWeightLb} lbs</p>
-                    <p><strong>Shipping method:</strong> ${s.shippingMethod}</p>
-                    <p><strong>Tracking numbers:</strong> ${s.trackingNumbers}</p>
+                    <h3>${s.id ?? ''}</h3>
+                    ${s.base64Image ? `<img src="${s.base64Image}" alt="${s.productSku ?? ''}" style="max-width: 200px; margin: 10px 0;" />` : ''}
+                    ${s.productSku ? `<p><strong>SKU:</strong> ${s.productSku}</p>` : ''}
+                    ${s.destinationName ? `<p><strong>Destination:</strong> ${s.destinationName}</p>` : ''}
+                    ${s.caseUnitQty ? `<p><strong>Case Quantity:</strong> ${s.caseUnitQty}</p>` : ''}
+                    ${s.numCases ? `<p><strong>Total number of cases:</strong> ${s.numCases}</p>` : ''}
+                    ${s.totalUnitQty ? `<p><strong>Total quantity:</strong> ${s.totalUnitQty}</p>` : ''}
+                    ${s.caseGrossWeightLb ? `<p><strong>Case gross weight:</strong> ${s.caseGrossWeightLb} lbs</p>` : ''}
+                    ${s.shippingMethod ? `<p><strong>Shipping method:</strong> ${s.shippingMethod}</p>` : ''}
+                    ${s.trackingNumbers ? `<p><strong>Tracking numbers:</strong> ${s.trackingNumbers}</p>` : ''}
                 </div>
             `).join('\n')
 
