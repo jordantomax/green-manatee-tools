@@ -1,5 +1,5 @@
 import React from 'react'
-import { AppShell, Group, Button, Text, Stack, Image, Avatar, Menu } from '@mantine/core'
+import { AppShell, Group, Text, Stack, Image, Avatar, Menu, NavLink } from '@mantine/core'
 import { Link, useLocation } from 'react-router-dom'
 import { AuthContext } from '@/contexts/Auth'
 import { IconChevronDown, IconUserFilled } from '@tabler/icons-react'
@@ -12,6 +12,13 @@ function AppNav() {
     auth.logOut()
   }
 
+  const navItems = [
+    { label: 'Postage', to: '/postage' },
+    { label: 'Shipping', to: '/shipping' },
+    { label: 'Inventory', to: '/inventory' },
+    { label: 'Ads', to: '/ads' }
+  ]
+
   return (
     <AppShell.Navbar p="md">
       <Stack h="100%">
@@ -21,76 +28,25 @@ function AppNav() {
         </Group>
 
         <Stack gap="xs" style={{ flex: 1 }}>
-          <Button
-            component={Link}
-            to="/postage"
-            variant={location.pathname === '/postage' ? 'light' : 'subtle'}
-            fullWidth
-            justify="start"
-          >
-            Postage
-          </Button>
-          <Button
-            component={Link}
-            to="/shipping"
-            variant={location.pathname === '/shipping' ? 'light' : 'subtle'}
-            fullWidth
-            justify="start"
-          >
-            Shipping
-          </Button>
-          <Button
-            component={Link}
-            to="/inventory"
-            variant={location.pathname === '/inventory' ? 'light' : 'subtle'}
-            fullWidth
-            justify="start"
-          >
-            Inventory
-          </Button>
-          <Button
-            component={Link}
-            to="/ads"
-            variant={location.pathname === '/ads' ? 'light' : 'subtle'}
-            fullWidth
-            justify="start"
-          >
-            Ads
-          </Button>
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              component={Link}
+              to={item.to}
+              label={item.label}
+              active={location.pathname === item.to || location.pathname.startsWith(item.to + '/')}
+            />
+          ))}
         </Stack>
 
         <Stack gap="xs">
           <Menu shadow="md" width={200}>
             <Menu.Target>
-              <Button variant="subtle" fullWidth justify="start" p="xs" pl={40} pr={30} style={{ position: 'relative' }}>
-                <Avatar 
-                  radius="xl" 
-                  size="sm" 
-                  color="green" 
-                  style={{ 
-                    position: 'absolute', 
-                    left: 8, 
-                    top: '50%', 
-                    transform: 'translateY(-50%)',
-                    zIndex: 1
-                  }}
-                >
-                  <IconUserFilled size={20} />
-                </Avatar>
-                <div style={{ width: '100%' }}>
-                  <Text size="sm" fw={500}>{auth.user?.email || 'User'}</Text>
-                </div>
-                <IconChevronDown 
-                  size={16} 
-                  style={{ 
-                    position: 'absolute', 
-                    right: 8, 
-                    top: '50%', 
-                    transform: 'translateY(-50%)',
-                    zIndex: 1
-                  }} 
-                />
-              </Button>
+              <NavLink
+                label={auth.user?.email || 'User'}
+                leftSection={<Avatar radius="xl" size="sm"><IconUserFilled size={20} /></Avatar>}
+                rightSection={<IconChevronDown size={16} />}
+              />
             </Menu.Target>
 
             <Menu.Dropdown>

@@ -15,9 +15,11 @@ import Nav from '@/components/Nav'
 import Postage from '@/views/Postage'
 import Inventory from '@/views/Inventory'
 import Shipping from '@/views/Shipping'
-import Ads from '@/views/Ads'
-import AdsReport from '@/views/AdsReport'
-import AdsReports from '@/views/AdsReports'
+
+import Ads from '@/views/ads/Ads'
+import AdsReport from '@/views/ads/AdsReport'
+import AdsReports from '@/views/ads/AdsReports'
+import AdsSearchTerm from '@/views/ads/AdsSearchTerm'
 
 function AppContent() {
   const auth = React.useContext(AuthContext)
@@ -61,6 +63,7 @@ function AppContent() {
             <Route index element={<Navigate to="/ads/reports" replace />} />
             <Route path='reports' element={<AdsReports />} />
             <Route path=':id' element={<AdsReport />} />
+            <Route path='search-terms' element={<AdsSearchTerm />} />
           </Route>
         </Routes>
       </AppShell.Main>
