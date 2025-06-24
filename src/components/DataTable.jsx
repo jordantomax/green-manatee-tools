@@ -33,6 +33,14 @@ function DataTable({
   onPageSizeChange,
   columnOrder = []
 }) {
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return (
+      <Paper withBorder p="md">
+        <Text c="dimmed">No data available</Text>
+      </Paper>
+    )
+  }
+
   const localStorageKey = useMemo(() => {
     if (!tableId) return null
     return `dataTableState-${tableId}`
@@ -118,14 +126,6 @@ function DataTable({
   useEffect(() => {
     if (!paginationFromQueryParams) setInternalCurrentPage(1)
   }, [filters, activeSorts, internalPageSize, paginationFromQueryParams])
-
-  if (!data || !Array.isArray(data) || data.length === 0) {
-    return (
-      <Paper withBorder p="md">
-        <Text c="dimmed">No data available</Text>
-      </Paper>
-    )
-  }
 
   const inferredColumnTypes = useMemo(() => {
     const types = {}

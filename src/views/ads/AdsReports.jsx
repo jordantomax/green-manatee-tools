@@ -82,7 +82,7 @@ function AdsReports() {
   return(
     <Stack gap="md">
       <Group justify="space-between">
-        <Title order={2}>Ads Reports</Title>
+        <Title order={1}>Reports</Title>
         <Group>
           <Button
             variant="light"

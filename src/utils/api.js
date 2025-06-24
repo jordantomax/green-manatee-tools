@@ -267,6 +267,12 @@ async function deleteAdsReport(reportId) {
   })
 }
 
+async function getAdsSearchTerms() {
+  return call('amazon/ads/search-terms', {
+    method: 'GET'
+  })
+}
+
 const api = {
   login,
   signUp,
@@ -286,7 +292,8 @@ const api = {
   createAdsReport,
   getAdsReport,
   getTaggedAdsReport,
-  deleteAdsReport
+  deleteAdsReport,
+  getAdsSearchTerms
 }
 
 export default api
