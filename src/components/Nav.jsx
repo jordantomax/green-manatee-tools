@@ -4,6 +4,8 @@ import { Link, useLocation } from 'react-router-dom'
 import { AuthContext } from '@/contexts/Auth'
 import { IconChevronDown, IconUserFilled } from '@tabler/icons-react'
 
+import styles from '@/styles/Nav.module.css'
+
 function AppNav() {
   const location = useLocation()
   const auth = React.useContext(AuthContext)
@@ -27,7 +29,7 @@ function AppNav() {
           <Text size="md" fw={700}>Green Manatee</Text>
         </Group>
 
-        <Stack gap="xs" style={{ flex: 1 }}>
+        <Stack gap="0" style={{ flex: 1 }}>
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -35,6 +37,7 @@ function AppNav() {
               to={item.to}
               label={item.label}
               active={location.pathname === item.to || location.pathname.startsWith(item.to + '/')}
+              className={styles.navLink}
             />
           ))}
         </Stack>
@@ -46,6 +49,7 @@ function AppNav() {
                 label={auth.user?.email || 'User'}
                 leftSection={<Avatar radius="xl" size="sm"><IconUserFilled size={20} /></Avatar>}
                 rightSection={<IconChevronDown size={16} />}
+                className={styles.navLink}
               />
             </Menu.Target>
 
