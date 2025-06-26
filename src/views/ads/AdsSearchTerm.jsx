@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react"
-import { Stack, Title, Group } from "@mantine/core"
+import { Stack, Title, Group, Loader, Text } from "@mantine/core"
 import { DateInput } from "@mantine/dates"
 import { useForm } from '@mantine/form'
 import { subDays, format } from 'date-fns'
@@ -8,48 +8,64 @@ import api from "@/utils/api"
 import { useAsync } from '@/hooks/useAsync'
 import { usePagination } from '@/hooks/usePagination'
 import RecordTable from "@/components/RecordTable"
+import TablePagination from "@/components/TablePagination"
 import { validators } from '@/utils/validation'
+
+const formatDate = (date) => format(date, 'yyyy-MM-dd')
 
 function AdsSearchTerm() {
   const [searchTerms, setSearchTerms] = useState([])
+  const [pagination, setPagination] = useState({ totalPages: 1 })
   const { run, isLoading } = useAsync()
   const { 
     currentPage,
     pageSize,
     handlePageChange,
-    handlePageSizeChange 
+    handlePageSizeChange,
   } = usePagination()
 
   const form = useForm({
     initialValues: {
-      startDate: format(subDays(new Date(), 30), 'yyyy-MM-dd'),
-      endDate: format(new Date(), 'yyyy-MM-dd')
+      startDate: formatDate(subDays(new Date(), 30)),
+      endDate: formatDate(new Date())
     },
     validate: {
       startDate: validators.required('Start date'),
       endDate: validators.required('End date'),
     },
     transformValues: (values) => ({
-      startDate: format(values.startDate, 'yyyy-MM-dd'),
-      endDate: format(values.endDate, 'yyyy-MM-dd'),
+      startDate: formatDate(values.startDate),
+      endDate: formatDate(values.endDate),
     })
   })
   
-  const handleRefreshSearchTerms = useCallback(async () => {
-    const { data, pagination } = await run(async () => await api.getAdsSearchTerms({
-        startDate: form.values.startDate,
-        endDate: form.values.endDate
+  const handleRefreshSearchTerms = async () => {
+    const { data, pagination: pg } = await run(async () => await api.getAdsSearchTerms({
+      limit: pageSize,
+      page: currentPage,
+      startDate: form.values.startDate,
+      endDate: form.values.endDate
     }))
     setSearchTerms(data)
-  }, [run])
+    setPagination(pg)
+  }
 
   useEffect(() => { 
     handleRefreshSearchTerms()  
-  }, [handleRefreshSearchTerms])
+  }, [
+    run, 
+    form.values.startDate, 
+    form.values.endDate, 
+    pageSize,
+    currentPage
+  ])
   
   return (
     <Stack>
-      <Title order={1}>Search Terms</Title>
+      <Group gap="sm">
+        <Title order={2}>Search Terms</Title>
+        {isLoading && <Loader size="sm" />}
+      </Group>
 
       <Group align="flex-end" grow>
         <DateInput
@@ -70,12 +86,14 @@ function AdsSearchTerm() {
         />
       </Group>
 
-      <RecordTable
-        data={searchTerms}
+      <RecordTable data={searchTerms} />
+      
+      <TablePagination
         currentPage={currentPage}
         pageSize={pageSize}
-        onPageChange={handlePageChange}
-        onPageSizeChange={handlePageSizeChange}
+        totalPages={pagination.totalPages}
+        handlePageChange={handlePageChange}
+        handlePageSizeChange={handlePageSizeChange}
       />
     </Stack>
   )
