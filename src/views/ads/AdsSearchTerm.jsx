@@ -36,7 +36,7 @@ function AdsSearchTerm() {
   })
   
   const handleRefreshSearchTerms = useCallback(async () => {
-    const data = await run(async () => await api.getAdsSearchTerms({
+    const { data, pagination } = await run(async () => await api.getAdsSearchTerms({
         startDate: form.values.startDate,
         endDate: form.values.endDate
     }))
