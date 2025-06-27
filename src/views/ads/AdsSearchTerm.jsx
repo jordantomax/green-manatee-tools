@@ -86,7 +86,10 @@ function AdsSearchTerm() {
         />
       </Group>
 
-      <RecordTable data={searchTerms} />
+      <RecordTable 
+        data={searchTerms} 
+        columnOrder={['keywordId', 'searchTerm']}
+       />
       
       <TablePagination
         currentPage={currentPage}

@@ -1,14 +1,29 @@
 import { Text, Table } from '@mantine/core'
 import { useEffect, useState } from 'react'
+import { startCase } from 'lodash-es'
 
 import styles from '@/styles/RecordTable.module.css'
 
-function RecordTable({ data }) {
-  const [columns, setColumns] = useState([])
+/**
+ * @param {Array<string>} order - Array of column names in the desired order
+ */
+const orderColumns = (columns, order) => {
+  if (order && Array.isArray(order)) {
+    const orderedColumns = order.filter(col => columns.includes(col))
+    const remainingColumns = columns.filter(col => !order.includes(col))
+    return [...orderedColumns, ...remainingColumns]
+  }
+  return columns
+}
 
+function RecordTable({ data, columnOrder }) {
+  const [columns, setColumns] = useState([])
+  
   useEffect(() => {
-    setColumns(Object.keys(data[0] || {}))
-  }, [data])
+    let columns = Object.keys(data[0] || {})
+    columns = orderColumns(columns, columnOrder)
+    setColumns(columns)
+  }, [data, columnOrder])
 
   if (data.length === 0) {
     return <Text>Loading...</Text>
@@ -23,7 +38,7 @@ function RecordTable({ data }) {
               <Table.Th 
                 className={styles.th}
                 key={column}>
-                {column}
+                {startCase(column)}
               </Table.Th>
             ))}
           </Table.Tr>
