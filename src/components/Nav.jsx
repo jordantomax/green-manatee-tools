@@ -57,6 +57,15 @@ function AppNav() {
           >
             Ads
           </Button>
+          <Button
+            component={Link}
+            to="/pricing"
+            variant={location.pathname === '/pricing' ? 'light' : 'subtle'}
+            fullWidth
+            justify="start"
+          >
+            Pricing
+          </Button>
         </Stack>
 
         <Stack gap="xs">
