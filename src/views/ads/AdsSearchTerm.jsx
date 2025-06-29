@@ -10,24 +10,38 @@ import { usePagination } from '@/hooks/usePagination'
 import RecordTable from "@/components/RecordTable"
 import TablePagination from "@/components/TablePagination"
 import { validators } from '@/utils/validation'
+import { getLocalData, setLocalData } from '@/utils/storage'
 
 const formatDate = (date) => format(date, 'yyyy-MM-dd')
+
+const STORAGE_KEY = 'adsSearchTermSettings'
+
+const DEFAULT_SETTINGS = {
+  startDate: formatDate(subDays(new Date(), 30)),
+  endDate: formatDate(new Date()),
+  currentPage: 1,
+  pageSize: 10,
+  filters: {},
+  sorts: {}
+}
 
 function AdsSearchTerm() {
   const [searchTerms, setSearchTerms] = useState([])
   const [pagination, setPagination] = useState({ totalPages: 1 })
+  const [settings, setSettings] = useState(() => getLocalData(STORAGE_KEY) || DEFAULT_SETTINGS)
   const { run, isLoading } = useAsync()
+  
   const { 
     currentPage,
     pageSize,
     handlePageChange,
     handlePageSizeChange,
-  } = usePagination()
+  } = usePagination(settings.currentPage, settings.pageSize)
 
   const form = useForm({
     initialValues: {
-      startDate: formatDate(subDays(new Date(), 30)),
-      endDate: formatDate(new Date())
+      startDate: settings.startDate,
+      endDate: settings.endDate
     },
     validate: {
       startDate: validators.required('Start date'),
@@ -38,6 +52,23 @@ function AdsSearchTerm() {
       endDate: formatDate(values.endDate),
     })
   })
+
+  const saveSettings = useCallback(() => {
+    const newSettings = {
+      startDate: form.values.startDate,
+      endDate: form.values.endDate,
+      currentPage,
+      pageSize,
+      filters: settings.filters,
+      sorts: settings.sorts,
+    }
+    setLocalData(STORAGE_KEY, newSettings)
+    setSettings(newSettings)
+  }, [form.values, currentPage, pageSize, settings.filters, settings.sorts])
+
+  useEffect(() => {
+    saveSettings()
+  }, [saveSettings])
   
   const handleRefreshSearchTerms = async () => {
     const { data, pagination: pg } = await run(async () => await api.getAdsSearchTerms({
@@ -53,7 +84,6 @@ function AdsSearchTerm() {
   useEffect(() => { 
     handleRefreshSearchTerms()  
   }, [
-    run, 
     form.values.startDate, 
     form.values.endDate, 
     pageSize,

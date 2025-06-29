@@ -4,9 +4,6 @@ import { startCase } from 'lodash-es'
 
 import styles from '@/styles/RecordTable.module.css'
 
-/**
- * @param {Array<string>} order - Array of column names in the desired order
- */
 const orderColumns = (columns, order) => {
   if (order && Array.isArray(order)) {
     const orderedColumns = order.filter(col => columns.includes(col))
