@@ -52,6 +52,7 @@ function ShippingEmail ({ shipments }) {
                     <h3>${s.id ?? ''}</h3>
                     ${s.base64Image ? `<img src="${s.base64Image}" alt="${s.productSku ?? ''}" style="max-width: 200px; margin: 10px 0;" />` : ''}
                     ${s.productSku ? `<p><strong>SKU:</strong> ${s.productSku}</p>` : ''}
+                    ${s.productGtin12 ? `<p><strong>Barcode:</strong> ${s.productGtin12}</p>` : ''}
                     ${s.destinationName ? `<p><strong>Destination:</strong> ${s.destinationName}</p>` : ''}
                     ${s.caseUnitQty ? `<p><strong>Case Quantity:</strong> ${s.caseUnitQty}</p>` : ''}
                     ${s.numCases ? `<p><strong>Total number of cases:</strong> ${s.numCases}</p>` : ''}
@@ -114,6 +115,7 @@ function ShippingEmail ({ shipments }) {
                         trackingNumbers: shipment.properties.trackingNumbers?.value,
                         base64Image,
                         productSku: product.properties.sku?.value,
+                        productGtin12: product.properties.gtin12?.value,
                         destinationName: destination?.properties?.name?.value,
                         inStock: run?.properties?.inStock?.value || -1
                     })
@@ -226,6 +228,7 @@ function ShippingEmail ({ shipments }) {
                                                 </Box>
                                             )}
                                             <Text size="sm"><Text span fw={500}>SKU:</Text> {s.productSku}</Text>
+                                            <Text size="sm"><Text span fw={500}>Barcode:</Text> {s.productGtin12}</Text>
                                             <Text size="sm"><Text span fw={500}>Destination:</Text> {s.destinationName}</Text>
                                             <Text size="sm"><Text span fw={500}>Case Quantity:</Text> {s.caseUnitQty}</Text>
                                             <Text size="sm"><Text span fw={500}>Total number of cases:</Text> {s.numCases}</Text>
