@@ -80,7 +80,7 @@ function Ads() {
   };
 
   return (
-    <Container size="md" py="xl">
+    <Container>
       <Paper withBorder p="lg">
         <Stack gap="md">
           <Group justify="space-between">

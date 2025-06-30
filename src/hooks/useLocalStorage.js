@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { getLocalData, setLocalData } from '@/utils/storage'
 
-export function useLocalStorage(key, defaultValue={}) {
-  if (typeof defaultValue !== 'object' || defaultValue === null || Array.isArray(defaultValue)) {
-    throw new Error('useLocalStorage: defaultValue must be a plain object')
+export function useLocalStorage(key, defaultValues={}) {
+  if (typeof defaultValues !== 'object' || defaultValues === null || Array.isArray(defaultValues)) {
+    throw new Error('useLocalStorage: defaultValues must be a plain object')
   }
 
-  const [values, setValues] = useState(defaultValue)
+  const [values, setValues] = useState(defaultValues)
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
@@ -23,9 +23,9 @@ export function useLocalStorage(key, defaultValue={}) {
     }
   }, [key, values, isLoaded])
 
-  const setField = (field, fieldValue) => {
-    setValues(prev => ({ ...prev, [field]: fieldValue }))
+  const setValue = (field, value) => {
+    setValues(prev => ({ ...prev, [field]: value }))
   }
 
-  return [values, setField]
+  return [values, setValue]
 }

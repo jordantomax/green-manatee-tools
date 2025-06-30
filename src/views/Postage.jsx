@@ -177,7 +177,7 @@ function Postage () {
   }
 
   return (
-    <Container fluid>
+    <Container>
       <Grid gutter="xl">
         <Grid.Col span={{ base: 12, sm: 6 }}>
           <Box pb="md">
