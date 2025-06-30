@@ -15,15 +15,9 @@ export const theme = createTheme({
   cursorType: 'pointer',
   components: {
     Container: Container.extend({
-      vars: (_, { size, fluid }) => ({
-        root: {
-          '--container-size': fluid
-            ? '100%'
-            : size !== undefined && size in CONTAINER_SIZES
-              ? rem(CONTAINER_SIZES[size])
-              : rem(size),
-        },
-      }),
+      defaultProps: {
+        p: 'md',
+      }
     }),
     Table: {
       defaultProps: {

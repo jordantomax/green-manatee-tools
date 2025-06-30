@@ -17,6 +17,7 @@ import Inventory from '@/views/Inventory'
 import Shipping from '@/views/Shipping'
 import Ads from '@/views/Ads'
 import AdsReport from '@/views/AdsReport'
+import Pricing from '@/views/Pricing'
 
 function AppContent() {
   const auth = React.useContext(AuthContext)
@@ -58,6 +59,7 @@ function AppContent() {
           <Route path='inventory' element={<Inventory />} />
           <Route path='ads' element={<Ads />} />
           <Route path='ads/:id' element={<AdsReport />} />
+          <Route path='pricing' element={<Pricing />} />
         </Routes>
       </AppShell.Main>
     </AppShell>
