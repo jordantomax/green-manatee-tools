@@ -18,7 +18,8 @@ function AppNav() {
     { label: 'Postage', to: '/postage' },
     { label: 'Shipping', to: '/shipping' },
     { label: 'Inventory', to: '/inventory' },
-    { label: 'Ads', to: '/ads' }
+    { label: 'Ads', to: '/ads' },
+    { label: 'Pricing', to: '/pricing' }
   ]
 
   return (

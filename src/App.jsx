@@ -20,6 +20,7 @@ import Ads from '@/views/ads/Ads'
 import AdsReport from '@/views/ads/AdsReport'
 import AdsReports from '@/views/ads/AdsReports'
 import AdsSearchTerm from '@/views/ads/AdsSearchTerm'
+import Pricing from '@/views/Pricing'
 
 function AppContent() {
   const auth = React.useContext(AuthContext)
@@ -65,6 +66,7 @@ function AppContent() {
             <Route path=':id' element={<AdsReport />} />
             <Route path='search-terms' element={<AdsSearchTerm />} />
           </Route>
+          <Route path='pricing' element={<Pricing />} />
         </Routes>
       </AppShell.Main>
     </AppShell>
