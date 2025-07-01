@@ -9,16 +9,16 @@ const PAGE_SIZE_OPTIONS = [
 ]
 
 const TablePagination = memo(function TablePagination({ 
-  currentPage, 
-  pageSize, 
+  page, 
+  limit, 
   totalPages,
   handlePageChange, 
-  handlePageSizeChange 
+  handleLimitChange 
 }) {
   return (
     <Group justify="space-between" align="center" mt="md">
       <Pagination
-        value={currentPage}
+        value={page}
         onChange={handlePageChange}
         total={totalPages}
         size="sm"
@@ -26,8 +26,8 @@ const TablePagination = memo(function TablePagination({
         disabled={totalPages <= 1}
       />
       <Select
-        value={String(pageSize)}
-        onChange={handlePageSizeChange}
+        value={String(limit)}
+        onChange={handleLimitChange}
         data={PAGE_SIZE_OPTIONS}
         size="xs"
         style={{ width: 150 }}

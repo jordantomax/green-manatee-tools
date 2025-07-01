@@ -22,24 +22,20 @@ function AdsSearchTerm() {
   const [settings, setSettings] = useLocalStorage('adsSearchTermSettings', {
     startDate: formatDate(subDays(new Date(), 30)),
     endDate: formatDate(new Date()),
-    currentPage: 1,
-    pageSize: 10,
+    page: 1,
+    limit: 10,
     filter: {},
   })
   
   const { 
-    currentPage,
-    pageSize,
+    page,
+    limit,
     handlePageChange,
-    handlePageSizeChange,
-  } = usePagination(settings.currentPage, settings.pageSize)
+    handleLimitChange,
+  } = usePagination(settings.page, settings.limit)
 
   const form = useForm({
-    initialValues: {
-      startDate: settings.startDate,
-      endDate: settings.endDate,
-      filter: settings.filter,
-    },
+    initialValues: settings,
     validate: {
       startDate: validators.required('Start date'),
       endDate: validators.required('End date'),
@@ -50,22 +46,11 @@ function AdsSearchTerm() {
     })
   })
 
-  useEffect(() => {
-    setSettings({
-      startDate: form.values.startDate,
-      endDate: form.values.endDate,
-      filter: form.values.filter,
-      currentPage,
-      pageSize,
-    })
-  }, [form.values, currentPage, pageSize])
-
   const handleRefreshSearchTerms = async () => {
     const { data, pagination: pg } = await run(async () => await api.getAdsSearchTerms({
-      limit: pageSize,
-      page: currentPage,
-      startDate: form.values.startDate,
-      endDate: form.values.endDate
+      ...form.values,
+      limit,
+      page,
     }))
     setSearchTerms(data)
     setPagination(pg)
@@ -73,12 +58,13 @@ function AdsSearchTerm() {
 
   useEffect(() => { 
     handleRefreshSearchTerms()  
-  }, [
-    form.values.startDate, 
-    form.values.endDate, 
-    pageSize,
-    currentPage
-  ])
+
+    setSettings({
+      ...form.values,
+      page,
+      limit,
+    })
+  }, [form.values, page, limit])
   
   return (
     <Stack>
@@ -112,11 +98,11 @@ function AdsSearchTerm() {
        />
       
       <TablePagination
-        currentPage={currentPage}
-        pageSize={pageSize}
+        page={page}
+        limit={limit}
         totalPages={pagination.totalPages}
         handlePageChange={handlePageChange}
-        handlePageSizeChange={handlePageSizeChange}
+        handleLimitChange={handleLimitChange}
       />
     </Stack>
   )

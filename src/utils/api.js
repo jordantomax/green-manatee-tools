@@ -267,10 +267,10 @@ async function deleteAdsReport(reportId) {
   })
 }
 
-async function getAdsSearchTerms(params) {
+async function getAdsSearchTerms(body) {
   return call('amazon/ads/search-terms', {
-    method: 'GET',
-    params
+    method: 'POST',
+    body
   })
 }
 

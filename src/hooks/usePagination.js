@@ -1,22 +1,22 @@
 import { useState, useCallback } from 'react'
 
-export function usePagination(initialPage = 1, initialPageSize = 10) {
-  const [currentPage, setCurrentPage] = useState(initialPage)
-  const [pageSize, setPageSize] = useState(initialPageSize)
+export function usePagination(initialPage = 1, initialLimit = 10) {
+  const [page, setPage] = useState(initialPage)
+  const [limit, setLimit] = useState(initialLimit)
 
-  const handlePageChange = useCallback((page) => {
-    setCurrentPage(page)
+  const handlePageChange = useCallback((newPage) => {
+    setPage(newPage)
   }, [])
 
-  const handlePageSizeChange = useCallback((size) => {
-    setPageSize(size)
-    setCurrentPage(1)
+  const handleLimitChange = useCallback((newLimit) => {
+    setLimit(newLimit)
+    setPage(1)
   }, [])
 
   return {
-    currentPage,
-    pageSize,
+    page,
+    limit,
     handlePageChange,
-    handlePageSizeChange
+    handleLimitChange
   }
 } 
