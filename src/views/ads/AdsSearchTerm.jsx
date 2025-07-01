@@ -11,25 +11,21 @@ import RecordTable from "@/components/RecordTable"
 import TablePagination from "@/components/TablePagination"
 import { validators } from '@/utils/validation'
 import { getLocalData, setLocalData } from '@/utils/storage'
+import { useLocalStorage } from '@/hooks/useLocalStorage'
 
 const formatDate = (date) => format(date, 'yyyy-MM-dd')
 
-const STORAGE_KEY = 'adsSearchTermSettings'
-
-const DEFAULT_SETTINGS = {
-  startDate: formatDate(subDays(new Date(), 30)),
-  endDate: formatDate(new Date()),
-  currentPage: 1,
-  pageSize: 10,
-  filters: {},
-  sorts: {}
-}
-
 function AdsSearchTerm() {
+  const { run, isLoading } = useAsync()
   const [searchTerms, setSearchTerms] = useState([])
   const [pagination, setPagination] = useState({ totalPages: 1 })
-  const [settings, setSettings] = useState(() => getLocalData(STORAGE_KEY) || DEFAULT_SETTINGS)
-  const { run, isLoading } = useAsync()
+  const [settings, setSettings] = useLocalStorage('adsSearchTermSettings', {
+    startDate: formatDate(subDays(new Date(), 30)),
+    endDate: formatDate(new Date()),
+    currentPage: 1,
+    pageSize: 10,
+    filter: {},
+  })
   
   const { 
     currentPage,
@@ -41,7 +37,8 @@ function AdsSearchTerm() {
   const form = useForm({
     initialValues: {
       startDate: settings.startDate,
-      endDate: settings.endDate
+      endDate: settings.endDate,
+      filter: settings.filter,
     },
     validate: {
       startDate: validators.required('Start date'),
@@ -53,23 +50,24 @@ function AdsSearchTerm() {
     })
   })
 
-  const saveSettings = useCallback(() => {
-    const newSettings = {
+  useEffect(() => {
+    form.setValues({
+      startDate: settings.startDate,
+      endDate: settings.endDate
+    })
+  }, [settings.startDate, settings.endDate])
+
+  useEffect(() => {
+    setSettings({
       startDate: form.values.startDate,
       endDate: form.values.endDate,
       currentPage,
       pageSize,
       filters: settings.filters,
       sorts: settings.sorts,
-    }
-    setLocalData(STORAGE_KEY, newSettings)
-    setSettings(newSettings)
-  }, [form.values, currentPage, pageSize, settings.filters, settings.sorts])
+    })
+  }, [form.values.startDate, form.values.endDate, currentPage, pageSize])
 
-  useEffect(() => {
-    saveSettings()
-  }, [saveSettings])
-  
   const handleRefreshSearchTerms = async () => {
     const { data, pagination: pg } = await run(async () => await api.getAdsSearchTerms({
       limit: pageSize,
