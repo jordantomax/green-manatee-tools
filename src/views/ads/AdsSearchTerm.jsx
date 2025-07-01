@@ -51,22 +51,14 @@ function AdsSearchTerm() {
   })
 
   useEffect(() => {
-    form.setValues({
-      startDate: settings.startDate,
-      endDate: settings.endDate
-    })
-  }, [settings.startDate, settings.endDate])
-
-  useEffect(() => {
     setSettings({
       startDate: form.values.startDate,
       endDate: form.values.endDate,
+      filter: form.values.filter,
       currentPage,
       pageSize,
-      filters: settings.filters,
-      sorts: settings.sorts,
     })
-  }, [form.values.startDate, form.values.endDate, currentPage, pageSize])
+  }, [form.values, currentPage, pageSize])
 
   const handleRefreshSearchTerms = async () => {
     const { data, pagination: pg } = await run(async () => await api.getAdsSearchTerms({
