@@ -1,26 +1,36 @@
+export const conditionLabels = {
+  equals: 'Equals',
+  contains: 'Contains',
+  gt: 'Greater than',
+  gte: 'Greater than or equal',
+  lt: 'Less than',
+  lte: 'Less than or equal',
+  between: 'Between'
+}
+
 export const baseTypes = {
   id: {
-    conditions: ['equals'],
+    conditionOptions: ['equals'],
     defaultCondition: 'equals',
     defaultValue: ''
   },
   string: {
-    conditions: ['equals', 'contains'],
+    conditionOptions: ['equals', 'contains'],
     defaultCondition: 'equals',
     defaultValue: ''
   },
   number: {
-    conditions: ['equals', 'gt', 'gte', 'lt', 'lte'],
+    conditionOptions: ['equals', 'gt', 'gte', 'lt', 'lte'],
     defaultCondition: 'equals',
     defaultValue: 0
   },
   date: {
-    conditions: ['equals', 'gt', 'gte', 'lt', 'lte', 'between'],
+    conditionOptions: ['equals', 'gt', 'gte', 'lt', 'lte'],
     defaultCondition: 'equals',
-    defaultValue: ''
+    defaultValue: null
   },
   boolean: {
-    conditions: ['equals'],
+    conditionOptions: ['equals'],
     defaultCondition: 'equals',
     defaultValue: false
   }
@@ -105,8 +115,10 @@ export const createDefaultFilter = (column) => {
   const baseType = baseTypes[baseTypeName]
   return {
     column,
+    id: crypto.randomUUID(),
     type: baseTypeName,
-    condition: baseType.defaultCondition,
     value: baseType.defaultValue,
+    condition: baseType.defaultCondition,
+    conditionOptions: baseType.conditionOptions,
   }
 }

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { Stack, Title, Group, Loader } from "@mantine/core"
+import { useState, useEffect } from "react"
+import { Stack, Title, Group, Loader, Button } from "@mantine/core"
 import { DateInput } from "@mantine/dates"
 import { useForm } from '@mantine/form'
 import { subDays, format } from 'date-fns'
@@ -12,6 +12,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage'
 import RecordTable from "@/components/RecordTable"
 import TablePagination from "@/components/TablePagination"
 import { AddFilter, ActiveFilters } from "@/components/TableFilter"
+import { columnTypes } from '@/utils/table'
 
 const formatDate = (date) => format(date, 'yyyy-MM-dd')
 
@@ -34,92 +35,112 @@ function AdsSearchTerm() {
     handleLimitChange,
   } = usePagination(settings.page, settings.limit)
 
+  const handleSubmit = async (transformedValues) => {
+    const { data, pagination: pg } = await run(async () => await api.getAdsSearchTerms({
+      ...transformedValues,
+      limit,
+      page,
+    }))
+    setSettings({
+      ...form.getValues(),
+      page,
+      limit,
+    })
+    setSearchTerms(data)
+    setPagination(pg)
+  }
+  
   const form = useForm({
+    mode: 'uncontrolled',
     initialValues: settings,
     validate: {
       startDate: validators.required('Start date'),
       endDate: validators.required('End date'),
     },
     transformValues: (values) => ({
-      startDate: formatDate(values.startDate),
-      endDate: formatDate(values.endDate),
-    })
+      ...values
+    }),
+    onValuesChange: (values) => {
+      setSettings({ ...settings, ...values })
+    },
   })
 
-  const handleRefreshSearchTerms = async () => {
-    const { data, pagination: pg } = await run(async () => await api.getAdsSearchTerms({
-      ...form.values,
-      limit,
-      page,
-    }))
-    setSearchTerms(data)
-    setPagination(pg)
-  }
-
-  const handleAddFilter = (filter) => {
-    form.setFieldValue('filters', [
-      ...form.values.filters,
-      filter
-    ])
+  const handleFilterAdd = (filter) => {
+    form.setValues( { filters: [...settings.filters, filter] } )
   }
 
   useEffect(() => { 
-    handleRefreshSearchTerms()  
+    form.onSubmit(handleSubmit)()
+  }, [])
+  
+  const handleFilterRemove = (filter) => {
+    const filters = form.getValues().filters.filter(f => f.id !== filter.id)
+    form.setFieldValue('filters', filters)
+  }
 
-    setSettings({
-      ...form.values,
-      page,
-      limit,
-    })
-  }, [form.values, page, limit])
+  const handleFilterChange = (filter, condition, value) => {
+    const filters = form.getValues().filters.map(f => f.id === filter.id ? { ...f, condition, value } : f)
+    form.setFieldValue('filters', filters)
+  }
 
   return (
-    <Stack>
-      <Group gap="sm">
-        <Title order={2}>Search Terms</Title>
-        {isLoading && <Loader size="sm" />}
-      </Group>
+    <form onSubmit={form.onSubmit(handleSubmit)}>
+      <Stack>
+        <Group gap="sm">
+          <Title order={2}>Search Terms</Title>
+          {isLoading && <Loader size="sm" />}
+        </Group>
 
-      <Group align="flex-end" grow>
-        <DateInput
-          label="Start Date"
-          placeholder="Pick a date"
-          style={{ maxWidth: 150 }}
-          valueFormat="YYYY-MM-DD"
-          value={form.values.startDate}
-          onChange={(value) => form.setFieldValue('startDate', value)}
+        <Group align="flex-end">
+          <DateInput
+            {...form.getInputProps('startDate')}
+            label="Start Date"
+            placeholder="Pick a date"
+            style={{ maxWidth: 150 }}
+            valueFormat="YYYY-MM-DD"
+          />
+
+          <DateInput
+            {...form.getInputProps('endDate')}
+            label="End Date"
+            placeholder="Pick a date"
+            style={{ maxWidth: 150 }}
+            valueFormat="YYYY-MM-DD"
+          />
+
+          <AddFilter 
+            columns={Object.keys(columnTypes)}
+            handleFilterAdd={handleFilterAdd}
+          />
+
+          <Button 
+            variant="light" 
+            type="submit" 
+            disabled={!form.isDirty()}
+            children="Refresh"
+          />
+        </Group>
+
+        <ActiveFilters 
+          filters={form.getValues().filters} 
+          handleFilterRemove={handleFilterRemove}
+          handleFilterChange={handleFilterChange}
         />
 
-        <DateInput
-          label="End Date"
-          placeholder="Pick a date"
-          style={{ maxWidth: 150 }}
-          valueFormat="YYYY-MM-DD"
-          value={form.values.endDate}
-          onChange={(value) => form.setFieldValue('endDate', value)}
+        <RecordTable 
+          data={searchTerms} 
+          columnOrder={['keywordId', 'searchTerm']}
+         />
+        
+        <TablePagination
+          page={page}
+          limit={limit}
+          totalPages={pagination.totalPages}
+          handlePageChange={handlePageChange}
+          handleLimitChange={handleLimitChange}
         />
-
-        <AddFilter 
-          columns={Object.keys(searchTerms[0] || {})}
-          handleAddFilter={handleAddFilter}
-        />
-      </Group>
-
-      <ActiveFilters filters={form.values.filters} />
-
-      <RecordTable 
-        data={searchTerms} 
-        columnOrder={['keywordId', 'searchTerm']}
-       />
-      
-      <TablePagination
-        page={page}
-        limit={limit}
-        totalPages={pagination.totalPages}
-        handlePageChange={handlePageChange}
-        handleLimitChange={handleLimitChange}
-      />
-    </Stack>
+      </Stack>
+    </form>
   )
 }
 

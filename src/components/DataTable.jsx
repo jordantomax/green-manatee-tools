@@ -270,7 +270,7 @@ function DataTable({
     return processedData.slice(start, end)
   }, [processedData, currentPage, pageSize])
 
-  const handleAddFilter = useCallback(column => {
+  const handleFilterAdd = useCallback(column => {
     let type = inferredColumnTypes[column]?.type || 'text'
     if (type === 'percent') type = 'number'
     setFilters(prev => [...prev, { column, type }])
@@ -373,7 +373,7 @@ function DataTable({
                 value: column,
                 label: formatColumnName(column)
               }))}
-              onSelect={handleAddFilter}
+              onSelect={handleFilterAdd}
               placeholder="Search columns..."
               width={300}
               buttonProps={{
