@@ -71,7 +71,7 @@ function AdsSearchTerm() {
 
   useEffect(() => { 
     form.onSubmit(handleSubmit)()
-  }, [])
+  }, [page, limit])
   
   const handleFilterRemove = (filter) => {
     const filters = form.getValues().filters.filter(f => f.id !== filter.id)
