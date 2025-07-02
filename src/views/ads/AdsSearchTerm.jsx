@@ -19,12 +19,12 @@ const formatDate = (date) => format(date, 'yyyy-MM-dd')
 function AdsSearchTerm() {
   const { run, isLoading } = useAsync()
   const [searchTerms, setSearchTerms] = useState([])
-  const [pagination, setPagination] = useState({ totalPages: 1 })
   const [settings, setSettings] = useLocalStorage('adsSearchTermSettings', {
     startDate: formatDate(subDays(new Date(), 30)),
     endDate: formatDate(new Date()),
     page: 1,
     limit: 10,
+    totalPages: 1,
     filters: [],
   })
   
@@ -36,18 +36,16 @@ function AdsSearchTerm() {
   } = usePagination(settings.page, settings.limit)
 
   const handleSubmit = async (transformedValues) => {
-    const { data, pagination: pg } = await run(async () => await api.getAdsSearchTerms({
+    const { data, pagination } = await run(async () => await api.getAdsSearchTerms({
       ...transformedValues,
       limit,
       page,
     }))
     setSettings({
       ...form.getValues(),
-      page,
-      limit,
+      ...pagination,
     })
     setSearchTerms(data)
-    setPagination(pg)
   }
   
   const form = useForm({
@@ -135,7 +133,7 @@ function AdsSearchTerm() {
         <TablePagination
           page={page}
           limit={limit}
-          totalPages={pagination.totalPages}
+          totalPages={settings.totalPages}
           handlePageChange={handlePageChange}
           handleLimitChange={handleLimitChange}
         />
