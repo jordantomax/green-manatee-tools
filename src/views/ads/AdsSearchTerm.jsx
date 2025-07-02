@@ -1,17 +1,17 @@
-import { useEffect, useState, useCallback } from "react"
-import { Stack, Title, Group, Loader, Text } from "@mantine/core"
+import { useEffect, useState } from "react"
+import { Stack, Title, Group, Loader } from "@mantine/core"
 import { DateInput } from "@mantine/dates"
 import { useForm } from '@mantine/form'
 import { subDays, format } from 'date-fns'
 
 import api from "@/utils/api"
+import { validators } from '@/utils/validation'
 import { useAsync } from '@/hooks/useAsync'
 import { usePagination } from '@/hooks/usePagination'
+import { useLocalStorage } from '@/hooks/useLocalStorage'
 import RecordTable from "@/components/RecordTable"
 import TablePagination from "@/components/TablePagination"
-import { validators } from '@/utils/validation'
-import { getLocalData, setLocalData } from '@/utils/storage'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { AddFilter, ActiveFilters } from "@/components/TableFilter"
 
 const formatDate = (date) => format(date, 'yyyy-MM-dd')
 
@@ -24,7 +24,7 @@ function AdsSearchTerm() {
     endDate: formatDate(new Date()),
     page: 1,
     limit: 10,
-    filter: {},
+    filters: [],
   })
   
   const { 
@@ -56,6 +56,13 @@ function AdsSearchTerm() {
     setPagination(pg)
   }
 
+  const handleAddFilter = (filter) => {
+    form.setFieldValue('filters', [
+      ...form.values.filters,
+      filter
+    ])
+  }
+
   useEffect(() => { 
     handleRefreshSearchTerms()  
 
@@ -65,7 +72,7 @@ function AdsSearchTerm() {
       limit,
     })
   }, [form.values, page, limit])
-  
+
   return (
     <Stack>
       <Group gap="sm">
@@ -77,20 +84,28 @@ function AdsSearchTerm() {
         <DateInput
           label="Start Date"
           placeholder="Pick a date"
-          style={{ width: '50%' }}
+          style={{ maxWidth: 150 }}
           valueFormat="YYYY-MM-DD"
           value={form.values.startDate}
           onChange={(value) => form.setFieldValue('startDate', value)}
         />
+
         <DateInput
           label="End Date"
           placeholder="Pick a date"
-          style={{ width: '50%' }}
+          style={{ maxWidth: 150 }}
           valueFormat="YYYY-MM-DD"
           value={form.values.endDate}
           onChange={(value) => form.setFieldValue('endDate', value)}
         />
+
+        <AddFilter 
+          columns={Object.keys(searchTerms[0] || {})}
+          handleAddFilter={handleAddFilter}
+        />
       </Group>
+
+      <ActiveFilters filters={form.values.filters} />
 
       <RecordTable 
         data={searchTerms} 
