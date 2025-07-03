@@ -55,9 +55,20 @@ function AdsSearchTerm() {
       startDate: validators.required('Start date'),
       endDate: validators.required('End date'),
     },
-    transformValues: (values) => ({
-      ...values
-    }),
+    transformValues: ({ filters, ...values }) => {
+      const filter = filters?.length > 0 ? {
+        and: filters.map(f => ({
+          [f.column]: {
+            [f.condition]: f.value
+          }
+        }))
+      } : null
+      
+      return {
+        ...values,
+        filter
+      }
+    },
     onValuesChange: (values) => {
       setSettings({ ...settings, ...values })
     },
