@@ -1,5 +1,5 @@
 import React from 'react'
-import { Paper, Stack, Tabs } from '@mantine/core'
+import { Container, Paper, Stack, Tabs } from '@mantine/core'
 import { useNavigate, useLocation, Outlet } from 'react-router-dom'
 
 function Ads() {

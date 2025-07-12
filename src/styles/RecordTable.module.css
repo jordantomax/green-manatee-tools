@@ -1,9 +1,18 @@
+.th {
+    white-space: nowrap;
+}
+
+.td {
+    white-space: nowrap;
+}
+
 .stickyCol {
   position: sticky;
   left: 0;
   background: #fff;
   z-index: 2;
 }
+
 .stickyCol::after {
   content: '';
   position: absolute;
@@ -14,4 +23,13 @@
   background: #f0f0f0;
   z-index: 3;
   pointer-events: none;
+} 
+
+/* Lighten table row hover color */
+.row {
+  transition: background-color 0.15s ease;
 }
+
+.row:hover {
+  background-color: var(--mantine-color-gray-0) !important;
+} 

@@ -49,7 +49,7 @@ const generatePricingScenarios = ({
 }
 
 function Pricing() {
-  const [values, setValue] = useLocalStorage('pricing-calculator', {
+  const [settings, setSetting] = useLocalStorage('pricingCalculator', {
     costOfGoods: 0,
     lowSalePrice: 0,
     highSalePrice: 0,
@@ -58,7 +58,7 @@ function Pricing() {
     steps: 15
   })
 
-  const scenarios = generatePricingScenarios(values)
+  const scenarios = generatePricingScenarios(settings)
   
   return (
     <Container>
@@ -69,48 +69,48 @@ function Pricing() {
           <Group>
             <NumberInput
               label="Low Sale Price"
-              value={values.lowSalePrice}
-              onChange={(value) => setValue('lowSalePrice', value)}
+              value={settings.lowSalePrice}
+              onChange={(value) => setSetting('lowSalePrice', value)}
               prefix="$"
               decimalScale={2}
               style={{ maxWidth: 150 }}
             />
             <NumberInput
               label="High Sale Price"
-              value={values.highSalePrice}
-              onChange={(value) => setValue('highSalePrice', value)}
+              value={settings.highSalePrice}
+              onChange={(value) => setSetting('highSalePrice', value)}
               prefix="$"
               decimalScale={2}
               style={{ maxWidth: 150 }}
             />
             <NumberInput
               label="Cost of Goods"
-              value={values.costOfGoods}
-              onChange={(value) => setValue('costOfGoods', value)}
+              value={settings.costOfGoods}
+              onChange={(value) => setSetting('costOfGoods', value)}
               prefix="$"
               decimalScale={2}
               style={{ maxWidth: 150 }}
             />
             <NumberInput
               label="Referral Fee (%)"
-              value={values.referralFee}
-              onChange={(value) => setValue('referralFee', value)}
+              value={settings.referralFee}
+              onChange={(value) => setSetting('referralFee', value)}
               suffix="%"
               decimalScale={1}
               style={{ maxWidth: 150 }}
             />
             <NumberInput
               label="FBA Fee"
-              value={values.fbaFee}
-              onChange={(value) => setValue('fbaFee', value)}
+              value={settings.fbaFee}
+              onChange={(value) => setSetting('fbaFee', value)}
               prefix="$"
               decimalScale={2}
               style={{ maxWidth: 150 }}
             />
             <NumberInput
               label="steps"
-              value={values.steps}
-              onChange={(value) => setValue('steps', value)}
+              value={settings.steps}
+              onChange={(value) => setSetting('steps', value)}
               min={2}
               max={50}
               style={{ maxWidth: 150 }}

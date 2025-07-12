@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import { Select, Button, Group, Stack, Box } from '@mantine/core'
 import { DateInput } from '@mantine/dates'
 import { useForm } from '@mantine/form'
+
 import api from '@/utils/api'
 import { useAsync } from '@/hooks/useAsync'
+import { validators } from '@/utils/validation'
 
 const CreateReport = ({ setCreateModalOpen, handleRefreshReports }) => {
   const { isLoading, run } = useAsync()
@@ -24,10 +26,10 @@ const CreateReport = ({ setCreateModalOpen, handleRefreshReports }) => {
       timeUnit: 'SUMMARY'
     },
     validate: {
-      reportType: (value) => (!value ? 'Report type is required' : null),
-      startDate: (value) => (!value ? 'Start date is required' : null),
-      endDate: (value) => (!value ? 'End date is required' : null),
-      timeUnit: (value) => (!value ? 'Time unit is required' : null)
+      reportType: validators.required('Report type'),
+      startDate: validators.required('Start date'),
+      endDate: validators.required('End date'),
+      timeUnit: validators.required('Time unit')
     }
   })
 

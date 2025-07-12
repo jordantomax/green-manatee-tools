@@ -1,0 +1,17 @@
+.tableFilterPill {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.tableFilterPill:hover {
+    background-color: var(--mantine-color-gray-3);
+}
+
+.removeButton {
+    color: var(--mantine-color-gray-6);
+    transition: color 0.2s ease;
+}
+
+.removeButton:hover {
+    color: var(--mantine-color-gray-9);
+}

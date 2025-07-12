@@ -33,6 +33,14 @@ function DataTable({
   onPageSizeChange,
   columnOrder = []
 }) {
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return (
+      <Paper withBorder p="md">
+        <Text c="dimmed">No data available</Text>
+      </Paper>
+    )
+  }
+
   const localStorageKey = useMemo(() => {
     if (!tableId) return null
     return `dataTableState-${tableId}`
@@ -118,14 +126,6 @@ function DataTable({
   useEffect(() => {
     if (!paginationFromQueryParams) setInternalCurrentPage(1)
   }, [filters, activeSorts, internalPageSize, paginationFromQueryParams])
-
-  if (!data || !Array.isArray(data) || data.length === 0) {
-    return (
-      <Paper withBorder p="md">
-        <Text c="dimmed">No data available</Text>
-      </Paper>
-    )
-  }
 
   const inferredColumnTypes = useMemo(() => {
     const types = {}
@@ -270,7 +270,7 @@ function DataTable({
     return processedData.slice(start, end)
   }, [processedData, currentPage, pageSize])
 
-  const handleAddFilter = useCallback(column => {
+  const handleFilterAdd = useCallback(column => {
     let type = inferredColumnTypes[column]?.type || 'text'
     if (type === 'percent') type = 'number'
     setFilters(prev => [...prev, { column, type }])
@@ -373,7 +373,7 @@ function DataTable({
                 value: column,
                 label: formatColumnName(column)
               }))}
-              onSelect={handleAddFilter}
+              onSelect={handleFilterAdd}
               placeholder="Search columns..."
               width={300}
               buttonProps={{

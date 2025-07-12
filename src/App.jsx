@@ -15,8 +15,11 @@ import Nav from '@/components/Nav'
 import Postage from '@/views/Postage'
 import Inventory from '@/views/Inventory'
 import Shipping from '@/views/Shipping'
-import Ads from '@/views/Ads'
-import AdsReport from '@/views/AdsReport'
+
+import Ads from '@/views/ads/Ads'
+import AdsReport from '@/views/ads/AdsReport'
+import AdsReports from '@/views/ads/AdsReports'
+import AdsSearchTerm from '@/views/ads/AdsSearchTerm'
 import Pricing from '@/views/Pricing'
 
 function AppContent() {
@@ -53,12 +56,16 @@ function AppContent() {
       <Nav />
       <AppShell.Main>
         <Routes>
-          <Route path='/' element={<Navigate to="/postage" replace />} />
+          <Route index path='/' element={<Navigate to="/postage" replace />} />
           <Route path='postage' element={<Postage />} />
           <Route path='shipping' element={<Shipping />} />
           <Route path='inventory' element={<Inventory />} />
-          <Route path='ads' element={<Ads />} />
-          <Route path='ads/:id' element={<AdsReport />} />
+          <Route path='ads' element={<Ads />}>
+            <Route index element={<Navigate to="/ads/reports" replace />} />
+            <Route path='reports' element={<AdsReports />} />
+            <Route path=':id' element={<AdsReport />} />
+            <Route path='search-terms' element={<AdsSearchTerm />} />
+          </Route>
           <Route path='pricing' element={<Pricing />} />
         </Routes>
       </AppShell.Main>
