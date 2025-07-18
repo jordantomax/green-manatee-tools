@@ -23,7 +23,7 @@ function RecordTable({ data, columnOrder }) {
   }, [data, columnOrder])
 
   if (data.length === 0) {
-    return <Text>Loading...</Text>
+    return <Text>No records found</Text>
   }
   
   return (

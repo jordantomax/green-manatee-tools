@@ -115,6 +115,7 @@ function AdsReports() {
         <Table.Thead>
           <Table.Tr>
             <Table.Th>Type</Table.Th>
+            <Table.Th>Source</Table.Th>
             <Table.Th>Time Unit</Table.Th>
             <Table.Th>Start Date</Table.Th>
             <Table.Th>End Date</Table.Th>
@@ -131,6 +132,7 @@ function AdsReports() {
               className={classes.tableRowHover}
             >
               <Table.Td>{report.reportType}</Table.Td>
+              <Table.Td>{report.source || '-'}</Table.Td>
               <Table.Td>{report.configuration?.timeUnit || '-'}</Table.Td>
               <Table.Td>{report.startDate.split('T')[0]}</Table.Td>
               <Table.Td>{report.endDate.split('T')[0]}</Table.Td>
