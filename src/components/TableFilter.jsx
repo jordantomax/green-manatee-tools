@@ -89,7 +89,13 @@ const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange }) => {
             size="xs"
             placeholder={filter.type}
             value={value}
-            onChange={setValue}
+            onChange={(newValue) => {
+              if (filter.type === 'string' || filter.type === 'id') {
+                setValue(newValue.target.value)
+              } else {
+                setValue(newValue)
+              }
+            }}
             style={{ maxWidth: '200px' }}
           />
 
