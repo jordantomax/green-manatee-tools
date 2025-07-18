@@ -1,5 +1,5 @@
 export const conditionLabels = {
-  equals: 'Equals',
+  eq: 'Equals',
   contains: 'Contains',
   gt: 'Greater than',
   gte: 'Greater than or equal',
@@ -10,28 +10,28 @@ export const conditionLabels = {
 
 export const baseTypes = {
   id: {
-    conditionOptions: ['equals'],
-    defaultCondition: 'equals',
+    conditionOptions: ['eq'],
+    defaultCondition: 'eq',
     defaultValue: ''
   },
   string: {
-    conditionOptions: ['equals', 'contains'],
-    defaultCondition: 'equals',
+    conditionOptions: ['eq', 'contains'],
+    defaultCondition: 'eq',
     defaultValue: ''
   },
   number: {
-    conditionOptions: ['equals', 'gt', 'gte', 'lt', 'lte'],
-    defaultCondition: 'equals',
+    conditionOptions: ['eq', 'gt', 'gte', 'lt', 'lte'],
+    defaultCondition: 'eq',
     defaultValue: 0
   },
   date: {
-    conditionOptions: ['equals', 'gt', 'gte', 'lt', 'lte'],
-    defaultCondition: 'equals',
+    conditionOptions: ['eq', 'gt', 'gte', 'lt', 'lte'],
+    defaultCondition: 'eq',
     defaultValue: null
   },
   boolean: {
-    conditionOptions: ['equals'],
-    defaultCondition: 'equals',
+    conditionOptions: ['eq'],
+    defaultCondition: 'eq',
     defaultValue: false
   }
 }
