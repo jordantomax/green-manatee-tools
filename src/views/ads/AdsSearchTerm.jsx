@@ -35,19 +35,6 @@ function AdsSearchTerm() {
     handleLimitChange,
   } = usePagination(settings.page, settings.limit)
 
-  const handleSubmit = async (transformedValues) => {
-    const { data, pagination } = await run(async () => await api.getAdsSearchTerms({
-      ...transformedValues,
-      limit,
-      page,
-    }))
-    setSettings({
-      ...form.getValues(),
-      ...pagination,
-    })
-    setSearchTerms(data)
-  }
-  
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: settings,
@@ -74,14 +61,28 @@ function AdsSearchTerm() {
     },
   })
 
-  const handleFilterAdd = (filter) => {
-    form.setValues( { filters: [...settings.filters, filter] } )
+  const handleSubmit = async (transformedValues) => {
+    const { data, pagination } = await run(async () => await api.getAdsSearchTerms({
+      ...transformedValues,
+      limit,
+      page,
+    }))
+    setSettings({
+      ...form.getValues(),
+      ...pagination,
+    })
+    setSearchTerms(data)
+    form.resetDirty()
   }
 
   useEffect(() => { 
     form.onSubmit(handleSubmit)()
   }, [page, limit])
-  
+
+  const handleFilterAdd = (filter) => {
+    form.setValues( { filters: [...settings.filters, filter] } )
+  }
+
   const handleFilterRemove = (filter) => {
     const filters = form.getValues().filters.filter(f => f.id !== filter.id)
     form.setFieldValue('filters', filters)
