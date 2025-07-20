@@ -23,7 +23,7 @@ function AppNav() {
   ]
 
   return (
-    <AppShell.Navbar p="md" bg="gray.0">
+    <AppShell.Navbar p="md">
       <Stack h="100%">
         <Group>
           <Image src="/logo512.png" h={30} w="auto" />

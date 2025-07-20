@@ -16,7 +16,7 @@ export const theme = createTheme({
   components: {
     Container: Container.extend({
       defaultProps: {
-        p: 'md',
+        p: 'sm',
       }
     }),
     AppShell: {
