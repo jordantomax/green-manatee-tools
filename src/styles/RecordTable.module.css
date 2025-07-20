@@ -8,7 +8,7 @@
 
 .stickyCol {
   position: sticky;
-  left: 0;
+  left: var(--app-shell-navbar-width);
   background: #fff;
   z-index: 2;
   white-space: nowrap;
@@ -26,17 +26,24 @@
   pointer-events: none;
 }
 
-.stickyCol::after {
+.stickyRow {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 3;
+  white-space: nowrap;
+}
+
+.stickyRow::after {
   content: '';
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 2px;
-  height: 100%;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
   background: #f0f0f0;
   z-index: 3;
-  pointer-events: none;
-} 
+}
 
 /* Lighten table row hover color */
 .row {

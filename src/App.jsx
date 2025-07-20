@@ -44,15 +44,7 @@ function AppContent() {
   }
 
   return (
-    <AppShell
-      navbar={{ width: 200, breakpoint: 'sm' }}
-      padding="md"
-      styles={{
-        main: {
-          backgroundColor: 'var(--mantine-color-gray-0)'
-        }
-      }}
-    >
+    <AppShell>
       <Nav />
       <AppShell.Main>
         <Routes>
