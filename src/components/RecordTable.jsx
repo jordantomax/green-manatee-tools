@@ -32,7 +32,7 @@ function RecordTable({ data, columnOrder }) {
         <Table.Tr>
           {columns.map((column, colIdx) => (
             <Table.Th 
-              className={styles.th}
+              className={colIdx === 0 ? styles.stickyCol : styles.th}
               key={column}>
               {startCase(column)}
             </Table.Th>
