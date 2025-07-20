@@ -1,5 +1,5 @@
 import React from 'react'
-import { Container, Paper, Stack, Tabs } from '@mantine/core'
+import { Stack, Tabs } from '@mantine/core'
 import { useNavigate, useLocation, Outlet } from 'react-router-dom'
 
 function Ads() {
@@ -9,16 +9,17 @@ function Ads() {
 
   return (
     <Stack>
-      <Tabs value={activeTab} onChange={(value) => navigate(`/ads/${value}`)}>
+      <Tabs 
+        value={activeTab} 
+        onChange={(value) => navigate(`/ads/${value}`)}
+      >
         <Tabs.List>
           <Tabs.Tab value="reports">Reports</Tabs.Tab>
           <Tabs.Tab value="search-terms">Search Terms</Tabs.Tab>
         </Tabs.List>
       </Tabs>
 
-      <Paper withBorder p="lg">
-        <Outlet />
-      </Paper>
+      <Outlet />
     </Stack>
   )
 }

@@ -1,4 +1,4 @@
-import { Container, createTheme, rem } from '@mantine/core';
+import { Container, createTheme } from '@mantine/core';
 
 const CONTAINER_SIZES = {
   xxs: 360,
@@ -16,9 +16,15 @@ export const theme = createTheme({
   components: {
     Container: Container.extend({
       defaultProps: {
-        p: 'md',
+        p: 'sm',
       }
     }),
+    AppShell: {
+      defaultProps: {
+        padding: 'lg',
+        navbar: { width: 210 }
+      }
+    },
     Table: {
       defaultProps: {
         verticalSpacing: 'sm'

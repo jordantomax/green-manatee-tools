@@ -3,7 +3,7 @@ import {
   AuthProvider,
   AuthContext
 } from '@/contexts/Auth'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { MantineProvider, AppShell } from '@mantine/core'
 
 import { theme } from '@/utils/theme'
@@ -25,10 +25,18 @@ import Pricing from '@/views/Pricing'
 function AppContent() {
   const auth = React.useContext(AuthContext)
   const { showError } = useError()
+  const location = useLocation()
 
   useEffect(() => {
     setErrorHandler(showError)
   }, [showError])
+
+  const getMainBackgroundColor = () => {
+    if (location.pathname.startsWith('/ads')) {
+      return 'white'
+    }
+    return 'var(--mantine-color-gray-0)'
+  }
 
   if (auth.isLoggedIn === null) {
     return <div>Loading...</div>
@@ -44,17 +52,9 @@ function AppContent() {
   }
 
   return (
-    <AppShell
-      navbar={{ width: 200, breakpoint: 'sm' }}
-      padding="md"
-      styles={{
-        main: {
-          backgroundColor: 'var(--mantine-color-gray-0)'
-        }
-      }}
-    >
+    <AppShell>
       <Nav />
-      <AppShell.Main>
+      <AppShell.Main style={{ backgroundColor: getMainBackgroundColor() }}>
         <Routes>
           <Route index path='/' element={<Navigate to="/postage" replace />} />
           <Route path='postage' element={<Postage />} />
