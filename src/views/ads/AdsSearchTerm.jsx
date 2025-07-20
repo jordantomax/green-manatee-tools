@@ -138,7 +138,7 @@ function AdsSearchTerm() {
 
         <RecordTable 
           data={searchTerms} 
-          columnOrder={['keywordId', 'searchTerm', 'acosClicks7d']}
+          columnOrder={['searchTerm', 'keywordId', 'acosClicks7d']}
          />
         
         <TablePagination

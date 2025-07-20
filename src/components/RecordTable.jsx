@@ -33,7 +33,7 @@ function RecordTable({ data, columnOrder }) {
           <Table.Tr>
             {columns.map((column, colIdx) => (
               <Table.Th 
-                className={styles.th}
+                className={colIdx === 0 ? styles.stickyCol : styles.th}
                 key={column}>
                 {startCase(column)}
               </Table.Th>
@@ -46,7 +46,7 @@ function RecordTable({ data, columnOrder }) {
             <Table.Tr className={styles.row} key={rowIdx}>
               {columns.map((column, colIdx) => (
                 <Table.Td 
-                  className={styles.td}
+                  className={colIdx === 0 ? styles.stickyCol : styles.td}
                   key={`${rowIdx}-${column}`}
                 >
                   <Text size="xs">{row[column]}</Text>
