@@ -27,34 +27,36 @@ function RecordTable({ data, columnOrder }) {
   }
   
   return (
-    <Table highlightOnHover size="sm">
-      <Table.Thead className={styles.stickyRow}>
-        <Table.Tr>
-          {columns.map((column, colIdx) => (
-            <Table.Th 
-              className={colIdx === 0 ? styles.stickyCol : styles.th}
-              key={column}>
-              {startCase(column)}
-            </Table.Th>
-          ))}
-        </Table.Tr>
-      </Table.Thead>
-
-      <Table.Tbody>
-        {data.map((row, rowIdx) => (
-          <Table.Tr className={styles.row} key={rowIdx}>
+    <Table.ScrollContainer>
+      <Table highlightOnHover size="sm">
+        <Table.Thead className={styles.stickyRow}>
+          <Table.Tr>
             {columns.map((column, colIdx) => (
-              <Table.Td 
-                className={colIdx === 0 ? styles.stickyCol : styles.td}
-                key={`${rowIdx}-${column}`}
-              >
-                <Text size="xs">{row[column]}</Text>
-              </Table.Td>
+              <Table.Th 
+                className={colIdx === 0 ? styles.stickyCol : styles.th}
+                key={column}>
+                {startCase(column)}
+              </Table.Th>
             ))}
           </Table.Tr>
-        ))}
-      </Table.Tbody>
-    </Table>
+        </Table.Thead>
+
+        <Table.Tbody>
+          {data.map((row, rowIdx) => (
+            <Table.Tr className={styles.row} key={rowIdx}>
+              {columns.map((column, colIdx) => (
+                <Table.Td 
+                  className={colIdx === 0 ? styles.stickyCol : styles.td}
+                  key={`${rowIdx}-${column}`}
+                >
+                  <Text size="xs">{row[column]}</Text>
+                </Table.Td>
+              ))}
+            </Table.Tr>
+          ))}
+        </Table.Tbody>
+      </Table>
+    </Table.ScrollContainer>
   )
 }
 

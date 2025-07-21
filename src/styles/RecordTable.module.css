@@ -8,7 +8,7 @@
 
 .stickyCol {
   position: sticky;
-  left: var(--app-shell-navbar-width);
+  left: 0;
   background: #fff;
   z-index: 2;
   white-space: nowrap;
