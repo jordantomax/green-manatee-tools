@@ -51,9 +51,15 @@ function AdsSearchTerm() {
         }))
       } : null
       
+      const sort = [{}]
+      if (filters?.length > 0) {
+        sort[0][filters[0]?.column] = 'desc'
+      }
+      
       return {
         ...values,
-        filter
+        filter,
+        sort
       }
     },
     onValuesChange: (values) => {
