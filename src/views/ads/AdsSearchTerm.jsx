@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { Box, Title, Stack, Text } from '@mantine/core'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { LineChart } from '@mantine/charts'
 
 import NotFound from '@/views/NotFound'
 import { useAsync } from '@/hooks/useAsync'
 import api from '@/utils/api'
+import { numberTypeColumns } from '@/utils/table'
 
 function AdsSearchTerm() {
   const { searchTerm } = useParams()
@@ -21,10 +22,16 @@ function AdsSearchTerm() {
   useEffect(() => {
     const fetchData = async () => {
       const response = await run(async () => await api.getAdsSearchTerm(searchTerm, keywordId))
-      const data = response.map(item => ({
-        date: new Date(item.date),
-        cost: parseFloat(item.cost || 0)
-      })).sort((a, b) => a.date - b.date)
+      const data = response.map(item => {
+        const itemData = { date: new Date(item.date).toLocaleDateString() }
+        
+        numberTypeColumns.forEach((field) => {
+          if (item[field] !== undefined) {
+            itemData[field] = parseFloat(item[field] || 0)
+          }
+        })
+        return itemData
+      }).sort((a, b) => new Date(a.date) - new Date(b.date))
       setChartData(data)
     }
     fetchData()
@@ -41,28 +48,16 @@ function AdsSearchTerm() {
       )}
 
       <Box style={{ width: '100%', height: 400, marginTop: 20 }}>
-        <Title order={2}>Cost Over Time</Title>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis 
-              dataKey="date" 
-              tickFormatter={(date) => date.toLocaleDateString()}
-            />
-            <YAxis />
-            <Tooltip 
-              labelFormatter={(date) => date.toLocaleDateString()}
-              formatter={(value) => [`$${value.toFixed(2)}`, 'Cost']}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="cost" 
-              stroke="#8884d8" 
-              strokeWidth={2}
-              dot={{ fill: '#8884d8', strokeWidth: 2, r: 4 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+        <LineChart 
+          h={600}
+          dataKey="date" 
+          data={chartData} 
+          withLegend
+          series={numberTypeColumns.map(column => ({
+            name: column,
+            color: '#8884d8'
+          }))} 
+        />
       </Box>
     </Stack>
   )

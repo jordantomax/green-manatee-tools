@@ -120,6 +120,10 @@ export const columnTypes = {
   advertisedSku: 'string',
 }
 
+export const numberTypeColumns = Object.keys(columnTypes).filter(key => 
+  ['integer', 'float', 'currency'].includes(columnTypes[key])
+)
+
 export const createDefaultFilter = (column) => {
   const baseTypeName = columnTypes[column] || 'string'
   const baseType = baseTypes[baseTypeName]
