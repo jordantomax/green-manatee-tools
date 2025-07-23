@@ -97,6 +97,7 @@ function AdsSearchTerms() {
   }
 
   const handleFilterChange = (filter, condition, value) => {
+    console.log(filter, condition, value)
     const filters = form.getValues().filters.map(f => f.id === filter.id ? { ...f, condition, value } : f)
     form.setFieldValue('filters', filters)
   }
