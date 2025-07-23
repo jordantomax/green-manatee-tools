@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@mantine/core": "^8.0.0",
-    "@mantine/dates": "^8.0.0",
-    "@mantine/form": "^8.0.0",
-    "@mantine/hooks": "^8.0.0",
+    "@mantine/charts": "^8.2.1",
+    "@mantine/core": "^8.2.1",
+    "@mantine/dates": "^8.2.1",
+    "@mantine/form": "^8.2.1",
+    "@mantine/hooks": "^8.2.1",
     "@tabler/icons-react": "^3.31.0",
     "@tanstack/react-virtual": "^3.13.8",
     "@testing-library/jest-dom": "^5.11.4",
@@ -17,6 +18,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^6.0.2",
+    "recharts": "^3.1.0",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
