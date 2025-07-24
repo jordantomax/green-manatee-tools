@@ -48,7 +48,7 @@ function AdsSearchTerm() {
         <p>No data available</p>
       )}
     
-      <Box style={{ width: '100%', height: 400, marginTop: 20 }}>
+      <Box mt="md">
         <LineChart 
           h={600}
           dataKey="date" 

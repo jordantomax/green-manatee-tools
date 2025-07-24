@@ -16,5 +16,3 @@ export const CHART_COLORS = [
   ...getColorShades('blue'),
   ...getColorShades('pink'),
 ]
-
-console.log('CHART_COLORS:', CHART_COLORS) 
