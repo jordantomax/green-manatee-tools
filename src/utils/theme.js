@@ -1,4 +1,5 @@
 import { Container, createTheme } from '@mantine/core';
+import { PRIMARY_COLOR } from '@/utils/color';
 
 const CONTAINER_SIZES = {
   xxs: 360,
@@ -10,7 +11,7 @@ const CONTAINER_SIZES = {
 };
 
 export const theme = createTheme({
-  primaryColor: 'green',
+  primaryColor: PRIMARY_COLOR,
   fontFamily: 'system-ui, -apple-system, sans-serif',
   cursorType: 'pointer',
   components: {

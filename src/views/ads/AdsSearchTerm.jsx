@@ -7,6 +7,7 @@ import NotFound from '@/views/NotFound'
 import { useAsync } from '@/hooks/useAsync'
 import api from '@/utils/api'
 import { numberTypeColumns } from '@/utils/table'
+import { CHART_COLORS } from '@/utils/color'
 
 function AdsSearchTerm() {
   const { searchTerm } = useParams()
@@ -46,16 +47,16 @@ function AdsSearchTerm() {
       {chartData.length === 0 && (
         <p>No data available</p>
       )}
-
+    
       <Box style={{ width: '100%', height: 400, marginTop: 20 }}>
         <LineChart 
           h={600}
           dataKey="date" 
           data={chartData} 
           withLegend
-          series={numberTypeColumns.map(column => ({
+          series={[...numberTypeColumns].sort().map((column, index) => ({
             name: column,
-            color: '#8884d8'
+            color: CHART_COLORS[index % CHART_COLORS.length]
           }))} 
         />
       </Box>
