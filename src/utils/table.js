@@ -70,33 +70,33 @@ export const columnTypes = {
   
   // Purchase metrics
   purchases7d: 'integer',
-  purchases14d: 'integer',
+  // purchases14d: 'integer',
   purchasesSameSku7d: 'integer',
-  purchasesSameSku14d: 'integer',
+  // purchasesSameSku14d: 'integer',
   
   // Sales metrics
   sales7d: 'integer',
-  sales14d: 'integer',
+  // sales14d: 'integer',
   salesOtherSku7d: 'integer',
-  salesOtherSku14d: 'integer',
+  // salesOtherSku14d: 'integer',
   
   // Units sold metrics
   unitsSoldClicks7d: 'integer',
-  unitsSoldClicks14d: 'integer',
+  // unitsSoldClicks14d: 'integer',
   unitsSoldSameSku7d: 'integer',
-  unitsSoldSameSku14d: 'integer',
+  // unitsSoldSameSku14d: 'integer',
   unitsSoldOtherSku7d: 'integer',
-  unitsSoldOtherSku14d: 'integer',
+  // unitsSoldOtherSku14d: 'integer',
   
   // Attribution metrics
   attributedSalesSameSku7d: 'currency',
-  attributedSalesSameSku14d: 'currency',
+  // attributedSalesSameSku14d: 'currency',
   
   // Performance metrics
   acosClicks7d: 'float',
-  acosClicks14d: 'float',
+  // acosClicks14d: 'float',
   roasClicks7d: 'float',
-  roasClicks14d: 'float',
+  // roasClicks14d: 'float',
   purchaseClickRate14d: 'float',
   
   // Engagement metrics

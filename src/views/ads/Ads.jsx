@@ -27,15 +27,17 @@ function Ads() {
       ) : (
         <Breadcrumbs separator={<IconChevronRight size={16} />}>
           {segments.map((segment, index) => {
+            const name = decodeURIComponent(segment)
+
             if (index !== segments.length - 1) {
               return (
                 <Anchor onClick={() => navigate(`/ads/${segments.slice(0, index + 1).join('/')}`)}>
-                  {segment}
+                  {name}
                 </Anchor>
               )
             }
             return (
-              <Text fw={500}>{segment}</Text>
+              <Text fw={500}>{name}</Text>
             )
           })}
         </Breadcrumbs>

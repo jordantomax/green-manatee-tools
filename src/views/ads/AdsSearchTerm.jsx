@@ -10,14 +10,13 @@ import { numberTypeColumns } from '@/utils/table'
 import { getIndexedChartColor } from '@/utils/color'
 import ChartLegendDropdown from '@/components/ChartLegendDropdown'
 
-
 function AdsSearchTerm() {
   const { searchTerm } = useParams()
   const [searchParams] = useSearchParams()
   const keywordId = searchParams.get('keywordId')
   const { run, isLoading } = useAsync()
   const [chartData, setChartData] = useState([])
-  const [visibleColumns, setVisibleColumns] = useState(new Set(['acosClicks7d', 'clicks', 'cost', 'sales7d']))
+  const [visibleColumns, setVisibleColumns] = useState(new Set(['acosClicks7d', 'cost', 'sales7d']))
   
   if (!keywordId) {
     return <NotFound message="The search term has no keyword ID." />
@@ -37,6 +36,7 @@ function AdsSearchTerm() {
         return itemData
       }).sort((a, b) => new Date(a.date) - new Date(b.date))
       setChartData(data)
+      
     }
     fetchData()
   }, [])
