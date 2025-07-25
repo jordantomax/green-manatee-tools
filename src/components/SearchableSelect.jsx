@@ -42,8 +42,6 @@ function SearchableSelect({
     <Combobox
       store={combobox}
       width={width}
-      position="bottom-start"
-      withArrow
       onOptionSubmit={value => {
         combobox.closeDropdown()
         onSelect(value)
@@ -88,8 +86,10 @@ function SearchableSelect({
             </Tooltip>
           )}
         </Box>
-        <Combobox.Options style={{ maxHeight: 200, overflowY: 'auto' }}>
-          {filteredOptions.length > 0 ? (
+        <Combobox.Options>
+          {filteredOptions.length === 0 ? (
+            <Combobox.Empty>Nothing found</Combobox.Empty>
+          ) : (
             filteredOptions.map(option => (
               <Combobox.Option 
                 value={option.value} 
@@ -99,8 +99,6 @@ function SearchableSelect({
                 {option.label}
               </Combobox.Option>
             ))
-          ) : (
-            <Combobox.Empty>Nothing found</Combobox.Empty>
           )}
         </Combobox.Options>
       </Combobox.Dropdown>

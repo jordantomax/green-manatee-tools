@@ -15,6 +15,19 @@ export const theme = createTheme({
   fontFamily: 'system-ui, -apple-system, sans-serif',
   cursorType: 'pointer',
   components: {
+    Combobox: {
+      defaultProps: {
+        width: 300,
+        position: 'bottom-start',
+        withArrow: true
+      },
+      styles: {
+        options: {
+          maxHeight: 200,
+          overflowY: 'auto',
+        }
+      }
+    },
     Container: Container.extend({
       defaultProps: {
         p: 'sm',

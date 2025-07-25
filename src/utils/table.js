@@ -69,35 +69,35 @@ export const columnTypes = {
   clickThroughRate: 'float',
   
   // Purchase metrics
-  purchases7D: 'integer',
-  purchases14D: 'integer',
-  purchasesSameSku7D: 'integer',
-  purchasesSameSku14D: 'integer',
+  purchases7d: 'integer',
+  purchases14d: 'integer',
+  purchasesSameSku7d: 'integer',
+  purchasesSameSku14d: 'integer',
   
   // Sales metrics
-  sales7D: 'integer',
-  sales14D: 'integer',
-  salesOtherSku7D: 'integer',
-  salesOtherSku14D: 'integer',
+  sales7d: 'integer',
+  sales14d: 'integer',
+  salesOtherSku7d: 'integer',
+  salesOtherSku14d: 'integer',
   
   // Units sold metrics
-  unitsSoldClicks7D: 'integer',
-  unitsSoldClicks14D: 'integer',
-  unitsSoldSameSku7D: 'integer',
-  unitsSoldSameSku14D: 'integer',
-  unitsSoldOtherSku7D: 'integer',
-  unitsSoldOtherSku14D: 'integer',
+  unitsSoldClicks7d: 'integer',
+  unitsSoldClicks14d: 'integer',
+  unitsSoldSameSku7d: 'integer',
+  unitsSoldSameSku14d: 'integer',
+  unitsSoldOtherSku7d: 'integer',
+  unitsSoldOtherSku14d: 'integer',
   
   // Attribution metrics
-  attributedSalesSameSku7D: 'currency',
-  attributedSalesSameSku14D: 'currency',
+  attributedSalesSameSku7d: 'currency',
+  attributedSalesSameSku14d: 'currency',
   
   // Performance metrics
-  acosClicks7D: 'float',
-  acosClicks14D: 'float',
-  roasClicks7D: 'float',
-  roasClicks14D: 'float',
-  purchaseClickRate14D: 'float',
+  acosClicks7d: 'float',
+  acosClicks14d: 'float',
+  roasClicks7d: 'float',
+  roasClicks14d: 'float',
+  purchaseClickRate14d: 'float',
   
   // Engagement metrics
   addToList: 'integer',
@@ -122,7 +122,7 @@ export const columnTypes = {
 
 export const numberTypeColumns = Object.keys(columnTypes).filter(key => 
   ['integer', 'float', 'currency'].includes(columnTypes[key])
-)
+).sort()
 
 export const createDefaultFilter = (column) => {
   const baseTypeName = columnTypes[column] || 'string'

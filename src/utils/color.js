@@ -16,3 +16,7 @@ export const CHART_COLORS = [
   ...getColorShades('blue'),
   ...getColorShades('pink'),
 ]
+
+export const getIndexedChartColor = (index) => {
+  return CHART_COLORS[index % CHART_COLORS.length]
+}
