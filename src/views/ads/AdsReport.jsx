@@ -59,27 +59,8 @@ function AdsReport() {
     )
   }
 
-  const items = [
-    { title: 'Ads', href: '/ads' },
-    { title: report.reportType, href: '#' }
-  ].map((item, index) => (
-    <Anchor
-      key={index}
-      component="button"
-      onClick={() => item.href !== '#' && navigate(item.href)}
-      data-active={item.href === '#'}
-      className={classes.breadcrumbAnchor}
-    >
-      {item.title}
-    </Anchor>
-  ))
-
   return (
     <Stack gap="md">
-      <Breadcrumbs separator={<IconChevronRight size={16} />}>
-        {items}
-      </Breadcrumbs>
-
       <Paper withBorder p="lg">
         <Stack gap="md">
           <Title order={2}>Report Details</Title>
