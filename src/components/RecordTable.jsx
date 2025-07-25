@@ -13,7 +13,7 @@ const orderColumns = (columns, order) => {
   return columns
 }
 
-function RecordTable({ data, columnOrder }) {
+function RecordTable({ data, columnOrder, handleRowClick }) {
   const [columns, setColumns] = useState([])
   
   useEffect(() => {
@@ -27,7 +27,7 @@ function RecordTable({ data, columnOrder }) {
   }
   
   return (
-    <Table highlightOnHover size="sm">
+    <Table size="sm">
       <Table.Thead className={styles.stickyRow}>
         <Table.Tr>
           {columns.map((column, colIdx) => (
@@ -42,7 +42,7 @@ function RecordTable({ data, columnOrder }) {
 
       <Table.Tbody>
         {data.map((row, rowIdx) => (
-          <Table.Tr className={styles.row} key={rowIdx}>
+          <Table.Tr className={styles.row} key={rowIdx} onClick={() => handleRowClick(row)}>
             {columns.map((column, colIdx) => (
               <Table.Td 
                 className={colIdx === 0 ? styles.stickyCol : styles.td}

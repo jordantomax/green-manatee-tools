@@ -274,6 +274,16 @@ async function getAdsSearchTerms(body) {
   })
 }
 
+async function getAdsSearchTerm(searchTerm, keywordId) {
+  return call(`amazon/ads/search-terms/${searchTerm}`, {
+    params: {
+      searchTerm,
+      keywordId
+    },
+    method: 'GET'
+  })
+}
+
 const api = {
   login,
   signUp,
@@ -294,7 +304,8 @@ const api = {
   getAdsReport,
   getTaggedAdsReport,
   deleteAdsReport,
-  getAdsSearchTerms
+  getAdsSearchTerms,
+  getAdsSearchTerm
 }
 
 export default api

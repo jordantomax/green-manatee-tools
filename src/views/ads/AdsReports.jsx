@@ -71,7 +71,7 @@ function AdsReports() {
     }
 
     if (report.status === 'COMPLETED') {
-      navigate(`/ads/${report.id}`);
+              navigate(`/ads/reports/${report.id}`);
     } else {
       if (!loadingReports[report.id]) {
         handleGetReport(report);

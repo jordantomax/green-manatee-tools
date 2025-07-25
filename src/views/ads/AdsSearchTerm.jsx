@@ -1,162 +1,78 @@
-import { useState, useEffect } from "react"
-import { Stack, Title, Group, Loader, Button } from "@mantine/core"
-import { DateInput } from "@mantine/dates"
-import { useForm } from '@mantine/form'
-import { subDays, format } from 'date-fns'
+import { useState, useEffect } from 'react'
+import { useParams, useSearchParams } from 'react-router-dom'
+import { Box, Title, Stack, Text, Group } from '@mantine/core'
+import { LineChart } from '@mantine/charts'
 
-import api from "@/utils/api"
-import { validators } from '@/utils/validation'
+import NotFound from '@/views/NotFound'
 import { useAsync } from '@/hooks/useAsync'
-import { usePagination } from '@/hooks/usePagination'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
-import RecordTable from "@/components/RecordTable"
-import TablePagination from "@/components/TablePagination"
-import { AddFilter, ActiveFilters } from "@/components/TableFilter"
-import { columnTypes } from '@/utils/table'
-
-const formatDate = (date) => format(date, 'yyyy-MM-dd')
+import api from '@/utils/api'
+import { numberTypeColumns } from '@/utils/table'
+import { getIndexedChartColor } from '@/utils/color'
+import ChartLegendDropdown from '@/components/ChartLegendDropdown'
 
 function AdsSearchTerm() {
+  const { searchTerm } = useParams()
+  const [searchParams] = useSearchParams()
+  const keywordId = searchParams.get('keywordId')
   const { run, isLoading } = useAsync()
-  const [searchTerms, setSearchTerms] = useState([])
-  const [settings, setSettings] = useLocalStorage('adsSearchTermSettings', {
-    startDate: formatDate(subDays(new Date(), 30)),
-    endDate: formatDate(new Date()),
-    page: 1,
-    limit: 10,
-    totalPages: 1,
-    filters: [],
-  })
+  const [chartData, setChartData] = useState([])
+  const [visibleColumns, setVisibleColumns] = useState(new Set(['acosClicks7d', 'cost', 'sales7d']))
   
-  const { 
-    page,
-    limit,
-    handlePageChange,
-    handleLimitChange,
-  } = usePagination(settings.page, settings.limit)
-
-  const form = useForm({
-    mode: 'uncontrolled',
-    initialValues: settings,
-    validate: {
-      startDate: validators.required('Start date'),
-      endDate: validators.required('End date'),
-    },
-    transformValues: ({ filters, ...values }) => {
-      const filter = filters?.length > 0 ? {
-        and: filters.map(f => ({
-          [f.column]: {
-            [f.condition]: f.value
-          }
-        }))
-      } : null
-      
-      const sort = [{}]
-      if (filters?.length > 0) {
-        sort[0][filters[0]?.column] = 'desc'
-      }
-      
-      return {
-        ...values,
-        filter,
-        sort
-      }
-    },
-    onValuesChange: (values) => {
-      setSettings({ ...settings, ...values })
-    },
-  })
-
-  const handleSubmit = async (transformedValues) => {
-    const { data, pagination } = await run(async () => await api.getAdsSearchTerms({
-      ...transformedValues,
-      limit,
-      page,
-    }))
-    setSettings({
-      ...form.getValues(),
-      ...pagination,
-    })
-    setSearchTerms(data)
-    form.resetDirty()
+  if (!keywordId) {
+    return <NotFound message="The search term has no keyword ID." />
   }
-
-  useEffect(() => { 
-    form.onSubmit(handleSubmit)()
-  }, [page, limit])
-
-  const handleFilterAdd = (filter) => {
-    form.setValues( { filters: [...settings.filters, filter] } )
-  }
-
-  const handleFilterRemove = (filter) => {
-    const filters = form.getValues().filters.filter(f => f.id !== filter.id)
-    form.setFieldValue('filters', filters)
-  }
-
-  const handleFilterChange = (filter, condition, value) => {
-    const filters = form.getValues().filters.map(f => f.id === filter.id ? { ...f, condition, value } : f)
-    form.setFieldValue('filters', filters)
-  }
-
-  return (
-    <form onSubmit={form.onSubmit(handleSubmit)}>
-      <Stack>
-        <Group gap="sm">
-          <Title order={2}>Search Terms</Title>
-          {isLoading && <Loader size="sm" />}
-        </Group>
-
-        <Group align="flex-end">
-          <DateInput
-            {...form.getInputProps('startDate')}
-            label="Start Date"
-            placeholder="Pick a date"
-            style={{ maxWidth: 150 }}
-            valueFormat="YYYY-MM-DD"
-          />
-
-          <DateInput
-            {...form.getInputProps('endDate')}
-            label="End Date"
-            placeholder="Pick a date"
-            style={{ maxWidth: 150 }}
-            valueFormat="YYYY-MM-DD"
-          />
-
-          <AddFilter 
-            columns={Object.keys(columnTypes)}
-            handleFilterAdd={handleFilterAdd}
-          />
-
-          <Button 
-            variant="light" 
-            type="submit" 
-            disabled={!form.isDirty()}
-            children="Refresh"
-          />
-        </Group>
-
-        <ActiveFilters 
-          filters={form.getValues().filters} 
-          handleFilterRemove={handleFilterRemove}
-          handleFilterChange={handleFilterChange}
-        />
-
-        <RecordTable 
-          data={searchTerms} 
-          columnOrder={['searchTerm', 'keywordId', 'acosClicks7d']}
-         />
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await run(async () => await api.getAdsSearchTerm(searchTerm, keywordId))
+      const data = response.map(item => {
+        const itemData = { date: new Date(item.date).toLocaleDateString() }
         
-        <TablePagination
-          page={page}
-          limit={limit}
-          totalPages={settings.totalPages}
-          handlePageChange={handlePageChange}
-          handleLimitChange={handleLimitChange}
+        numberTypeColumns.forEach((field) => {
+          if (item[field] !== undefined) {
+            itemData[field] = parseFloat(item[field] || 0)
+          }
+        })
+        return itemData
+      }).sort((a, b) => new Date(a.date) - new Date(b.date))
+      setChartData(data)
+      
+    }
+    fetchData()
+  }, [])
+  
+  return (
+    <Stack>
+      <Title order={1}>{decodeURIComponent(searchTerm)}</Title>
+      <Text>Keyword ID: {keywordId}</Text>
+
+      {chartData.length === 0 && (
+        <p>No data available</p>
+      )}
+      
+      <Group>
+        <ChartLegendDropdown
+            name="Columns"
+            items={[...numberTypeColumns]}
+            visibleItems={visibleColumns}
+            setVisibleItems={setVisibleColumns}
+          />
+      </Group>
+      
+      <Box mt="md">
+        <LineChart 
+          h={400}
+          dataKey="date" 
+          data={chartData} 
+          withLegend
+          legendProps={{ verticalAlign: 'bottom' }}
+          series={[...visibleColumns].map((column) => ({
+            name: column,
+            color: getIndexedChartColor(numberTypeColumns.indexOf(column))
+          }))}
         />
-      </Stack>
-    </form>
+      </Box>
+    </Stack>
   )
 }
 

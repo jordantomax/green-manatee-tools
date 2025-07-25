@@ -19,10 +19,20 @@ export const baseTypes = {
     defaultCondition: 'eq',
     defaultValue: ''
   },
-  number: {
+  integer: {
     conditionOptions: ['eq', 'gt', 'gte', 'lt', 'lte'],
     defaultCondition: 'eq',
     defaultValue: 0
+  },
+  float: {
+    conditionOptions: ['eq', 'gt', 'gte', 'lt', 'lte'],
+    defaultCondition: 'eq',
+    defaultValue: 0.00
+  },
+  currency: {
+    conditionOptions: ['eq', 'gt', 'gte', 'lt', 'lte'],
+    defaultCondition: 'eq',
+    defaultValue: 0.00
   },
   date: {
     conditionOptions: ['eq', 'gt', 'gte', 'lt', 'lte'],
@@ -47,68 +57,72 @@ export const columnTypes = {
   
   // Campaign details
   campaignBudgetType: 'string',
-  campaignBudgetAmount: 'number',
+  campaignBudgetAmount: 'currency',
   campaignStatus: 'string',
   campaignBudgetCurrencyCode: 'string',
   
   // Basic metrics
-  impressions: 'number',
-  clicks: 'number',
-  cost: 'number',
-  costPerClick: 'number',
-  clickThroughRate: 'number',
+  impressions: 'integer',
+  clicks: 'integer',
+  cost: 'currency',
+  costPerClick: 'currency',
+  clickThroughRate: 'float',
   
   // Purchase metrics
-  purchases7D: 'number',
-  purchases14D: 'number',
-  purchasesSameSku7D: 'number',
-  purchasesSameSku14D: 'number',
+  purchases7d: 'integer',
+  // purchases14d: 'integer',
+  purchasesSameSku7d: 'integer',
+  // purchasesSameSku14d: 'integer',
   
   // Sales metrics
-  sales7D: 'number',
-  sales14D: 'number',
-  salesOtherSku7D: 'number',
-  salesOtherSku14D: 'number',
+  sales7d: 'integer',
+  // sales14d: 'integer',
+  salesOtherSku7d: 'integer',
+  // salesOtherSku14d: 'integer',
   
   // Units sold metrics
-  unitsSoldClicks7D: 'number',
-  unitsSoldClicks14D: 'number',
-  unitsSoldSameSku7D: 'number',
-  unitsSoldSameSku14D: 'number',
-  unitsSoldOtherSku7D: 'number',
-  unitsSoldOtherSku14D: 'number',
+  unitsSoldClicks7d: 'integer',
+  // unitsSoldClicks14d: 'integer',
+  unitsSoldSameSku7d: 'integer',
+  // unitsSoldSameSku14d: 'integer',
+  unitsSoldOtherSku7d: 'integer',
+  // unitsSoldOtherSku14d: 'integer',
   
   // Attribution metrics
-  attributedSalesSameSku7D: 'number',
-  attributedSalesSameSku14D: 'number',
+  attributedSalesSameSku7d: 'currency',
+  // attributedSalesSameSku14d: 'currency',
   
   // Performance metrics
-  acosClicks7D: 'number',
-  acosClicks14D: 'number',
-  roasClicks7D: 'number',
-  roasClicks14D: 'number',
-  purchaseClickRate14D: 'number',
+  acosClicks7d: 'float',
+  // acosClicks14d: 'float',
+  roasClicks7d: 'float',
+  // roasClicks14d: 'float',
+  purchaseClickRate14d: 'float',
   
   // Engagement metrics
-  addToList: 'number',
+  addToList: 'integer',
   
   // Keyword metrics
   keywordId: 'id',
   keyword: 'string',
-  keywordBid: 'number',
+  keywordBid: 'currency',
   keywordType: 'string',
   matchType: 'string',
   targeting: 'string',
   searchTerm: 'string',
   adKeywordStatus: 'string',
-  topOfSearchImpressionShare: 'number',
+  topOfSearchImpressionShare: 'float',
   
   // Product metrics
   adId: 'id',
-  spend: 'number',
+  spend: 'currency',
   advertisedAsin: 'string',
   advertisedSku: 'string',
 }
+
+export const numberTypeColumns = Object.keys(columnTypes).filter(key => 
+  ['integer', 'float', 'currency'].includes(columnTypes[key])
+).sort()
 
 export const createDefaultFilter = (column) => {
   const baseTypeName = columnTypes[column] || 'string'

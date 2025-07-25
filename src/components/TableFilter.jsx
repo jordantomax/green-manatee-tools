@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { Button, Group, Text, Select, NumberInput, Box, Pill, Popover, Stack, TextInput } from '@mantine/core'
-import { IconPlus } from '@tabler/icons-react'
+import { Button, Group, Select, NumberInput, Box, Pill, Popover, Stack, TextInput } from '@mantine/core'
 import { DateInput } from '@mantine/dates'
 import isEmpty from 'lodash-es/isEmpty'
 import startCase from 'lodash-es/startCase'
@@ -39,7 +38,9 @@ export const AddFilter = ({ columns, handleFilterAdd }) => {
 const FilterInputComponents = {
   string: TextInput,
   id: TextInput,
-  number: NumberInput,
+  integer: NumberInput,
+  float: NumberInput,
+  currency: NumberInput,
   date: DateInput,
   boolean: Select,
 }
@@ -87,7 +88,7 @@ const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange }) => {
           
           <FilterInput
             size="xs"
-            placeholder={filter.type}
+            placeholder={filter.value}
             value={value}
             onChange={(newValue) => {
               if (filter.type === 'string' || filter.type === 'id') {

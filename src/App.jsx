@@ -20,7 +20,9 @@ import Ads from '@/views/ads/Ads'
 import AdsReport from '@/views/ads/AdsReport'
 import AdsReports from '@/views/ads/AdsReports'
 import AdsSearchTerm from '@/views/ads/AdsSearchTerm'
+import AdsSearchTerms from '@/views/ads/AdsSearchTerms'
 import Pricing from '@/views/Pricing'
+import NotFound from '@/views/NotFound'
 
 function AppContent() {
   const auth = React.useContext(AuthContext)
@@ -63,10 +65,12 @@ function AppContent() {
           <Route path='ads' element={<Ads />}>
             <Route index element={<Navigate to="/ads/reports" replace />} />
             <Route path='reports' element={<AdsReports />} />
-            <Route path=':id' element={<AdsReport />} />
-            <Route path='search-terms' element={<AdsSearchTerm />} />
+            <Route path='reports/:id' element={<AdsReport />} />
+            <Route path='search-terms' element={<AdsSearchTerms />} />
+            <Route path='search-terms/:searchTerm' element={<AdsSearchTerm />} />
           </Route>
           <Route path='pricing' element={<Pricing />} />
+          <Route path='*' element={<NotFound />} />
         </Routes>
       </AppShell.Main>
     </AppShell>

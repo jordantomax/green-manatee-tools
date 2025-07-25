@@ -8,8 +8,8 @@
 
 .stickyCol {
   position: sticky;
-  left: var(--app-shell-navbar-width);
   background: #fff;
+  left: var(--app-shell-navbar-width);
   z-index: 2;
   white-space: nowrap;
 }
@@ -48,8 +48,10 @@
 /* Lighten table row hover color */
 .row {
   transition: background-color 0.15s ease;
+  cursor: pointer;
 }
 
-.row:hover {
-  background-color: var(--mantine-color-gray-0) !important;
-} 
+.row:hover,
+.row:hover .stickyCol {
+  background: var(--mantine-color-gray-0);
+}
