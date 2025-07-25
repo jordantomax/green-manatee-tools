@@ -65,7 +65,7 @@ function AppContent() {
           <Route path='ads' element={<Ads />}>
             <Route index element={<Navigate to="/ads/reports" replace />} />
             <Route path='reports' element={<AdsReports />} />
-            <Route path=':id' element={<AdsReport />} />
+            <Route path='reports/:id' element={<AdsReport />} />
             <Route path='search-terms' element={<AdsSearchTerms />} />
             <Route path='search-terms/:searchTerm' element={<AdsSearchTerm />} />
           </Route>
