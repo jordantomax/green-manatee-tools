@@ -4,6 +4,7 @@ import { Box, Title, Stack, Text, Group, Table } from '@mantine/core'
 import { LineChart } from '@mantine/charts'
 import startCase from 'lodash-es/startCase'
 import capitalize from 'lodash-es/capitalize'
+import omit from 'lodash-es/omit'
 
 import NotFound from '@/views/NotFound'
 import { useAsync } from '@/hooks/useAsync'
@@ -81,10 +82,12 @@ function AdsSearchTerm() {
       {Object.keys(recordsAggregate).length > 0 && (
         <Table variant="vertical">
           <Table.Tbody>
-            {Object.keys(recordsAggregate).map((key) => (
+            {Object.entries(
+              omit(recordsAggregate, ['keywordId', 'searchTerm'])
+            ).map(([key, value]) => (
               <Table.Tr key={key}>
                 <Table.Th>{capitalize(startCase(key))}</Table.Th>
-                <Table.Td>{recordsAggregate[key]}</Table.Td>
+                <Table.Td>{value}</Table.Td>
               </Table.Tr>
             ))}
           </Table.Tbody>
