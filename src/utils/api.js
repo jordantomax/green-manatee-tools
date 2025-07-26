@@ -274,11 +274,11 @@ async function getAdsSearchTerms(body) {
   })
 }
 
-async function getAdsSearchTerm(searchTerm, keywordId) {
+async function getAdsSearchTerm(searchTerm, keywordId, aggregate=false) {
   return call(`amazon/ads/search-terms/${searchTerm}`, {
     params: {
-      searchTerm,
-      keywordId
+      keywordId,
+      aggregate
     },
     method: 'GET'
   })

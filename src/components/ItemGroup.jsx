@@ -2,8 +2,7 @@ import React from 'react'
 import { Stack, TextInput, Group, Title, Button, Paper, Grid } from '@mantine/core'
 import { IconPlus, IconTrash } from '@tabler/icons-react'
 import capitalize from 'lodash-es/capitalize'
-
-import camelToSentenceCase from '@/utils/camelToSentenceCase'
+import startCase from 'lodash-es/startCase'
 
 function ItemGroup ({
   name,
@@ -72,8 +71,8 @@ function ItemGroup ({
                     return (
                       <Grid.Col key={`${item.id}-${key}`} span={columnSpan}>
                         <TextInput
-                          label={camelToSentenceCase(key)}
-                          placeholder={`Enter ${camelToSentenceCase(key).toLowerCase()}`}
+                          label={startCase(key)}
+                          placeholder={`Enter ${startCase(key).toLowerCase()}`}
                           defaultValue={value}
                           onChange={e => handleItemChange(itemIndex, e)}
                           name={key}

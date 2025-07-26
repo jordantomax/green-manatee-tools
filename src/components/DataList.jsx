@@ -2,8 +2,7 @@ import React from 'react'
 import isPlainObject from 'lodash-es/isPlainObject'
 import isArray from 'lodash-es/isArray'
 import { Grid, Text, Anchor } from '@mantine/core'
-
-import camelToSentenceCase from '@/utils/camelToSentenceCase'
+import startCase from 'lodash-es/startCase'
 
 function DataList ({ obj, mask, imageMask, linkMask }) {
   return Object.entries(obj).map(([key, value], j) => {
@@ -35,7 +34,7 @@ function DataList ({ obj, mask, imageMask, linkMask }) {
       <Grid key={j} gutter="xs">
         <Grid.Col span={5}>
           <Text size="sm" fw={500}>
-            {camelToSentenceCase(key)}
+            {startCase(key)}
           </Text>
         </Grid.Col>
         {value && (
