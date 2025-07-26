@@ -151,7 +151,7 @@ function AdsSearchTerms() {
 
         <RecordTable 
           data={searchTerms} 
-          columnOrder={['searchTerm', 'keywordId', 'acosClicks7d']}
+          columnOrder={['searchTerm', 'keyword', 'keywordId', 'acosClicks7d']}
           handleRowClick={handleRowClick}
          />
         
