@@ -8,7 +8,7 @@ function Ads() {
   const location = useLocation()
 
   const segments = location.pathname
-    .split('ads/')[1]
+    .split('ads')[1]
     .split('/')
     .filter(Boolean)
 
