@@ -1,5 +1,6 @@
 export const conditionLabels = {
   eq: 'Equals',
+  ne: 'Does not equal',
   contains: 'Contains',
   gt: 'Greater than',
   gte: 'Greater than or equal',
@@ -10,37 +11,37 @@ export const conditionLabels = {
 
 export const baseTypes = {
   id: {
-    conditionOptions: ['eq'],
+    conditionOptions: ['eq', 'ne'],
     defaultCondition: 'eq',
     defaultValue: ''
   },
   string: {
-    conditionOptions: ['eq', 'contains'],
+    conditionOptions: ['eq', 'ne', 'contains'],
     defaultCondition: 'eq',
     defaultValue: ''
   },
   integer: {
-    conditionOptions: ['eq', 'gt', 'gte', 'lt', 'lte'],
+    conditionOptions: ['eq', 'ne', 'gt', 'gte', 'lt', 'lte'],
     defaultCondition: 'eq',
     defaultValue: 0
   },
   float: {
-    conditionOptions: ['eq', 'gt', 'gte', 'lt', 'lte'],
+    conditionOptions: ['eq', 'ne', 'gt', 'gte', 'lt', 'lte'],
     defaultCondition: 'eq',
     defaultValue: 0.00
   },
   currency: {
-    conditionOptions: ['eq', 'gt', 'gte', 'lt', 'lte'],
+    conditionOptions: ['eq', 'ne', 'gt', 'gte', 'lt', 'lte'],
     defaultCondition: 'eq',
     defaultValue: 0.00
   },
   date: {
-    conditionOptions: ['eq', 'gt', 'gte', 'lt', 'lte'],
+    conditionOptions: ['eq', 'ne', 'gt', 'gte', 'lt', 'lte'],
     defaultCondition: 'eq',
     defaultValue: null
   },
   boolean: {
-    conditionOptions: ['eq'],
+    conditionOptions: ['eq', 'ne'],
     defaultCondition: 'eq',
     defaultValue: false
   }
