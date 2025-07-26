@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { Box, Title, Stack, Text, Group } from '@mantine/core'
+import { Box, Title, Stack, Text, Group, Table } from '@mantine/core'
 import { LineChart } from '@mantine/charts'
+import startCase from 'lodash-es/startCase'
+import capitalize from 'lodash-es/capitalize'
 
 import NotFound from '@/views/NotFound'
 import { useAsync } from '@/hooks/useAsync'
@@ -15,7 +17,8 @@ function AdsSearchTerm() {
   const [searchParams] = useSearchParams()
   const keywordId = searchParams.get('keywordId')
   const { run, isLoading } = useAsync()
-  const [chartData, setChartData] = useState([])
+  const [recordsByDate, setRecordsByDate] = useState([])
+  const [recordsAggregate, setRecordsAggregate] = useState({})
   const [visibleColumns, setVisibleColumns] = useState(new Set(['acosClicks7d', 'cost', 'sales7d']))
   
   if (!keywordId) {
@@ -24,8 +27,8 @@ function AdsSearchTerm() {
   
   useEffect(() => {
     const fetchData = async () => {
-      const response = await run(async () => await api.getAdsSearchTerm(searchTerm, keywordId))
-      const data = response.map(item => {
+      let recordsByDate = await run(async () => await api.getAdsSearchTerm(searchTerm, keywordId))
+      recordsByDate = recordsByDate.map(item => {
         const itemData = { date: new Date(item.date).toLocaleDateString() }
         
         numberTypeColumns.forEach((field) => {
@@ -35,8 +38,10 @@ function AdsSearchTerm() {
         })
         return itemData
       }).sort((a, b) => new Date(a.date) - new Date(b.date))
-      setChartData(data)
+      setRecordsByDate(recordsByDate)
       
+      const recordsAggregate = await run(async () => await api.getAdsSearchTerm(searchTerm, keywordId, true))
+      setRecordsAggregate(recordsAggregate)
     }
     fetchData()
   }, [])
@@ -46,7 +51,7 @@ function AdsSearchTerm() {
       <Title order={1}>{decodeURIComponent(searchTerm)}</Title>
       <Text>Keyword ID: {keywordId}</Text>
 
-      {chartData.length === 0 && (
+      {recordsByDate.length === 0 && (
         <p>No data available</p>
       )}
       
@@ -63,7 +68,7 @@ function AdsSearchTerm() {
         <LineChart 
           h={400}
           dataKey="date" 
-          data={chartData} 
+          data={recordsByDate} 
           withLegend
           legendProps={{ verticalAlign: 'bottom' }}
           series={[...visibleColumns].map((column) => ({
@@ -72,6 +77,19 @@ function AdsSearchTerm() {
           }))}
         />
       </Box>
+    
+      {Object.keys(recordsAggregate).length > 0 && (
+        <Table variant="vertical">
+          <Table.Tbody>
+            {Object.keys(recordsAggregate).map((key) => (
+              <Table.Tr key={key}>
+                <Table.Th>{capitalize(startCase(key))}</Table.Th>
+                <Table.Td>{recordsAggregate[key]}</Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      )}
     </Stack>
   )
 }
