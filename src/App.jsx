@@ -62,7 +62,7 @@ function AppContent() {
           <Route path='postage' element={<Postage />} />
           <Route path='shipping' element={<Shipping />} />
           <Route path='inventory' element={<Inventory />} />
-          <Route path='ads' element={<Ads />}>
+          <Route path='ads/*' element={<Ads />}>
             <Route index element={<Navigate to="/ads/reports" replace />} />
             <Route path='reports' element={<AdsReports />} />
             <Route path='reports/:id' element={<AdsReport />} />
