@@ -1,16 +1,14 @@
 import React, { Fragment } from 'react'
 import { Stack, Tabs, Breadcrumbs, Anchor, Text } from '@mantine/core'
-import { useNavigate, useLocation, Outlet } from 'react-router-dom'
+import { useNavigate, useLocation, useParams, Outlet } from 'react-router-dom'
 import { IconChevronRight } from '@tabler/icons-react'
 
 function Ads() {
   const navigate = useNavigate()
   const location = useLocation()
+  const params = useParams()
 
-  const segments = location.pathname
-    .split('ads')[1]
-    .split('/')
-    .filter(Boolean)
+  const segments = params["*"] ? params["*"].split('/') : []
 
   return (
     <Stack>
