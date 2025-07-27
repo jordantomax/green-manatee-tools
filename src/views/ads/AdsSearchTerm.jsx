@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { Box, Title, Stack, Text, Group, Table } from '@mantine/core'
+import { Box, Title, Stack, Text, Group, Table, TextInput } from '@mantine/core'
 import { LineChart } from '@mantine/charts'
 import startCase from 'lodash-es/startCase'
 import capitalize from 'lodash-es/capitalize'
 import omit from 'lodash-es/omit'
+import { IconSearch } from '@tabler/icons-react'
 
 import NotFound from '@/views/NotFound'
 import { useAsync } from '@/hooks/useAsync'
@@ -21,6 +22,7 @@ function AdsSearchTerm() {
   const [recordsByDate, setRecordsByDate] = useState([])
   const [recordsAggregate, setRecordsAggregate] = useState({})
   const [visibleColumns, setVisibleColumns] = useState(new Set(['acosClicks7d', 'cost', 'sales7d']))
+  const [filter, setFilter] = useState('')
   
   if (!keywordId) {
     return <NotFound message="The search term has no keyword ID." />
@@ -80,18 +82,33 @@ function AdsSearchTerm() {
       </Box>
     
       {Object.keys(recordsAggregate).length > 0 && (
-        <Table variant="vertical">
-          <Table.Tbody>
-            {Object.entries(
-              omit(recordsAggregate, ['keywordId', 'searchTerm'])
-            ).map(([key, value]) => (
-              <Table.Tr key={key}>
-                <Table.Th>{capitalize(startCase(key))}</Table.Th>
-                <Table.Td>{value}</Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
+        <>
+          <TextInput
+            placeholder="Search metrics..."
+            value={filter}
+            onChange={(event) => setFilter(event.currentTarget.value)}
+            leftSection={<IconSearch size={16} />}
+          />
+          
+          <Table variant="vertical">
+            <Table.Tbody>
+              {Object.entries(
+                omit(recordsAggregate, ['keywordId', 'searchTerm'])
+              )
+                .filter(([key, value]) => 
+                  filter === '' || 
+                  key.toLowerCase().includes(filter.toLowerCase()) ||
+                  String(value).toLowerCase().includes(filter.toLowerCase())
+                )
+                .map(([key, value]) => (
+                  <Table.Tr key={key}>
+                    <Table.Th>{capitalize(startCase(key))}</Table.Th>
+                    <Table.Td>{value}</Table.Td>
+                  </Table.Tr>
+                ))}
+            </Table.Tbody>
+          </Table>
+        </>
       )}
     </Stack>
   )
