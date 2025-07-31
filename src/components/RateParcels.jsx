@@ -1,7 +1,6 @@
 import React from 'react'
-import { Title, Paper, Text, Stack, Box } from '@mantine/core'
+import { Title, Paper, Text, Stack } from '@mantine/core'
 
-import { rateParcelMask } from '@/utils/dataMasks'
 import DataList from '@/components/DataList'
 
 function RateParcels ({ parcels }) {
@@ -17,8 +16,8 @@ function RateParcels ({ parcels }) {
         return (
           <Paper key={parcel.objectId} p="sm">
             <DataList
-              obj={parcel}
-              mask={rateParcelMask}
+              data={parcel}
+              visibleKeys={['length', 'width', 'height', 'weight', 'massUnit', 'distanceUnit']}
             />
           </Paper>
         )
