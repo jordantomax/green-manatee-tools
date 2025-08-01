@@ -284,6 +284,15 @@ async function getAdsSearchTerm(searchTerm, keywordId, aggregate=false) {
   })
 }
 
+async function getNegativeKeywordsByAdGroup(adGroupId) {
+  return call(`amazon/ads/negative-keywords`, {
+    method: 'GET',
+    params: {
+      adGroupId
+    }
+  })
+}
+
 const api = {
   login,
   signUp,
@@ -305,7 +314,8 @@ const api = {
   getTaggedAdsReport,
   deleteAdsReport,
   getAdsSearchTerms,
-  getAdsSearchTerm
+  getAdsSearchTerm,
+  getNegativeKeywordsByAdGroup
 }
 
 export default api
