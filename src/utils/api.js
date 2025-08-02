@@ -293,7 +293,7 @@ async function getNegativeKeywordsByAdGroup(adGroupId) {
   })
 }
 
-async function createNegativeKeyword(campaignId, adGroupId, keywordText, matchType) {
+async function createNegativeKeyword({ campaignId, adGroupId, keywordText, matchType='NEGATIVE_EXACT' }) {
   return call(`amazon/ads/negative-keywords`, {
     method: 'POST',
     body: {

@@ -11,6 +11,7 @@ import { numberTypeColumns } from '@/utils/table'
 import { getIndexedChartColor } from '@/utils/color'
 import ChartLegendDropdown from '@/components/ChartLegendDropdown'
 import DataList from '@/components/DataList'
+import NegativeKeywordToggle from '@/components/NegativeKeywordToggle'
 
 function AdsSearchTerm() {
   const { searchTerm } = useParams()
@@ -20,7 +21,7 @@ function AdsSearchTerm() {
   const [recordsAggregate, setRecordsAggregate] = useState({})
   const [visibleColumns, setVisibleColumns] = useState(new Set(['acosClicks7d', 'cost', 'sales7d']))
   const [negativeKeywords, setNegativeKeywords] = useState([])
-  
+
   const keywordId = searchParams.get('keywordId')
   const negativeKeyword = negativeKeywords.find(k => k.keywordText === searchTerm)
 
@@ -63,23 +64,6 @@ function AdsSearchTerm() {
     }
   }, [recordsAggregate?.adGroupId])
   
-  const createNegativeKeyword = () => {
-    run(async () => {
-      const negativeKeyword = await api.createNegativeKeyword(
-        recordsAggregate.campaignId,
-        recordsAggregate.adGroupId,
-        searchTerm,
-        'NEGATIVE_EXACT'
-      )
-    })
-  }
-  
-  const deleteNegativeKeyword = () => {
-    run(async () => {
-      await api.deleteNegativeKeyword(negativeKeyword.keywordId)
-    })
-  }
-  
   return (
     <Stack>
       <Title order={1}>{decodeURIComponent(searchTerm)}</Title>
@@ -100,13 +84,13 @@ function AdsSearchTerm() {
               visibleItems={visibleColumns}
               setVisibleItems={setVisibleColumns}
             />
-          <Button 
-            loading={isLoading} 
-            variant="light"
-            onClick={negativeKeyword ? deleteNegativeKeyword : createNegativeKeyword}
-          >
-            {negativeKeyword ? 'Remove Negative Keyword' : 'Add Negative Keyword'}
-          </Button>
+          <NegativeKeywordToggle 
+            negativeKeyword={negativeKeyword}
+            setNegativeKeywords={setNegativeKeywords}
+            campaignId={recordsAggregate.campaignId}
+            adGroupId={recordsAggregate.adGroupId}
+            keywordText={searchTerm}
+          />
         </Group>
 
         <LineChart 
