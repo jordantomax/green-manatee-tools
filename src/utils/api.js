@@ -293,6 +293,24 @@ async function getNegativeKeywordsByAdGroup(adGroupId) {
   })
 }
 
+async function createNegativeKeyword(campaignId, adGroupId, keywordText, matchType) {
+  return call(`amazon/ads/negative-keywords`, {
+    method: 'POST',
+    body: {
+      campaignId,
+      adGroupId,
+      keywordText,
+      matchType
+    }
+  })
+}
+
+async function deleteNegativeKeyword(negativeKeywordId) {
+  return call(`amazon/ads/negative-keywords/${negativeKeywordId}`, {
+    method: 'DELETE',
+  })
+}
+
 const api = {
   login,
   signUp,
@@ -315,7 +333,9 @@ const api = {
   deleteAdsReport,
   getAdsSearchTerms,
   getAdsSearchTerm,
-  getNegativeKeywordsByAdGroup
+  getNegativeKeywordsByAdGroup,
+  createNegativeKeyword,
+  deleteNegativeKeyword
 }
 
 export default api

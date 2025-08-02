@@ -68,6 +68,7 @@ function AppContent() {
             <Route path='reports/:id' element={<AdsReport />} />
             <Route path='search-terms' element={<AdsSearchTerms />} />
             <Route path='search-terms/:searchTerm' element={<AdsSearchTerm />} />
+            <Route path='*' element={<NotFound />} />
           </Route>
           <Route path='pricing' element={<Pricing />} />
           <Route path='*' element={<NotFound />} />

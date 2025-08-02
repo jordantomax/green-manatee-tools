@@ -17,7 +17,7 @@ function RateParcels ({ parcels }) {
           <Paper key={parcel.objectId} p="sm">
             <DataList
               data={parcel}
-              visibleKeys={['length', 'width', 'height', 'weight', 'massUnit', 'distanceUnit']}
+              keys={['length', 'width', 'height', 'weight', 'massUnit', 'distanceUnit']}
             />
           </Paper>
         )

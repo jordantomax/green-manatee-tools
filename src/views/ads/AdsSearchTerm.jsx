@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { Title, Stack, Text, Group, Table, TextInput } from '@mantine/core'
+import { Title, Stack, Text, Group, Button } from '@mantine/core'
 import { LineChart } from '@mantine/charts'
-import startCase from 'lodash-es/startCase'
-import capitalize from 'lodash-es/capitalize'
 import omit from 'lodash-es/omit'
-import { IconSearch } from '@tabler/icons-react'
 
 import NotFound from '@/views/NotFound'
 import { useAsync } from '@/hooks/useAsync'
@@ -22,10 +19,10 @@ function AdsSearchTerm() {
   const [recordsByDate, setRecordsByDate] = useState([])
   const [recordsAggregate, setRecordsAggregate] = useState({})
   const [visibleColumns, setVisibleColumns] = useState(new Set(['acosClicks7d', 'cost', 'sales7d']))
-  const [filter, setFilter] = useState('')
   const [negativeKeywords, setNegativeKeywords] = useState([])
   
   const keywordId = searchParams.get('keywordId')
+  const negativeKeyword = negativeKeywords.find(k => k.keywordText === searchTerm)
 
   if (!keywordId) {
     return <NotFound message="The search term has no keyword ID." />
@@ -66,12 +63,33 @@ function AdsSearchTerm() {
     }
   }, [recordsAggregate?.adGroupId])
   
+  const createNegativeKeyword = () => {
+    run(async () => {
+      const negativeKeyword = await api.createNegativeKeyword(
+        recordsAggregate.campaignId,
+        recordsAggregate.adGroupId,
+        searchTerm,
+        'NEGATIVE_EXACT'
+      )
+    })
+  }
+  
+  const deleteNegativeKeyword = () => {
+    run(async () => {
+      await api.deleteNegativeKeyword(negativeKeyword.keywordId)
+    })
+  }
+  
   return (
     <Stack>
       <Title order={1}>{decodeURIComponent(searchTerm)}</Title>
       <DataList 
-        data={{...recordsAggregate, keywordId}}
-        visibleKeys={['campaignName', 'keyword', 'keywordId']} 
+        data={recordsAggregate}
+        keys={[
+          { key: 'campaignName', label: 'Campaign', url: `/ads/campaigns/${recordsAggregate.campaignId}` },
+          { key: 'adGroupName', label: 'Ad Group', url: `/ads/ad-groups/${recordsAggregate.adGroupId}`},
+          { key: 'keyword', label: 'Keyword', url: `/ads/keywords/${keywordId}`},
+        ]} 
       />
 
       <Stack>
@@ -82,6 +100,13 @@ function AdsSearchTerm() {
               visibleItems={visibleColumns}
               setVisibleItems={setVisibleColumns}
             />
+          <Button 
+            loading={isLoading} 
+            variant="light"
+            onClick={negativeKeyword ? deleteNegativeKeyword : createNegativeKeyword}
+          >
+            {negativeKeyword ? 'Remove Negative Keyword' : 'Add Negative Keyword'}
+          </Button>
         </Group>
 
         <LineChart 
@@ -111,33 +136,9 @@ function AdsSearchTerm() {
       </Stack>
     
       {Object.keys(recordsAggregate).length > 0 && (
-        <>
-          <TextInput
-            placeholder="Search metrics..."
-            value={filter}
-            onChange={(event) => setFilter(event.currentTarget.value)}
-            leftSection={<IconSearch size={16} />}
-          />
-          
-          <Table variant="vertical">
-            <Table.Tbody>
-              {Object.entries(
-                omit(recordsAggregate, ['keywordId', 'searchTerm'])
-              )
-                .filter(([key, value]) => 
-                  filter === '' || 
-                  key.toLowerCase().includes(filter.toLowerCase()) ||
-                  String(value).toLowerCase().includes(filter.toLowerCase())
-                )
-                .map(([key, value]) => (
-                  <Table.Tr key={key}>
-                    <Table.Th>{capitalize(startCase(key))}</Table.Th>
-                    <Table.Td>{value}</Table.Td>
-                  </Table.Tr>
-                ))}
-            </Table.Tbody>
-          </Table>
-        </>
+        <DataList 
+          data={omit(recordsAggregate, ['keywordId', 'searchTerm'])}
+        />
       )}
     </Stack>
   )

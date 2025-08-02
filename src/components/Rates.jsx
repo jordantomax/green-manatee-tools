@@ -56,7 +56,7 @@ function Rates ({ rates, setPurchasedRate }) {
                     <Stack>
                       <DataList 
                         data={rate} 
-                        visibleKeys={[
+                        keys={[
                           { key: 'amount', prefix: '$' },
                           { key: 'attributes', label: 'Tags' },
                           { key: 'provider' },
