@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { Title, Stack, Text, Group, Button } from '@mantine/core'
+import { Title, Stack, Text, Group, Badge } from '@mantine/core'
 import { LineChart } from '@mantine/charts'
 import omit from 'lodash-es/omit'
 
@@ -66,7 +66,15 @@ function AdsSearchTerm() {
   
   return (
     <Stack>
-      <Title order={1}>{decodeURIComponent(searchTerm)}</Title>
+      <Group align="center">
+        <Title order={1}>{decodeURIComponent(searchTerm)}</Title>
+        {negativeKeyword && (
+          <Badge variant="outline" color="red">
+            {negativeKeyword.matchType}
+          </Badge>
+        )}
+      </Group>
+
       <DataList 
         data={recordsAggregate}
         keys={[
