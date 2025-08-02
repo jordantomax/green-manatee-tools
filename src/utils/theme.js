@@ -52,7 +52,7 @@ export const theme = createTheme({
     Title: {
       styles: {
         root: {
-          fontWeight: 500
+          fontWeight: 600
         }
       }
     },

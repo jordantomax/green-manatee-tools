@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { Box, Title, Stack, Text, Group, Table, TextInput } from '@mantine/core'
+import { Title, Stack, Text, Group, Badge } from '@mantine/core'
 import { LineChart } from '@mantine/charts'
-import startCase from 'lodash-es/startCase'
-import capitalize from 'lodash-es/capitalize'
 import omit from 'lodash-es/omit'
-import { IconSearch } from '@tabler/icons-react'
 
 import NotFound from '@/views/NotFound'
 import { useAsync } from '@/hooks/useAsync'
@@ -13,25 +10,30 @@ import api from '@/utils/api'
 import { numberTypeColumns } from '@/utils/table'
 import { getIndexedChartColor } from '@/utils/color'
 import ChartLegendDropdown from '@/components/ChartLegendDropdown'
+import DataList from '@/components/DataList'
+import NegativeKeywordToggle from '@/components/NegativeKeywordToggle'
 
 function AdsSearchTerm() {
   const { searchTerm } = useParams()
   const [searchParams] = useSearchParams()
-  const keywordId = searchParams.get('keywordId')
   const { run, isLoading } = useAsync()
   const [recordsByDate, setRecordsByDate] = useState([])
   const [recordsAggregate, setRecordsAggregate] = useState({})
   const [visibleColumns, setVisibleColumns] = useState(new Set(['acosClicks7d', 'cost', 'sales7d']))
-  const [filter, setFilter] = useState('')
-  
+  const [negativeKeywords, setNegativeKeywords] = useState([])
+
+  const keywordId = searchParams.get('keywordId')
+  const activeNegativeKeyword = negativeKeywords.find(k => k.keywordText === searchTerm)
+
   if (!keywordId) {
     return <NotFound message="The search term has no keyword ID." />
   }
   
   useEffect(() => {
-    const fetchData = async () => {
-      let recordsByDate = await run(async () => await api.getAdsSearchTerm(searchTerm, keywordId))
-      recordsByDate = recordsByDate.map(item => {
+    run(async () => {
+      const recordsByDate = await api.getAdsSearchTerm(searchTerm, keywordId)
+      
+      const processedRecordsByDate = recordsByDate.map(item => {
         const itemData = { date: new Date(item.date).toLocaleDateString() }
         
         numberTypeColumns.forEach((field) => {
@@ -41,35 +43,66 @@ function AdsSearchTerm() {
         })
         return itemData
       }).sort((a, b) => new Date(a.date) - new Date(b.date))
-      setRecordsByDate(recordsByDate)
       
-      const recordsAggregate = await run(async () => await api.getAdsSearchTerm(searchTerm, keywordId, true))
-      setRecordsAggregate(recordsAggregate)
-    }
-    fetchData()
+      setRecordsByDate(processedRecordsByDate)
+    })
   }, [])
+  
+  useEffect(() => {
+    run(async () => {
+      const recordsAggregate = await api.getAdsSearchTerm(searchTerm, keywordId, true)
+      setRecordsAggregate(recordsAggregate)
+    })
+  }, [])
+  
+  useEffect(() => {
+    if (recordsAggregate?.adGroupId) {
+      run(async () => {
+        const negativeKeywords = await api.getNegativeKeywordsByAdGroup(recordsAggregate.adGroupId)
+        setNegativeKeywords(negativeKeywords)
+      })
+    }
+  }, [recordsAggregate?.adGroupId])
   
   return (
     <Stack>
-      <Title order={1}>{decodeURIComponent(searchTerm)}</Title>
-      <Text>Keyword ID: {keywordId}</Text>
-
-      {recordsByDate.length === 0 && (
-        <p>No data available</p>
-      )}
-      
-      <Group>
-        <ChartLegendDropdown
-            name="Columns"
-            items={[...numberTypeColumns]}
-            visibleItems={visibleColumns}
-            setVisibleItems={setVisibleColumns}
-          />
+      <Group align="center">
+        <Title order={1}>{decodeURIComponent(searchTerm)}</Title>
+        {activeNegativeKeyword && (
+          <Badge variant="outline" color="red">
+            {activeNegativeKeyword.matchType}
+          </Badge>
+        )}
       </Group>
-      
-      <Box mt="md">
+
+      <DataList 
+        data={recordsAggregate}
+        keys={[
+          { key: 'campaignName', label: 'Campaign', url: `/ads/campaigns/${recordsAggregate.campaignId}` },
+          { key: 'adGroupName', label: 'Ad Group', url: `/ads/ad-groups/${recordsAggregate.adGroupId}`},
+          { key: 'keyword', label: 'Keyword', url: `/ads/keywords/${keywordId}`},
+        ]} 
+      />
+
+      <Stack>
+        <Group>
+          <ChartLegendDropdown
+              name="Columns"
+              items={[...numberTypeColumns]}
+              visibleItems={visibleColumns}
+              setVisibleItems={setVisibleColumns}
+            />
+          <NegativeKeywordToggle 
+            negativeKeyword={activeNegativeKeyword}
+            setNegativeKeywords={setNegativeKeywords}
+            campaignId={recordsAggregate.campaignId}
+            adGroupId={recordsAggregate.adGroupId}
+            keywordText={searchTerm}
+          />
+        </Group>
+
         <LineChart 
-          h={400}
+          h={300}
           dataKey="date" 
           data={recordsByDate} 
           withLegend
@@ -79,36 +112,12 @@ function AdsSearchTerm() {
             color: getIndexedChartColor(numberTypeColumns.indexOf(column))
           }))}
         />
-      </Box>
+      </Stack>
     
       {Object.keys(recordsAggregate).length > 0 && (
-        <>
-          <TextInput
-            placeholder="Search metrics..."
-            value={filter}
-            onChange={(event) => setFilter(event.currentTarget.value)}
-            leftSection={<IconSearch size={16} />}
-          />
-          
-          <Table variant="vertical">
-            <Table.Tbody>
-              {Object.entries(
-                omit(recordsAggregate, ['keywordId', 'searchTerm'])
-              )
-                .filter(([key, value]) => 
-                  filter === '' || 
-                  key.toLowerCase().includes(filter.toLowerCase()) ||
-                  String(value).toLowerCase().includes(filter.toLowerCase())
-                )
-                .map(([key, value]) => (
-                  <Table.Tr key={key}>
-                    <Table.Th>{capitalize(startCase(key))}</Table.Th>
-                    <Table.Td>{value}</Table.Td>
-                  </Table.Tr>
-                ))}
-            </Table.Tbody>
-          </Table>
-        </>
+        <DataList 
+          data={omit(recordsAggregate, ['keywordId', 'searchTerm'])}
+        />
       )}
     </Stack>
   )

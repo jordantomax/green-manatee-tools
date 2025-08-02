@@ -21,8 +21,8 @@ import RateParcels from '@/components/RateParcels'
 import Rates from '@/components/Rates'
 import PurchasedRate from '@/components/PurchasedRate'
 import Shipments from '@/components/Shipments'
-import Customs from '@/components/Postage/Customs'
-import Hazmat from '@/components/Postage/Hazmat'
+import Customs from '@/components/postage/Customs'
+import Hazmat from '@/components/postage/Hazmat'
 
 function Postage () {
   const [rateParcels, setRateParcels] = useState(getLocalData('shipment')?.rateParcels || [])
