@@ -114,19 +114,6 @@ function AdsSearchTerm() {
         />
       </Stack>
     
-      <Stack gap="xs" mb="xl">
-        <Title order={5}>Ad Group Negative Keywords</Title>
-
-        {negativeKeywords.length > 0 ? negativeKeywords.map((keyword) => (
-          <Group key={keyword.keywordId}>
-            <Text size="sm">{keyword.keywordText}</Text>
-            <Text c="dimmed" size="xs">{keyword.matchType}</Text>
-          </Group>
-        )) : (
-          <Text c="dimmed">No negative keywords found</Text>
-        )}
-      </Stack>
-    
       {Object.keys(recordsAggregate).length > 0 && (
         <DataList 
           data={omit(recordsAggregate, ['keywordId', 'searchTerm'])}

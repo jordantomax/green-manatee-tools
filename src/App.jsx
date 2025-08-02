@@ -21,6 +21,7 @@ import AdsReport from '@/views/ads/AdsReport'
 import AdsReports from '@/views/ads/AdsReports'
 import AdsSearchTerm from '@/views/ads/AdsSearchTerm'
 import AdsSearchTerms from '@/views/ads/AdsSearchTerms'
+import AdsAdGroups from '@/views/ads/AdsAdGroups'
 import Pricing from '@/views/Pricing'
 import NotFound from '@/views/NotFound'
 
@@ -68,6 +69,7 @@ function AppContent() {
             <Route path='reports/:id' element={<AdsReport />} />
             <Route path='search-terms' element={<AdsSearchTerms />} />
             <Route path='search-terms/:searchTerm' element={<AdsSearchTerm />} />
+            <Route path='ad-groups/:adGroupId' element={<AdsAdGroups />} />
             <Route path='*' element={<NotFound />} />
           </Route>
           <Route path='pricing' element={<Pricing />} />
