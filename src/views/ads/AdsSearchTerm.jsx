@@ -23,7 +23,7 @@ function AdsSearchTerm() {
   const [negativeKeywords, setNegativeKeywords] = useState([])
 
   const keywordId = searchParams.get('keywordId')
-  const negativeKeyword = negativeKeywords.find(k => k.keywordText === searchTerm)
+  const activeNegativeKeyword = negativeKeywords.find(k => k.keywordText === searchTerm)
 
   if (!keywordId) {
     return <NotFound message="The search term has no keyword ID." />
@@ -68,9 +68,9 @@ function AdsSearchTerm() {
     <Stack>
       <Group align="center">
         <Title order={1}>{decodeURIComponent(searchTerm)}</Title>
-        {negativeKeyword && (
+        {activeNegativeKeyword && (
           <Badge variant="outline" color="red">
-            {negativeKeyword.matchType}
+            {activeNegativeKeyword.matchType}
           </Badge>
         )}
       </Group>
@@ -93,7 +93,7 @@ function AdsSearchTerm() {
               setVisibleItems={setVisibleColumns}
             />
           <NegativeKeywordToggle 
-            negativeKeyword={negativeKeyword}
+            negativeKeyword={activeNegativeKeyword}
             setNegativeKeywords={setNegativeKeywords}
             campaignId={recordsAggregate.campaignId}
             adGroupId={recordsAggregate.adGroupId}
