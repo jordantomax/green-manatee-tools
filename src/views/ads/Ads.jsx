@@ -1,7 +1,7 @@
-import React, { Fragment } from 'react'
-import { Stack, Tabs, Breadcrumbs, Anchor, Text } from '@mantine/core'
+import React from 'react'
+import { Stack, Tabs, Breadcrumbs, Anchor, Text, Button, Group } from '@mantine/core'
 import { useNavigate, useLocation, useParams, Outlet } from 'react-router-dom'
-import { IconChevronRight } from '@tabler/icons-react'
+import { IconChevronRight, IconChevronLeft } from '@tabler/icons-react'
 
 function Ads() {
   const navigate = useNavigate()

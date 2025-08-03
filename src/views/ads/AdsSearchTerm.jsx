@@ -79,9 +79,10 @@ function AdsSearchTerm() {
         data={recordsAggregate}
         keys={[
           { key: 'campaignName', label: 'Campaign', url: `/ads/campaigns/${recordsAggregate.campaignId}` },
-          { key: 'adGroupName', label: 'Ad Group', url: `/ads/ad-groups/${recordsAggregate.adGroupId}`},
-          { key: 'keyword', label: 'Keyword', url: `/ads/keywords/${keywordId}`},
-          { key: 'matchType', valueComponent: value => <Badge variant="default">{value}</Badge>},
+          { key: 'adGroupName', label: 'Ad Group', url: `/ads/ad-groups/${recordsAggregate.adGroupId}` },
+          { key: 'keyword', label: 'Keyword', url: `/ads/keywords/${keywordId}` },
+          { key: 'adKeywordStatus', label: 'Status', badge: true },
+          { key: 'matchType', label: 'Match', badge: true },
         ]} 
       />
 
@@ -117,7 +118,7 @@ function AdsSearchTerm() {
     
       {Object.keys(recordsAggregate).length > 0 && (
         <DataList 
-          data={omit(recordsAggregate, ['keywordId', 'searchTerm', 'matchType', 'campaignName', 'adGroupName', 'campaignId', 'adGroupId'])}
+          data={omit(recordsAggregate, ['keywordId', 'searchTerm', 'matchType', 'campaignName', 'adGroupName', 'campaignId', 'adGroupId', 'adKeywordStatus'])}
         />
       )}
     </Stack>
