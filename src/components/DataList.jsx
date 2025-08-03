@@ -11,7 +11,7 @@ import styles from '@/styles/DataList.module.css'
 function DataList ({ data, keys=[] }) {
   const visibleData = (keys.length > 0 ? keys : Object.keys(data))
     .map(item => {
-      let key, label, prefix = '', url = ''
+      let key, label, prefix = '', url = '', valueComponent = null
 
       if (isString(item)) {
         key = item
@@ -21,27 +21,31 @@ function DataList ({ data, keys=[] }) {
         label = item.label || startCase(key)
         url = item.url || ''
         prefix = item.prefix || ''
+        valueComponent = item.valueComponent || null
       }
       
 
       let value = get(data, key);
       if (isArray(value)) value = value.join(', ')
       if (prefix) value = `${prefix}${value}`;
-      return { label, value, url }
+      return { label, value, url, valueComponent }
     })
     .filter(({ value }) => value !== undefined)
 
   return (
     <SimpleGrid className={styles.datalist} cols={2} spacing="xs">
-      {visibleData.map(({ label, value, url }) => {
+      {visibleData.map(({ label, value, url, valueComponent }) => {
         if (!label || !value) return null
         
         return (
           <React.Fragment key={label}>
             <Text size="sm" fw={600}>{label}:</Text>
-            <Text size="sm">
-              {url ? <Anchor href={url}>{value}</Anchor> : value}
-            </Text>
+
+            {valueComponent ? valueComponent(value) : (
+              <Text size="sm">
+                {url ? <Anchor href={url}>{value}</Anchor> : value}
+              </Text>
+            )}
           </React.Fragment>
         )
       })}
