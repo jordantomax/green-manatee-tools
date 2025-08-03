@@ -1,36 +1,57 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { Title, Stack, Group, Text } from '@mantine/core'
+import { Title, Stack, Group, Text, SimpleGrid } from '@mantine/core'
 
 import api from '@/utils/api'
 import { useAsync } from '@/hooks/useAsync'
+import DataList from '@/components/DataList'
 
 function AdsAdGroups() {
   const { adGroupId } = useParams()
   const { run, isLoading } = useAsync()
+  const [keywords, setKeywords] = useState([])
   const [negativeKeywords, setNegativeKeywords] = useState([])
 
   useEffect(() => {
     run(async () => {
-      console.log('adGroupId', adGroupId)
-      const negativeKeywords = await api.getNegativeKeywordsByAdGroup(adGroupId)
+      const [negativeKeywords, keywords] = await Promise.all([
+        api.getNegativeKeywordsByAdGroup(adGroupId),
+        api.getKeywordsByAdGroup(adGroupId)
+      ])
       setNegativeKeywords(negativeKeywords)
+      setKeywords(keywords)
     })
   }, [])
 
   return (
-    <Stack>
-      <Title order={2}>Negative Keywords</Title>
+    <SimpleGrid cols={2} spacing="xs">
+      <Stack>
+        <Title order={2}>Keywords</Title>
 
-      {negativeKeywords.length > 0 ? negativeKeywords.map((keyword) => (
-        <Group key={keyword.keywordId}>
-          <Text size="sm">{keyword.keywordText}</Text>
-          <Text c="dimmed" size="xs">{keyword.matchType}</Text>
-        </Group>
-      )) : (
-        <Text c="dimmed">No negative keywords found</Text>
-      )}
-    </Stack>
+        {keywords.length > 0 ? keywords.map((keyword) => (
+          <Group key={keyword.keywordId}>
+            <Text size="sm">{keyword.keywordText}</Text>
+            <Text c="dimmed" size="xs">{keyword.matchType}</Text>
+          </Group>
+        )) : (
+          <Text c="dimmed">No keywords found</Text>
+        )}
+        
+      </Stack>
+
+      <Stack>
+        <Title order={2}>Negative Keywords</Title>
+      
+        {negativeKeywords.length > 0 ? negativeKeywords.map((keyword) => (
+          <Group key={keyword.keywordId}>
+            <Text size="sm">{keyword.keywordText}</Text>
+            <Text c="dimmed" size="xs">{keyword.matchType}</Text>
+          </Group>
+        )) : (
+          <Text c="dimmed">No negative keywords found</Text>
+        )}
+      </Stack>
+    </SimpleGrid>
   )
 }
 
