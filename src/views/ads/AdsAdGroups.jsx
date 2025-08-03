@@ -4,7 +4,7 @@ import { Title, Stack, Group, Text, SimpleGrid } from '@mantine/core'
 
 import api from '@/utils/api'
 import { useAsync } from '@/hooks/useAsync'
-import DataList from '@/components/DataList'
+import Loader from '@/components/Loader'
 
 function AdsAdGroups() {
   const { adGroupId } = useParams()
@@ -22,6 +22,8 @@ function AdsAdGroups() {
       setKeywords(keywords)
     })
   }, [])
+  
+  if (isLoading) return <Loader />
 
   return (
     <SimpleGrid cols={2} spacing="xs">

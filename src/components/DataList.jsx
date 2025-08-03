@@ -41,7 +41,7 @@ function DataList ({ data, keys=[] }) {
           <React.Fragment key={label}>
             <Text size="sm" fw={600}>{label}:</Text>
 
-            {badge ? <Badge variant="default">{value}</Badge> : (
+            {badge ? <Badge variant="default"size="sm">{value}</Badge> : (
               <Text size="sm">
                 {url ? <Anchor href={url}>{value}</Anchor> : value}
               </Text>
