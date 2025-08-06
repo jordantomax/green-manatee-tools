@@ -17,7 +17,7 @@ import { columnTypes } from '@/utils/table'
 
 const formatDate = (date) => format(date, 'yyyy-MM-dd')
 
-function AdsSearchTerms() {
+function SearchTerms() {
   const navigate = useNavigate()
   const { run, isLoading } = useAsync()
   const [searchTerms, setSearchTerms] = useState([])
@@ -167,4 +167,4 @@ function AdsSearchTerms() {
   )
 }
 
-export default AdsSearchTerms
+export default SearchTerms

@@ -7,7 +7,7 @@ import DataTable from '@/components/DataTable'
 import { useAsync } from '@/hooks/useAsync'
 import classes from '@/styles/AdsReport.module.css'
 
-function AdsReport() {
+function Report() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams();
@@ -131,4 +131,4 @@ function AdsReport() {
   )
 }
 
-export default AdsReport 
+export default Report 

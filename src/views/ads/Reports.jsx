@@ -8,7 +8,7 @@ import { useAsync } from '@/hooks/useAsync'
 import classes from '@/styles/Ads.module.css'
 import CreateReport from '@/components/amazon/CreateReport'
 
-function AdsReports() {
+function Reports() {
   const navigate = useNavigate()
   const [reports, setReports] = useState([])
   const [loadingReports, setLoadingReports] = useState({})
@@ -192,4 +192,4 @@ function AdsReports() {
   )
 }
 
-export default AdsReports
+export default Reports

@@ -13,7 +13,7 @@ import ChartLegendDropdown from '@/components/ChartLegendDropdown'
 import DataList from '@/components/DataList'
 import NegativeKeywordToggle from '@/components/NegativeKeywordToggle'
 
-function AdsSearchTerm() {
+function SearchTerm() {
   const { searchTerm } = useParams()
   const [searchParams] = useSearchParams()
   const { run, isLoading } = useAsync()
@@ -125,4 +125,4 @@ function AdsSearchTerm() {
   )
 }
 
-export default AdsSearchTerm
+export default SearchTerm
