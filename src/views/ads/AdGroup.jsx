@@ -6,7 +6,7 @@ import api from '@/utils/api'
 import { useAsync } from '@/hooks/useAsync'
 import Loader from '@/components/Loader'
 
-function AdGroups() {
+function AdGroup() {
   const { adGroupId } = useParams()
   const { run, isLoading } = useAsync()
   const [keywords, setKeywords] = useState([])
@@ -57,4 +57,4 @@ function AdGroups() {
   )
 }
 
-export default AdGroups
+export default AdGroup
