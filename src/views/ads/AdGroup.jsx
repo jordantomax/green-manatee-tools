@@ -5,6 +5,7 @@ import { Title, Stack, Group, Text, SimpleGrid } from '@mantine/core'
 import api from '@/utils/api'
 import { useAsync } from '@/hooks/useAsync'
 import Loader from '@/components/Loader'
+import Keyword from '@/components/amazon_ads/Keyword'
 
 function AdGroup() {
   const { adGroupId } = useParams()
@@ -31,10 +32,7 @@ function AdGroup() {
         <Title order={2}>Keywords</Title>
 
         {keywords.length > 0 ? keywords.map((keyword) => (
-          <Group key={keyword.keywordId}>
-            <Text size="sm">{keyword.keywordText}</Text>
-            <Text c="dimmed" size="xs">{keyword.matchType}</Text>
-          </Group>
+          <Keyword key={keyword.keywordId} {...keyword} />
         )) : (
           <Text c="dimmed">No keywords found</Text>
         )}
@@ -45,10 +43,7 @@ function AdGroup() {
         <Title order={2}>Negative Keywords</Title>
       
         {negativeKeywords.length > 0 ? negativeKeywords.map((keyword) => (
-          <Group key={keyword.keywordId}>
-            <Text size="sm">{keyword.keywordText}</Text>
-            <Text c="dimmed" size="xs">{keyword.matchType}</Text>
-          </Group>
+          <Keyword key={keyword.keywordId} {...keyword} />
         )) : (
           <Text c="dimmed">No negative keywords found</Text>
         )}
