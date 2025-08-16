@@ -23,6 +23,16 @@ function AdGroup() {
       setKeywords(keywords)
     })
   }, [])
+
+  const createKeywordHandler = (setter) => (keywordId, newState) => {
+    setter(prevKeywords => 
+      prevKeywords.map(keyword => 
+        keyword.keywordId === keywordId 
+          ? { ...keyword, state: newState }
+          : keyword
+      )
+    )
+  }
   
   if (isLoading) return <Loader />
 
@@ -30,12 +40,12 @@ function AdGroup() {
     <SimpleGrid cols={2} spacing="xs">
       <Stack>
         <Title order={2}>Keywords</Title>
-        <Keywords keywords={keywords} />
+        <Keywords keywords={keywords} onChange={createKeywordHandler(setKeywords)} />
       </Stack>
 
       <Stack>
         <Title order={2}>Negative Keywords</Title>
-        <Keywords keywords={negativeKeywords} />
+        <Keywords keywords={negativeKeywords} onChange={createKeywordHandler(setNegativeKeywords)} />
       </Stack>
     </SimpleGrid>
   )
