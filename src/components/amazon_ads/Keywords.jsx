@@ -1,5 +1,7 @@
 import React from 'react'
-import { Text, Group, Badge, Select, Table, Loader } from '@mantine/core'
+import { isFunction } from 'lodash'
+import { Text, Select, Table, Loader } from '@mantine/core'
+
 import api from '@/utils/api'
 import { useAsync } from '@/hooks/useAsync'
 
@@ -33,11 +35,8 @@ export const Keyword = ({ keywordId, keywordText, matchType, state = 'ENABLED', 
     if (newState === state) return
     
     run(async () => {
-      const response = await api.updateKeyword(keywordId, { state: newState })
-      console.log(response)
-      if (onChange) {
-        onChange(keywordId, newState)
-      }
+      await api.updateKeyword(keywordId, { state: newState })
+      isFunction(onChange) && onChange(keywordId, newState)
     })
   }
 
