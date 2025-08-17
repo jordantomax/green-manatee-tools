@@ -3,9 +3,27 @@ import { Text, Group, Badge, Select, Table, Loader } from '@mantine/core'
 import api from '@/utils/api'
 import { useAsync } from '@/hooks/useAsync'
 
-const getStateColor = (state) => {
-  const colors = { ENABLED: 'green', PAUSED: 'yellow', ARCHIVED: 'gray' }
-  return colors[state] || 'blue'
+export const KeywordState = ({ value, handleChange, isLoading }) => {
+  return (
+    <Select
+      size="xs"
+      radius="xl"
+      variant="filled"
+      value={value}
+      onChange={handleChange}
+      disabled={isLoading}
+      rightSection={isLoading ? <Loader size="xs" /> : null}
+      data={[
+        { value: 'ENABLED', label: 'Enabled' },
+        { value: 'PAUSED', label: 'Paused' },
+        { value: 'ARCHIVED', label: 'Archived' }
+      ]}
+      styles={{ 
+        input: { width: 120 },
+        dropdown: { width: 120 } 
+      }}
+    />
+  )
 }
 
 export const Keyword = ({ keywordId, keywordText, matchType, state = 'ENABLED', onChange }) => {
@@ -32,23 +50,10 @@ export const Keyword = ({ keywordId, keywordText, matchType, state = 'ENABLED', 
         <Text size="xs" c="dimmed">{matchType}</Text>
       </Table.Td>
       <Table.Td>
-        <Select
-          size="xs"
-          radius="xl"
-          variant="filled"
+        <KeywordState 
           value={state}
-          onChange={handleStateChange}
-          disabled={isLoading}
-          rightSection={isLoading ? <Loader size="xs" /> : null}
-          data={[
-            { value: 'ENABLED', label: 'Enabled' },
-            { value: 'PAUSED', label: 'Paused' },
-            { value: 'ARCHIVED', label: 'Archived' }
-          ]}
-          styles={{ 
-            input: { width: 120 },
-            dropdown: { width: 120 } 
-          }}
+          handleChange={handleStateChange}
+          isLoading={isLoading}
         />
       </Table.Td>
     </Table.Tr>
