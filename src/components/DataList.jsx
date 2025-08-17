@@ -8,7 +8,7 @@ import get from 'lodash-es/get'
 
 import styles from '@/styles/DataList.module.css'
 
-function DataListItem ({ key, label, value, url, badge, component: CustomComponent }) {
+function DataListItem ({ label, value, url, badge, component: CustomComponent }) {
   if (!label || !value) return null
 
   return (
@@ -16,7 +16,7 @@ function DataListItem ({ key, label, value, url, badge, component: CustomCompone
       <Text size="sm" fw={600}>{label}:</Text>
 
       {
-        CustomComponent ? <CustomComponent value={value} data={data} keyName={key} /> : 
+        CustomComponent ? <CustomComponent value={value} data={data} /> : 
         badge ? <Badge variant="default" size="sm">{value}</Badge> : 
         <Text size="sm">
           {url ? <Anchor href={url}>{value}</Anchor> : value}
@@ -50,7 +50,7 @@ function DataList ({ data, keys=[] }) {
 
   return (
     <SimpleGrid className={styles.datalist} cols={2} spacing="xs">
-      {visibleData.map(item => <DataListItem {...item} />)}
+      {visibleData.map(({ key, ...item }) => <DataListItem key={key} {...item} />)}
     </SimpleGrid>
   )
 }
