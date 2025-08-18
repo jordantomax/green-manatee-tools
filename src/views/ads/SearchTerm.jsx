@@ -11,12 +11,14 @@ import { numberTypeColumns } from '@/utils/table'
 import { getIndexedChartColor } from '@/utils/color'
 import ChartLegendDropdown from '@/components/ChartLegendDropdown'
 import DataList from '@/components/DataList'
+import { KeywordState } from '@/components/amazon_ads/Keywords'
 import NegativeKeywordToggle from '@/components/NegativeKeywordToggle'
 
 function SearchTerm() {
   const { searchTerm } = useParams()
   const [searchParams] = useSearchParams()
-  const { run, isLoading } = useAsync()
+  const { run, isLoading, loadingStates } = useAsync()
+  const [keyword, setKeyword] = useState({})
   const [recordsByDate, setRecordsByDate] = useState([])
   const [recordsAggregate, setRecordsAggregate] = useState({})
   const [visibleColumns, setVisibleColumns] = useState(new Set(['acosClicks7d', 'cost', 'sales7d']))
@@ -45,22 +47,25 @@ function SearchTerm() {
       }).sort((a, b) => new Date(a.date) - new Date(b.date))
       
       setRecordsByDate(processedRecordsByDate)
-    })
-  }, [])
-  
-  useEffect(() => {
+    }, 'recordsByDate')
+
     run(async () => {
       const recordsAggregate = await api.getAdsSearchTerm(searchTerm, keywordId, true)
       setRecordsAggregate(recordsAggregate)
-    })
+    }, 'recordsAggregate')
+
+    run(async () => {
+      const keyword = await api.getKeywordById(keywordId)
+      setKeyword(keyword)
+    }, 'keyword')
   }, [])
-  
+
   useEffect(() => {
     if (recordsAggregate?.adGroupId) {
       run(async () => {
         const negativeKeywords = await api.getNegativeKeywordsByAdGroup(recordsAggregate.adGroupId)
         setNegativeKeywords(negativeKeywords)
-      })
+      }, 'negativeKeywords')
     }
   }, [recordsAggregate?.adGroupId])
   
@@ -75,13 +80,21 @@ function SearchTerm() {
         )}
       </Group>
 
+      <KeywordState 
+        keywordId={keywordId}
+        value={keyword.state} 
+        isLoading={loadingStates.keyword}
+        onChange={(keywordId, newState) => {
+          setKeyword(prev => ({ ...prev, state: newState }))
+        }}
+      />
+
       <DataList 
         data={recordsAggregate}
         keys={[
           { key: 'campaignName', label: 'Campaign', url: `/ads/campaigns/${recordsAggregate.campaignId}` },
           { key: 'adGroupName', label: 'Ad Group', url: `/ads/ad-groups/${recordsAggregate.adGroupId}` },
           { key: 'keyword', label: 'Keyword', url: `/ads/keywords/${keywordId}` },
-          { key: 'adKeywordStatus', label: 'Status', badge: true },
           { key: 'matchType', label: 'Match', badge: true },
         ]} 
       />

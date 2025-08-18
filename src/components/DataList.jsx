@@ -16,7 +16,7 @@ function DataListItem ({ label, value, url, badge, component: CustomComponent })
       <Text size="sm" fw={600}>{label}:</Text>
 
       {
-        CustomComponent ? <CustomComponent value={value} data={data} /> : 
+        CustomComponent ? <CustomComponent value={value} /> : 
         badge ? <Badge variant="default" size="sm">{value}</Badge> : 
         <Text size="sm">
           {url ? <Anchor href={url}>{value}</Anchor> : value}

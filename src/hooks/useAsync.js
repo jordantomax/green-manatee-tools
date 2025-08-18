@@ -1,20 +1,24 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 
 export function useAsync() {
-  const [isLoading, setIsLoading] = useState(false)
+  const [loadingStates, setLoadingStates] = useState({})
 
-  const run = useCallback(async (asyncFunction) => {
-    setIsLoading(true)
+  const run = useCallback(async (asyncFunction, operationName = 'default') => {
+    setLoadingStates(prev => ({ ...prev, [operationName]: true }))
+    
     try {
       const result = await asyncFunction()
       return result
     } finally {
-      setIsLoading(false)
+      setLoadingStates(prev => ({ ...prev, [operationName]: false }))
     }
   }, [])
 
+  const isLoading = useMemo(() => loadingStates.default || false, [loadingStates.default])
+
   return {
     isLoading,
-    run
+    run,
+    loadingStates
   }
 } 

@@ -5,34 +5,11 @@ import { Text, Select, Table, Loader } from '@mantine/core'
 import api from '@/utils/api'
 import { useAsync } from '@/hooks/useAsync'
 
-export const KeywordState = ({ value, handleChange, isLoading }) => {
-  return (
-    <Select
-      size="xs"
-      radius="xl"
-      variant="filled"
-      value={value}
-      onChange={handleChange}
-      disabled={isLoading}
-      rightSection={isLoading ? <Loader size="xs" /> : null}
-      data={[
-        { value: 'ENABLED', label: 'Enabled' },
-        { value: 'PAUSED', label: 'Paused' },
-        { value: 'ARCHIVED', label: 'Archived' }
-      ]}
-      styles={{ 
-        input: { width: 120 },
-        dropdown: { width: 120 } 
-      }}
-    />
-  )
-}
-
-export const Keyword = ({ keywordId, keywordText, matchType, state = 'ENABLED', onChange }) => {
+export const KeywordState = ({ keywordId, value, onChange, isLoading: externalLoading }) => {
   const { isLoading, run } = useAsync()
 
-  const handleStateChange = (newState) => {
-    if (newState === state) return
+  const handleChange = (newState) => {
+    if (newState === value) return
     
     run(async () => {
       await api.updateKeyword(keywordId, { state: newState })
@@ -40,6 +17,29 @@ export const Keyword = ({ keywordId, keywordText, matchType, state = 'ENABLED', 
     })
   }
 
+  return (
+    <Select
+      size="xs"
+      radius="xl"
+      variant="filled"
+      value={value}
+      onChange={handleChange}
+      disabled={externalLoading || isLoading}
+      rightSection={(externalLoading || isLoading) ? <Loader size="xs" /> : null}
+      data={[
+        { value: 'ENABLED', label: 'Enabled' },
+        { value: 'PAUSED', label: 'Paused' },
+        { value: 'ARCHIVED', label: 'Archived' }
+      ]}
+      styles={{ 
+        wrapper: { width: 120 },
+        dropdown: { width: 120 } 
+      }}
+    />
+  )
+}
+
+export const Keyword = ({ keywordId, keywordText, matchType, state = 'ENABLED', onChange }) => {
   return (
     <Table.Tr key={keywordId}>
       <Table.Td>
@@ -50,9 +50,9 @@ export const Keyword = ({ keywordId, keywordText, matchType, state = 'ENABLED', 
       </Table.Td>
       <Table.Td>
         <KeywordState 
+          keywordId={keywordId}
           value={state}
-          handleChange={handleStateChange}
-          isLoading={isLoading}
+          onChange={onChange}
         />
       </Table.Td>
     </Table.Tr>
