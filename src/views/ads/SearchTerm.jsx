@@ -18,7 +18,7 @@ function SearchTerm() {
   const { searchTerm } = useParams()
   const [searchParams] = useSearchParams()
   const { run, isLoading, loadingStates } = useAsync()
-  const [keyword, setKeyword] = useState({})
+  const [keyword, setKeyword] = useState(null)
   const [recordsByDate, setRecordsByDate] = useState([])
   const [recordsAggregate, setRecordsAggregate] = useState({})
   const [visibleColumns, setVisibleColumns] = useState(new Set(['acosClicks7d', 'cost', 'sales7d']))
@@ -80,14 +80,16 @@ function SearchTerm() {
         )}
       </Group>
 
-      <KeywordState 
-        keywordId={keywordId}
-        value={keyword.state} 
-        isLoading={loadingStates.keyword}
-        onChange={(keywordId, newState) => {
-          setKeyword(prev => ({ ...prev, state: newState }))
-        }}
-      />
+      {keyword && (
+        <KeywordState 
+          keywordId={keywordId}
+          value={keyword?.state} 
+          isLoading={loadingStates.keyword}
+          onChange={(keywordId, newState) => {
+            setKeyword(prev => ({ ...prev, state: newState }))
+          }}
+        />
+      )}
 
       <DataList 
         data={recordsAggregate}
