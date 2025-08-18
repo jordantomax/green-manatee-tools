@@ -17,11 +17,11 @@ import Inventory from '@/views/Inventory'
 import Shipping from '@/views/Shipping'
 
 import Ads from '@/views/ads/Ads'
-import AdsReport from '@/views/ads/AdsReport'
-import AdsReports from '@/views/ads/AdsReports'
-import AdsSearchTerm from '@/views/ads/AdsSearchTerm'
-import AdsSearchTerms from '@/views/ads/AdsSearchTerms'
-import AdsAdGroups from '@/views/ads/AdsAdGroups'
+import Report from '@/views/ads/Report'
+import Reports from '@/views/ads/Reports'
+import SearchTerm from '@/views/ads/SearchTerm'
+import SearchTerms from '@/views/ads/SearchTerms'
+import AdGroup from '@/views/ads/AdGroup'
 import Pricing from '@/views/Pricing'
 import NotFound from '@/views/NotFound'
 
@@ -65,11 +65,11 @@ function AppContent() {
           <Route path='inventory' element={<Inventory />} />
           <Route path='ads/*' element={<Ads />}>
             <Route index element={<Navigate to="/ads/reports" replace />} />
-            <Route path='reports' element={<AdsReports />} />
-            <Route path='reports/:id' element={<AdsReport />} />
-            <Route path='search-terms' element={<AdsSearchTerms />} />
-            <Route path='search-terms/:searchTerm' element={<AdsSearchTerm />} />
-            <Route path='ad-groups/:adGroupId' element={<AdsAdGroups />} />
+            <Route path='reports' element={<Reports />} />
+            <Route path='reports/:id' element={<Report />} />
+            <Route path='search-terms' element={<SearchTerms />} />
+            <Route path='search-terms/:searchTerm' element={<SearchTerm />} />
+            <Route path='ad-groups/:adGroupId' element={<AdGroup />} />
             <Route path='*' element={<NotFound />} />
           </Route>
           <Route path='pricing' element={<Pricing />} />
