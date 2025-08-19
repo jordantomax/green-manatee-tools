@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Button, Modal, Text, Stack, Group, CopyButton, Box, Image, SegmentedControl, Paper, Title } from '@mantine/core'
 import { IconCopy } from '@tabler/icons-react'
+import { startCase } from 'lodash'
 
 import api from '@/utils/api'
 import { useError } from '@/contexts/Error'
@@ -54,10 +55,10 @@ function ShippingEmail ({ shipments }) {
                     ${s.productSku ? `<p><strong>SKU:</strong> ${s.productSku}</p>` : ''}
                     ${s.productGtin12 ? `<p><strong>Barcode:</strong> ${s.productGtin12}</p>` : ''}
                     ${s.destinationName ? `<p><strong>Destination:</strong> ${s.destinationName}</p>` : ''}
-                    ${s.caseUnitQty ? `<p><strong>Case Quantity:</strong> ${s.caseUnitQty}</p>` : ''}
-                    ${s.numCases ? `<p><strong>Total number of cases:</strong> ${s.numCases}</p>` : ''}
-                    ${s.totalUnitQty ? `<p><strong>Total quantity:</strong> ${s.totalUnitQty}</p>` : ''}
-                    ${s.caseGrossWeightLb ? `<p><strong>Case gross weight:</strong> ${s.caseGrossWeightLb} lbs</p>` : ''}
+                    ${s.caseUnitQty && s.numCases > 0 ? `<p><strong>Case Quantity:</strong> ${s.caseUnitQty}</p>` : ''}
+                    ${`<p><strong>Total cases:</strong> ${s.numCases}</p>`}
+                    ${s.totalUnitQty ? `<p><strong>Total unit quantity:</strong> ${s.totalUnitQty}</p>` : ''}
+                    ${s.caseGrossWeightLb && s.numCases > 0 ? `<p><strong>Case gross weight:</strong> ${s.caseGrossWeightLb} lbs</p>` : ''}
                     ${s.shippingMethod ? `<p><strong>Shipping method:</strong> ${s.shippingMethod}</p>` : ''}
                     ${s.trackingNumbers ? `<p><strong>Tracking numbers:</strong> ${s.trackingNumbers}</p>` : ''}
                 </div>
@@ -210,32 +211,45 @@ function ShippingEmail ({ shipments }) {
                     </Group>
                     <Paper>
                         <Stack gap="xs">
-                            {processedShipments.map((s, i) => (
+                            {processedShipments.map((shipment, i) => (
                                 <Box key={i} mb="md">
                                     <Stack>
-                                        <Title order={4}>{s.id}</Title>
+                                        <Title order={4}>{shipment.id}</Title>
                                         <Box>
-                                            {s.base64Image && (
+                                            {shipment.base64Image && (
                                                 <Box mb="xs">
                                                     <Text size="sm" fw={500} mb="xs">Reference Image:</Text>
                                                     <Image 
-                                                        src={s.base64Image} 
-                                                        alt={s.productSku}
+                                                        src={shipment.base64Image} 
+                                                        alt={shipment.productSku}
                                                         w={200}
                                                         h="auto"
                                                         fit="contain"
                                                     />
                                                 </Box>
                                             )}
-                                            <Text size="sm"><Text span fw={500}>SKU:</Text> {s.productSku}</Text>
-                                            <Text size="sm"><Text span fw={500}>Barcode:</Text> {s.productGtin12}</Text>
-                                            <Text size="sm"><Text span fw={500}>Destination:</Text> {s.destinationName}</Text>
-                                            <Text size="sm"><Text span fw={500}>Case Quantity:</Text> {s.caseUnitQty}</Text>
-                                            <Text size="sm"><Text span fw={500}>Total number of cases:</Text> {s.numCases}</Text>
-                                            <Text size="sm"><Text span fw={500}>Total unit quantity:</Text> {s.totalUnitQty}</Text>
-                                            <Text size="sm"><Text span fw={500}>Case gross weight:</Text> {s.caseGrossWeightLb} lbs</Text>
-                                            <Text size="sm"><Text span fw={500}>Shipping method:</Text> {s.shippingMethod}</Text>
-                                            <Text size="sm"><Text span fw={500}>Tracking numbers:</Text> {s.trackingNumbers}</Text>
+                                            {[
+                                             'productSku',
+                                             'productGtin12',
+                                             'destinationName',
+                                             'caseUnitQty',
+                                             'numCases',
+                                             'totalUnitQty',
+                                             'caseGrossWeightLb',
+                                             'shippingMethod',
+                                             'trackingNumbers'
+                                            ].map(prop => {
+                                                if (
+                                                  (prop !== 'numCases' && !shipment[prop]) ||
+                                                  (prop === 'caseUnitQty' && shipment.numCases === 0) ||
+                                                  (prop === 'caseGrossWeightLb' && shipment.numCases === 0)
+                                                ) return null
+
+                                                return (
+                                                    <Text key={prop} size="sm"><Text span fw={500}>{startCase(prop)}:</Text> {shipment[prop]}</Text>
+                                                )
+                                              })
+                                            }
                                         </Box>
                                     </Stack>
                                 </Box>
