@@ -1,6 +1,6 @@
-import { Text, Table } from '@mantine/core'
+import { Text, Table, Group } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { startCase } from 'lodash-es'
+import { startCase, lowerCase } from 'lodash-es'
 
 import styles from '@/styles/RecordTable.module.css'
 
@@ -13,14 +13,15 @@ const orderColumns = (columns, order) => {
   return columns
 }
 
-function RecordTable({ data, columnOrder, handleRowClick }) {
+function RecordTable({ data, columnOrder, handleRowClick, stateProp }) {
   const [columns, setColumns] = useState([])
   
   useEffect(() => {
     let columns = Object.keys(data[0] || {})
+    columns = columns.filter(col => col !== stateProp)
     columns = orderColumns(columns, columnOrder)
     setColumns(columns)
-  }, [data, columnOrder])
+  }, [data, columnOrder, stateProp])
 
   if (data.length === 0) {
     return <Text>No records found</Text>
@@ -48,7 +49,20 @@ function RecordTable({ data, columnOrder, handleRowClick }) {
                 className={colIdx === 0 ? styles.stickyCol : styles.td}
                 key={`${rowIdx}-${column}`}
               >
-                <Text size="xs">{row[column]}</Text>
+                {colIdx === 0 && stateProp ? (
+                  <Group gap="xs" align="center" wrap="nowrap">
+                    <div 
+                      className={`
+                        ${styles['state-circle']}
+                        ${styles[`state-${(lowerCase(row[stateProp]))}`]}
+                      `}
+                      title={row[stateProp]}
+                    />
+                    <Text size="xs">{row[column]}</Text>
+                  </Group>
+                ) : (
+                  <Text size="xs">{row[column]}</Text>
+                )}
               </Table.Td>
             ))}
           </Table.Tr>

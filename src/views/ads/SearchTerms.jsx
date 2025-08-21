@@ -21,6 +21,7 @@ function SearchTerms() {
   const navigate = useNavigate()
   const { run, isLoading } = useAsync()
   const [searchTerms, setSearchTerms] = useState([])
+  const [keywords, setKeywords] = useState({})
   const [settings, setSettings] = useLocalStorage('adsSearchTermSettings', {
     startDate: formatDate(subDays(new Date(), 30)),
     endDate: formatDate(new Date()),
@@ -80,6 +81,14 @@ function SearchTerms() {
       ...pagination,
     })
     setSearchTerms(data)
+    
+    const keywordsData = await run(() => api.getKeywords({ keywordIds: data.map(d => d.keywordId) }))
+    const keywordsMap = {}
+    keywordsData.forEach(keyword => {
+      keywordsMap[keyword.keywordId] = keyword
+    })
+    setKeywords(keywordsMap)
+    
     form.resetDirty()
   }
 
@@ -104,6 +113,11 @@ function SearchTerms() {
   const handleRowClick = (row) => {
     navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?keywordId=${row.keywordId}`)
   }
+
+  const enrichedSearchTerms = searchTerms.map(term => ({
+    keywordState: keywords[term.keywordId]?.state,
+    ...term
+  }))
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -150,9 +164,10 @@ function SearchTerms() {
         />
 
         <RecordTable 
-          data={searchTerms} 
+          data={enrichedSearchTerms} 
           columnOrder={['searchTerm', 'keyword', 'keywordId', 'acosClicks7d']}
           handleRowClick={handleRowClick}
+          stateProp="keywordState"
          />
         
         <TablePagination
