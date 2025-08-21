@@ -284,12 +284,13 @@ async function getAdsSearchTerm(searchTerm, keywordId, aggregate=false) {
   })
 }
 
-async function getKeywordsByAdGroup(adGroupId) {
+async function getKeywords({ adGroupIds, keywordIds }) {
   return call(`amazon/ads/keywords`, {
-    method: 'GET',
-    params: {
-      adGroupId
-    }
+    method: 'POST',
+    body: {
+      adGroupIds,
+      keywordIds
+    },
   })
 }
 
@@ -306,11 +307,11 @@ async function updateKeyword(keywordId, body) {
   })
 }
 
-async function getNegativeKeywordsByAdGroup(adGroupId) {
+async function getNegativeKeywords({ adGroupIds }) {
   return call(`amazon/ads/negative-keywords`, {
-    method: 'GET',
-    params: {
-      adGroupId
+    method: 'POST',
+    body: {
+      adGroupIds
     }
   })
 }
@@ -355,10 +356,10 @@ const api = {
   deleteAdsReport,
   getAdsSearchTerms,
   getAdsSearchTerm,
-  getKeywordsByAdGroup,
+  getKeywords,
   getKeywordById,
   updateKeyword,
-  getNegativeKeywordsByAdGroup,
+  getNegativeKeywords,
   createNegativeKeyword,
   deleteNegativeKeyword
 }
