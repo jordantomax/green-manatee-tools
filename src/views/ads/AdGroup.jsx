@@ -16,8 +16,8 @@ function AdGroup() {
   useEffect(() => {
     run(async () => {
       const [negativeKeywords, keywords] = await Promise.all([
-        api.getNegativeKeywords({ adGroupIds: [adGroupId] }),
-        api.getKeywords({ adGroupIds: [adGroupId] })
+        api.listNegativeKeywords({ adGroupIds: [adGroupId] }),
+        api.listKeywords({ adGroupIds: [adGroupId] })
       ])
       setNegativeKeywords(negativeKeywords)
       setKeywords(keywords)
