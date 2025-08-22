@@ -63,7 +63,7 @@ function SearchTerm() {
   useEffect(() => {
     if (recordsAggregate?.adGroupId) {
       run(async () => {
-        const negativeKeywords = await api.getNegativeKeywords({ adGroupIds: [recordsAggregate.adGroupId] })
+        const negativeKeywords = await api.listNegativeKeywords({ adGroupIds: [recordsAggregate.adGroupId] })
         setNegativeKeywords(negativeKeywords)
       }, 'negativeKeywords')
     }

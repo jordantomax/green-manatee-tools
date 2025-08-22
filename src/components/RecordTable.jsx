@@ -13,15 +13,22 @@ const orderColumns = (columns, order) => {
   return columns
 }
 
-function RecordTable({ data, columnOrder, handleRowClick, stateProp }) {
+function RecordTable({ 
+  data,
+  columnOrder,
+  handleRowClick,
+  stateProp,
+  hiddenColumns = []
+}) {
   const [columns, setColumns] = useState([])
   
   useEffect(() => {
     let columns = Object.keys(data[0] || {})
     columns = columns.filter(col => col !== stateProp)
+    columns = columns.filter(col => !hiddenColumns.includes(col))
     columns = orderColumns(columns, columnOrder)
     setColumns(columns)
-  }, [data, columnOrder, stateProp])
+  }, [data, columnOrder, stateProp, hiddenColumns])
 
   if (data.length === 0) {
     return <Text>No records found</Text>

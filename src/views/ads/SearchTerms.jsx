@@ -14,6 +14,7 @@ import RecordTable from "@/components/RecordTable"
 import TablePagination from "@/components/TablePagination"
 import { AddFilter, ActiveFilters } from "@/components/TableFilter"
 import { columnTypes } from '@/utils/table'
+import { SEARCH_TERMS_HIDDEN_COLUMNS } from '@/utils/constants'
 
 const formatDate = (date) => format(date, 'yyyy-MM-dd')
 
@@ -82,7 +83,7 @@ function SearchTerms() {
     })
     setSearchTerms(data)
     
-    const keywordsData = await run(() => api.getKeywords({ keywordIds: data.map(d => d.keywordId) }))
+    const keywordsData = await run(() => api.listKeywords({ keywordIds: data.map(d => d.keywordId) }))
     const keywordsMap = {}
     keywordsData.forEach(keyword => {
       keywordsMap[keyword.keywordId] = keyword
@@ -165,7 +166,8 @@ function SearchTerms() {
 
         <RecordTable 
           data={enrichedSearchTerms} 
-          columnOrder={['searchTerm', 'keyword', 'keywordId', 'acosClicks7d']}
+          columnOrder={['searchTerm', 'keyword', 'acosClicks7d']}
+          hiddenColumns={SEARCH_TERMS_HIDDEN_COLUMNS}
           handleRowClick={handleRowClick}
           stateProp="keywordState"
          />
