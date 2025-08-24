@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { IconRefresh, IconDotsVertical, IconTrash, IconPlus } from '@tabler/icons-react'
 import { Title, Button, Stack, Group, Table, Menu, Modal, Loader } from '@mantine/core'
 
-import api from '@/utils/api'
+import api from '@/api'
 import { useAsync } from '@/hooks/useAsync'
 import classes from '@/styles/Ads.module.css'
 import CreateReport from '@/components/amazon_ads/CreateReport'

@@ -8,7 +8,7 @@ import { MantineProvider, AppShell } from '@mantine/core'
 
 import { theme } from '@/utils/theme'
 import { ErrorProvider, useError } from '@/contexts/Error'
-import { setErrorHandler } from '@/utils/api'
+import { setErrorHandler } from '@/api'
 import Login from '@/views/Login'
 import Signup from '@/views/Signup'
 import Nav from '@/components/Nav'

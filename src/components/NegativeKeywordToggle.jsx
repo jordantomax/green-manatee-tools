@@ -1,4 +1,4 @@
-import api from '@/utils/api'
+import api from '@/api'
 import { useAsync } from '@/hooks/useAsync'
 import { Button } from '@mantine/core'
 

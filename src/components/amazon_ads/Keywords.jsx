@@ -2,7 +2,7 @@ import React from 'react'
 import { isFunction } from 'lodash'
 import { Text, Select, Table, Loader } from '@mantine/core'
 
-import api from '@/utils/api'
+import api from '@/api'
 import { useAsync } from '@/hooks/useAsync'
 
 export const KeywordState = ({ keywordId, value, onChange, isLoading: externalLoading }) => {

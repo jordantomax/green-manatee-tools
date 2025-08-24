@@ -6,7 +6,7 @@ import omit from 'lodash-es/omit'
 
 import NotFound from '@/views/NotFound'
 import { useAsync } from '@/hooks/useAsync'
-import api from '@/utils/api'
+import api from '@/api'
 import { numberTypeColumns } from '@/utils/table'
 import { getIndexedChartColor } from '@/utils/color'
 import ChartLegendDropdown from '@/components/ChartLegendDropdown'
@@ -68,6 +68,17 @@ function SearchTerm() {
       }, 'negativeKeywords')
     }
   }, [recordsAggregate?.adGroupId])
+  
+  useEffect(() => {
+    if (recordsAggregate?.matchType === 'TARGETING_EXPRESSION') {
+      run(async () => {
+      const asin = searchTerm
+      const adGroupId = recordsAggregate.adGroupId
+        // const productTarget = await api.getProductTarget(asin, adGroupId)
+        // console.log(productTarget)
+      }, 'productTarget')
+    }
+  }, [recordsAggregate?.matchType])
   
   return (
     <Stack>

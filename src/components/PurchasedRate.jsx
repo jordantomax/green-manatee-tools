@@ -2,7 +2,7 @@ import React from 'react'
 import { Paper, Title, Stack, Button, Text, Group, Card } from '@mantine/core'
 import { IconDownload } from '@tabler/icons-react'
 
-import api from '@/utils/api'
+import api from '@/api'
 
 function PurchasedRate ({ rate }) {
   const [labels, setLabels] = React.useState([])

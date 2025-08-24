@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { Title, Stack, Group, Text, SimpleGrid } from '@mantine/core'
 
-import api from '@/utils/api'
+import api from '@/api'
 import { useAsync } from '@/hooks/useAsync'
 import Loader from '@/components/Loader'
 import { Keywords } from '@/components/amazon_ads/Keywords'

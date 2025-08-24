@@ -4,7 +4,7 @@ import {
   setSavedTokens,
   removeSavedTokens
 } from '@/utils/auth'
-import api, { setTokensHandler } from '@/utils/api'
+import api, { setTokensHandler } from '@/api'
 
 export const AuthContext = createContext({
   isLoggedIn: null,

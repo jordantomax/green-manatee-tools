@@ -5,7 +5,7 @@ import { useForm } from '@mantine/form'
 import { subDays, format } from 'date-fns'
 import { useNavigate } from 'react-router-dom'
 
-import api from "@/utils/api"
+import api from "@/api"
 import { validators } from '@/utils/validation'
 import { useAsync } from '@/hooks/useAsync'
 import { usePagination } from '@/hooks/usePagination'

@@ -3,7 +3,7 @@ import { Select, Button, Group, Stack, Box } from '@mantine/core'
 import { DateInput } from '@mantine/dates'
 import { useForm } from '@mantine/form'
 
-import api from '@/utils/api'
+import api from '@/api'
 import { useAsync } from '@/hooks/useAsync'
 import { validators } from '@/utils/validation'
 

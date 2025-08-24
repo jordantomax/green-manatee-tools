@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button } from '@mantine/core'
 
-import api from '@/utils/api'
+import api from '@/api'
 import { useError } from '@/contexts/Error'
 
 function ShippingManifest({ shipments }) {
