@@ -15,14 +15,11 @@ export const KeywordStateSelect = ({
   isNegative = false
 }) => {
   const { run, isLoading } = useAsync()
+  const method = isNegative ? api.updateNegativeKeyword : api.updateKeyword
 
   const handleStateChange = (newState) => {
     run(async () => {
-      if (isNegative) {
-        await api.updateNegativeKeyword(keywordId, { state: newState })
-      } else {
-        await api.updateKeyword(keywordId, { state: newState })
-      }
+      await method(keywordId, { state: newState })
       isFunction(onChange) && onChange(keywordId, newState)
     })
   }
