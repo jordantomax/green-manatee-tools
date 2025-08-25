@@ -8,7 +8,7 @@ import DataList from '@/components/DataList'
 import { KeywordStateSelect } from '@/components/amazon_ads/Keyword'
 import NegativeKeywordToggle from '@/components/NegativeKeywordToggle'
 
-function Keyword({ searchTerm, keywordId, recordsByDate, recordsAggregate }) {
+function Keyword({ searchTerm, keywordId, recordsAggregate }) {
   const { run, isLoading, loadingStates } = useAsync()
 
   const [keyword, setKeyword] = useState(null)

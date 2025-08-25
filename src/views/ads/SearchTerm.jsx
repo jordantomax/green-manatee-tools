@@ -59,7 +59,6 @@ function SearchTerm() {
         <ProductTarget
           asin={searchTerm}
           targetId={targetId}
-          recordsByDate={recordsByDate}
           recordsAggregate={recordsAggregate} 
         />
       )}
@@ -68,7 +67,6 @@ function SearchTerm() {
         <Keyword
           searchTerm={searchTerm}
           keywordId={keywordId}
-          recordsByDate={recordsByDate}
           recordsAggregate={recordsAggregate}
         />
       )}
