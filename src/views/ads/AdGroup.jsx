@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { Title, Stack, Group, Text, SimpleGrid } from '@mantine/core'
+import { Title, Stack, SimpleGrid, Loader } from '@mantine/core'
 
 import api from '@/api'
 import { useAsync } from '@/hooks/useAsync'
-import Loader from '@/components/Loader'
-import { Keywords } from '@/components/amazon_ads/Keywords'
+import { KeywordRows } from '@/components/amazon_ads/Keyword'
 
 function AdGroup() {
   const { adGroupId } = useParams()
@@ -40,12 +39,19 @@ function AdGroup() {
     <SimpleGrid cols={2} spacing="xs">
       <Stack>
         <Title order={2}>Keywords</Title>
-        <Keywords keywords={keywords} onChange={createKeywordHandler(setKeywords)} />
+        <KeywordRows
+          keywords={keywords}
+          onChange={createKeywordHandler(setKeywords)}
+        />
       </Stack>
 
       <Stack>
         <Title order={2}>Negative Keywords</Title>
-        <Keywords keywords={negativeKeywords} onChange={createKeywordHandler(setNegativeKeywords)} />
+        <KeywordRows
+          keywords={negativeKeywords}
+          onChange={createKeywordHandler(setNegativeKeywords)}
+          isNegative={true}
+        />
       </Stack>
     </SimpleGrid>
   )

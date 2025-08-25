@@ -40,7 +40,8 @@ const NegativeKeywordToggle = ({
   return (
           <Button 
             loading={isLoading} 
-            variant="light"
+            variant="default"
+            size="xs"
             onClick={negativeKeyword ? deleteNegativeKeyword : createNegativeKeyword}
           >
             {negativeKeyword ? 'Remove Negative Keyword' : 'Add Negative Keyword'}

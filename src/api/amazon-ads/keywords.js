@@ -44,6 +44,13 @@ export async function createNegativeKeyword({ campaignId, adGroupId, keywordText
   })
 }
 
+export async function updateNegativeKeyword(negativeKeywordId, body) {
+  return call(`amazon/ads/negative-keywords/${negativeKeywordId}`, {
+    method: 'POST',
+    body
+  })
+}
+
 export async function deleteNegativeKeyword(negativeKeywordId) {
   return call(`amazon/ads/negative-keywords/${negativeKeywordId}`, {
     method: 'DELETE',

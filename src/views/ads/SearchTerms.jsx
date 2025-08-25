@@ -112,7 +112,8 @@ function SearchTerms() {
   }
   
   const handleRowClick = (row) => {
-    navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?keywordId=${row.keywordId}`)
+    const param = row.matchType === 'TARGETING_EXPRESSION' ? 'targetId' : 'keywordId'
+    navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?${param}=${row.keywordId}`)
   }
 
   const enrichedSearchTerms = searchTerms.map(term => ({
