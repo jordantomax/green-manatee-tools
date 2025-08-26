@@ -7,7 +7,7 @@ import omit from 'lodash-es/omit'
 import { useAsync } from '@/hooks/useAsync'
 import api from '@/api'
 import Keyword from './Keyword'
-import ProductTarget from './ProductTarget'
+import Target from './Target'
 import { numberTypeColumns } from '@/utils/table'
 import { getIndexedChartColor } from '@/utils/color'
 import ChartLegendDropdown from '@/components/ChartLegendDropdown'
@@ -56,7 +56,7 @@ function SearchTerm() {
     <Stack>
 
       {targetId && (
-        <ProductTarget
+        <Target
           asin={searchTerm}
           targetId={targetId}
           recordsAggregate={recordsAggregate} 

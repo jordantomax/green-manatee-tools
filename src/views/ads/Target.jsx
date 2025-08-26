@@ -7,25 +7,25 @@ import NotFound from '@/views/NotFound'
 import DataList from '@/components/DataList'
 import StateSelect from '@/components/amazon_ads/StateSelect'
 
-function ProductTarget({ asin, targetId, recordsAggregate }) {
+function Target({ asin, targetId, recordsAggregate }) {
   const { run, isLoading, loadingStates } = useAsync()
-  const [productTarget, setProductTarget] = useState(null)
+  const [target, setTarget] = useState(null)
 
   useEffect(() => {
     const adGroupId = recordsAggregate.adGroupId
     if (!adGroupId) return
     
     run(async () => {
-      const productTarget = await api.getProductTarget(targetId, adGroupId)
-      setProductTarget(productTarget)
-    }, 'productTarget')
+      const target = await api.getTarget(targetId, adGroupId)
+      setTarget(target)
+    }, 'target')
   }, [recordsAggregate?.adGroupId])
 
   const handleStateChange = (newState) => {
     run(async () => {
-      await api.updateProductTarget(targetId, { state: newState })
-      setProductTarget(prev => ({ ...prev, state: newState }))
-    }, 'updateProductTarget')
+      await api.updateTarget(targetId, { state: newState })
+      setTarget(prev => ({ ...prev, state: newState }))
+    }, 'updateTarget')
   }
 
   if (!targetId) {
@@ -39,9 +39,9 @@ function ProductTarget({ asin, targetId, recordsAggregate }) {
       </Group>
 
       <StateSelect 
-        value={productTarget?.state}
+        value={target?.state}
         onChange={handleStateChange}
-        isLoading={loadingStates.productTarget || loadingStates.updateProductTarget}
+        isLoading={loadingStates.target || loadingStates.updateTarget}
       />
 
       <DataList 
@@ -56,4 +56,4 @@ function ProductTarget({ asin, targetId, recordsAggregate }) {
   )
 }
 
-export default ProductTarget
+export default Target
