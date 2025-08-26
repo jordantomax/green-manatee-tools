@@ -3,7 +3,7 @@ import { Stack, Checkbox, Group, Text, Button, Modal, Table, Badge } from '@mant
 import { IconRefresh } from '@tabler/icons-react'
 
 import { setLocalData, getLocalData } from '@/utils/storage'
-import api from '@/utils/api'
+import api from '@/api'
 
 function Shipments ({ children, inline = false }) {
   const [isLoading, setIsLoading] = useState(false)

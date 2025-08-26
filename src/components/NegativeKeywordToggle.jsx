@@ -1,4 +1,4 @@
-import api from '@/utils/api'
+import api from '@/api'
 import { useAsync } from '@/hooks/useAsync'
 import { Button } from '@mantine/core'
 
@@ -21,10 +21,10 @@ const NegativeKeywordToggle = ({
     }
     
     run(async () => {
-      const { negativeKeywordId } = await api.createNegativeKeyword(data)
+      const { keywordId } = await api.createNegativeKeyword(data)
       setNegativeKeywords(prevKeywords => [...prevKeywords, { 
         ...data, 
-        keywordId: negativeKeywordId,
+        keywordId,
         keywordText
       }])
     })
@@ -40,7 +40,8 @@ const NegativeKeywordToggle = ({
   return (
           <Button 
             loading={isLoading} 
-            variant="light"
+            variant="default"
+            size="xs"
             onClick={negativeKeyword ? deleteNegativeKeyword : createNegativeKeyword}
           >
             {negativeKeyword ? 'Remove Negative Keyword' : 'Add Negative Keyword'}

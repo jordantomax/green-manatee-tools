@@ -2,7 +2,7 @@ import React from 'react'
 import { Paper, Stack, Button, Text, Title, Group, Image, Box } from '@mantine/core'
 import { useForm } from '@mantine/form'
 
-import api from '@/utils/api'
+import api from '@/api'
 import DataList from '@/components/DataList'
 
 function Rates ({ rates, setPurchasedRate }) {

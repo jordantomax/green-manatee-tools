@@ -9,7 +9,7 @@ import {
 } from '@mantine/core'
 
 import { setLocalData, getLocalData } from '@/utils/storage'
-import api from '@/utils/api'
+import api from '@/api'
 import InventoryRestockRecs from '@/components/InventoryRestockRecs'
 
 function Inventory () {

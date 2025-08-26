@@ -3,7 +3,7 @@ import { Button, Modal, Text, Stack, Group, CopyButton, Box, Image, SegmentedCon
 import { IconCopy } from '@tabler/icons-react'
 import { startCase } from 'lodash'
 
-import api from '@/utils/api'
+import api from '@/api'
 import { useError } from '@/contexts/Error'
 
 function ShippingEmail ({ shipments }) {

@@ -10,7 +10,7 @@ import {
 } from '@mantine/core'
 import { IconChevronRight } from '@tabler/icons-react'
 
-import api from '@/utils/api'
+import api from '@/api'
 import { useError } from '@/contexts/Error'
 
 function Sales ({ sales }) {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Stack, TextInput, Group, Title } from '@mantine/core'
 import SearchableSelect from './SearchableSelect'
 import { setLocalData, getLocalData } from '@/utils/storage'
-import api from '@/utils/api'
+import api from '@/api'
 
 function Address ({ address, name, handleChange, label }) {
   const [isLoading, setIsLoading] = useState(false)

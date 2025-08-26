@@ -12,7 +12,7 @@ import {
 import { useForm } from '@mantine/form'
 
 import { useError } from '@/contexts/Error'
-import api from '@/utils/api'
+import api from '@/api'
 import { setLocalData, getLocalData } from '@/utils/storage'
 import { addressFactory, parcelFactory, customsFactory } from '@/factories'
 import Address from '@/components/Address'

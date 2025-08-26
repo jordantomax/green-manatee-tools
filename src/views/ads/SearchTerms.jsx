@@ -5,7 +5,7 @@ import { useForm } from '@mantine/form'
 import { subDays, format } from 'date-fns'
 import { useNavigate } from 'react-router-dom'
 
-import api from "@/utils/api"
+import api from "@/api"
 import { validators } from '@/utils/validation'
 import { useAsync } from '@/hooks/useAsync'
 import { usePagination } from '@/hooks/usePagination'
@@ -112,7 +112,8 @@ function SearchTerms() {
   }
   
   const handleRowClick = (row) => {
-    navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?keywordId=${row.keywordId}`)
+    const param = row.matchType === 'TARGETING_EXPRESSION' ? 'targetId' : 'keywordId'
+    navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?${param}=${row.keywordId}`)
   }
 
   const enrichedSearchTerms = searchTerms.map(term => ({
