@@ -3,13 +3,9 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { MantineProvider } from '@mantine/core'
 import SearchTerms from '../SearchTerms'
+import api from '@/api'
 
-vi.mock('@/api', () => ({
-  default: {
-    getAdsSearchTerms: vi.fn(),
-    listKeywords: vi.fn()
-  }
-}))
+vi.mock('@/api')
 
 const mockNavigate = vi.fn()
 vi.mock('react-router-dom', async () => {
@@ -20,7 +16,10 @@ vi.mock('react-router-dom', async () => {
   }
 })
 
-const mockRun = vi.fn()
+const mockRun = vi.fn().mockImplementation(async (apiCall) => {
+  return await apiCall()
+})
+
 vi.mock('@/hooks/useAsync', () => ({
   useAsync: () => ({
     run: mockRun,
@@ -51,76 +50,47 @@ vi.mock('@/hooks/usePagination', () => ({
   })
 }))
 
-describe('SearchTerms', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-
-    mockRun.mockImplementation(async (apiCall) => {
-      if (apiCall.toString().includes('getAdsSearchTerms')) {
-        return {
-          data: [
-            {
-              searchTerm: 'test product',
-              keywordId: '12345',
-              matchType: 'BROAD'
-            },
-            {
-              searchTerm: 'asin=B08N5WRWNW',
-              keywordId: '67890',
-              matchType: 'TARGETING_EXPRESSION'
-            }
-          ],
-          pagination: { totalPages: 1 }
-        }
-      }
-      if (apiCall.toString().includes('listKeywords')) {
-        return []
-      }
-      return apiCall()
-    })
+const setup = (searchTerms = []) => {
+  vi.clearAllMocks()
+  
+  vi.mocked(api.getAdsSearchTerms).mockResolvedValue({
+    data: searchTerms, pagination: { totalPages: 1 }
   })
+  vi.mocked(api.listKeywords).mockResolvedValue([])
+  
+  render(
+    <MantineProvider>
+      <BrowserRouter>
+        <SearchTerms />
+      </BrowserRouter>
+    </MantineProvider>
+  )
+}
 
+describe('SearchTerms', () => {
   it('navigates to keyword page when keyword row is clicked', async () => {
-    render(
-      <MantineProvider>
-        <BrowserRouter>
-          <SearchTerms />
-        </BrowserRouter>
-      </MantineProvider>
-    )
-
-    const table = await screen.findByRole('table')
-    expect(table).toBeInTheDocument()
-
-    const rows = table.querySelectorAll('tbody tr')
-    expect(rows.length).toBeGreaterThan(0)
+    const keyword = { searchTerm: 'test product', keywordId: '12345', matchType: 'BROAD' }
+    setup([keyword])
     
+    const table = await screen.findByRole('table')
+    const rows = table.querySelectorAll('tbody tr')
     fireEvent.click(rows[0])
-
+    
     expect(mockNavigate).toHaveBeenCalledWith(
-      '/ads/search-terms/test%20product?keywordId=12345'
+      `/ads/search-terms/${encodeURIComponent(keyword.searchTerm)}?keywordId=${keyword.keywordId}`
     )
   })
 
   it('navigates to target page when targeting expression row is clicked', async () => {
-    render(
-      <MantineProvider>
-        <BrowserRouter>
-          <SearchTerms />
-        </BrowserRouter>
-      </MantineProvider>
-    )
-
-    const table = await screen.findByRole('table')
-    expect(table).toBeInTheDocument()
-
-    const rows = table.querySelectorAll('tbody tr')
-    expect(rows.length).toBeGreaterThan(1)
+    const target = { searchTerm: 'asin=B08N5WRWNW', keywordId: '67890', matchType: 'TARGETING_EXPRESSION' }
+    setup([target])
     
-    fireEvent.click(rows[1])
-
+    const table = await screen.findByRole('table')
+    const rows = table.querySelectorAll('tbody tr')
+    fireEvent.click(rows[0])
+    
     expect(mockNavigate).toHaveBeenCalledWith(
-      '/ads/search-terms/asin%3DB08N5WRWNW?targetId=67890'
+      `/ads/search-terms/${encodeURIComponent(target.searchTerm)}?targetId=${target.keywordId}`
     )
   })
 })
