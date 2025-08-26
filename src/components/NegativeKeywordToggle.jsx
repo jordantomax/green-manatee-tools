@@ -21,10 +21,10 @@ const NegativeKeywordToggle = ({
     }
     
     run(async () => {
-      const { negativeKeywordId } = await api.createNegativeKeyword(data)
+      const { keywordId } = await api.createNegativeKeyword(data)
       setNegativeKeywords(prevKeywords => [...prevKeywords, { 
         ...data, 
-        keywordId: negativeKeywordId,
+        keywordId,
         keywordText
       }])
     })
