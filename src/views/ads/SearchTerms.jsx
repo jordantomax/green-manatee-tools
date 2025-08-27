@@ -78,8 +78,13 @@ function SearchTerms() {
       run(() => api.listTargets({ targetIds: data.map(d => d.keywordId) }))
     ])
     
-    const keywordsMap = keywordsData.reduce((map, keyword) => ({ ...map, [keyword.keywordId]: keyword }), {})
-    const targetsMap = targetsData.reduce((map, target) => ({ ...map, [target.targetId]: target }), {})
+    const keywordsMap = keywordsData?.reduce(
+      (map, keyword) => ({ ...map, [keyword.keywordId]: keyword }), {}
+    ) || {}
+
+    const targetsMap = targetsData?.reduce(
+      (map, target) => ({ ...map, [target.targetId]: target }), {}
+    ) || {}
 
     setKeywords(keywordsMap)
     setTargets(targetsMap)
