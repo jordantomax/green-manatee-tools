@@ -6,19 +6,29 @@ import { useAsync } from '@/hooks/useAsync'
 import api from '@/api'
 import DataList from '@/components/DataList'
 import { KeywordStateSelect } from '@/components/amazon_ads/Keyword'
-import NegativeKeywordToggle from '@/components/NegativeKeywordToggle'
+import NegativeKeywordButton from '@/components/NegativeKeywordButton'
+import { TARGET_STATES } from '@/utils/constants'
 
 function Keyword({ searchTerm, keywordId, recordsAggregate }) {
   const { run, isLoading, loadingStates } = useAsync()
-
   const [keyword, setKeyword] = useState(null)
   const [negativeKeywords, setNegativeKeywords] = useState([])
-  const activeNegativeKeyword = negativeKeywords.find(k => k.keywordText === searchTerm)
+  const activeNegativeKeyword = negativeKeywords.find(k => (
+    k.keywordText === searchTerm && 
+    k.state !== TARGET_STATES.ARCHIVED
+  ))
 
-  if (!keywordId) {
-    return <NotFound message="The search term has no keyword ID." />
+  const handleStateChange = (keywordId, newState) => {
+    setKeyword(prev => ({ ...prev, state: newState }))
   }
   
+  const refreshNegativeKeywords = () => {
+    run(async () => {
+      const negativeKeywords = await api.listNegativeKeywords({ adGroupIds: [recordsAggregate.adGroupId] })
+      setNegativeKeywords(negativeKeywords)
+    }, 'negativeKeywords')
+  }
+
   useEffect(() => {
     run(async () => {
       const keyword = await api.getKeywordById(keywordId)
@@ -28,21 +38,19 @@ function Keyword({ searchTerm, keywordId, recordsAggregate }) {
 
   useEffect(() => {
     if (recordsAggregate?.adGroupId) {
-      run(async () => {
-        const negativeKeywords = await api.listNegativeKeywords({ adGroupIds: [recordsAggregate.adGroupId] })
-        setNegativeKeywords(negativeKeywords)
-      }, 'negativeKeywords')
+      refreshNegativeKeywords()
     }
   }, [recordsAggregate?.adGroupId])
-  
-  const handleStateChange = (keywordId, newState) => {
-    setKeyword(prev => ({ ...prev, state: newState }))
+
+  if (!keywordId) {
+    return <NotFound message="The search term has no keyword ID." />
   }
   
   return (
     <Stack>
       <Group align="center">
         <Title order={1}>{decodeURIComponent(searchTerm)}</Title>
+
         {activeNegativeKeyword && (
           <Badge variant="outline" color="red">
             {activeNegativeKeyword.matchType}
@@ -60,9 +68,10 @@ function Keyword({ searchTerm, keywordId, recordsAggregate }) {
           />
         )}
 
-        <NegativeKeywordToggle 
+        <NegativeKeywordButton 
+          isLoading={loadingStates.negativeKeywords}
           negativeKeyword={activeNegativeKeyword}
-          setNegativeKeywords={setNegativeKeywords}
+          onSuccess={refreshNegativeKeywords}
           campaignId={recordsAggregate.campaignId}
           adGroupId={recordsAggregate.adGroupId}
           keywordText={searchTerm}

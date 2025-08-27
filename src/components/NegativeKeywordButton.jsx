@@ -1,45 +1,44 @@
+import isFunction from 'lodash-es/isFunction'
+
 import api from '@/api'
 import { useAsync } from '@/hooks/useAsync'
 import { Button } from '@mantine/core'
 
-const NegativeKeywordToggle = ({ 
+const NegativeKeywordButton = ({ 
   negativeKeyword,
-  setNegativeKeywords,
+  onSuccess,
   campaignId,
   adGroupId,
   keywordText,
-  matchType='NEGATIVE_EXACT' 
+  matchType='NEGATIVE_EXACT',
+  isLoading: externalLoading
 }) => {
   const { run, isLoading } = useAsync()
   
   const createNegativeKeyword = () => {
-    const data = {
-      campaignId,
-      adGroupId,
-      keywordText,
-      matchType
-    }
-    
     run(async () => {
-      const { keywordId } = await api.createNegativeKeyword(data)
-      setNegativeKeywords(prevKeywords => [...prevKeywords, { 
-        ...data, 
-        keywordId,
-        keywordText
-      }])
+      const { keywordId } = await api.createNegativeKeyword({
+        campaignId,
+        adGroupId,
+        keywordText,
+        matchType
+      })
+      
+      isFunction(onSuccess) && onSuccess()
     })
   }
   
   const deleteNegativeKeyword = () => {
     run(async () => {
       await api.deleteNegativeKeyword(negativeKeyword.keywordId)
-      setNegativeKeywords(prevKeywords => prevKeywords.filter(k => k.keywordId !== negativeKeyword.keywordId))
+      isFunction(onSuccess) && onSuccess()
     })
   }
 
   return (
           <Button 
-            loading={isLoading} 
+            disabled={isLoading || externalLoading}
+            loading={isLoading || externalLoading} 
             variant="default"
             size="xs"
             onClick={negativeKeyword ? deleteNegativeKeyword : createNegativeKeyword}
@@ -49,4 +48,4 @@ const NegativeKeywordToggle = ({
   )
 }
 
-export default NegativeKeywordToggle
+export default NegativeKeywordButton
