@@ -1,5 +1,12 @@
 import { call } from '../core'
 
+export async function listTargets({ targetIds, adGroupId }) {
+  return call(`amazon/ads/targets/list`, {
+    method: 'POST',
+    body: { targetIds, adGroupId }
+  })
+}
+
 export async function getTarget(targetId, adGroupId) {
   return call(`amazon/ads/targets/${targetId}?adGroupId=${adGroupId}`, {
     method: 'GET'

@@ -23,6 +23,7 @@ function SearchTerms() {
   const { run, isLoading } = useAsync()
   const [searchTerms, setSearchTerms] = useState([])
   const [keywords, setKeywords] = useState({})
+  const [targets, setTargets] = useState({})
   const [settings, setSettings] = useLocalStorage('adsSearchTermSettings', {
     startDate: formatDate(subDays(new Date(), 30)),
     endDate: formatDate(new Date()),
@@ -70,6 +71,19 @@ function SearchTerms() {
       setSettings({ ...settings, ...values })
     },
   })
+  
+  const getState = async (data) => {
+    const [keywordsData, targetsData] = await Promise.all([
+      run(() => api.listKeywords({ keywordIds: data.map(d => d.keywordId) })),
+      run(() => api.listTargets({ targetIds: data.map(d => d.keywordId) }))
+    ])
+    
+    const keywordsMap = keywordsData.reduce((map, keyword) => ({ ...map, [keyword.keywordId]: keyword }), {})
+    const targetsMap = targetsData.reduce((map, target) => ({ ...map, [target.targetId]: target }), {})
+
+    setKeywords(keywordsMap)
+    setTargets(targetsMap)
+  }
 
   const handleSubmit = async (transformedValues) => {
     const { data, pagination } = await run(async () => await api.getAdsSearchTerms({
@@ -82,13 +96,7 @@ function SearchTerms() {
       ...pagination,
     })
     setSearchTerms(data)
-    
-    const keywordsData = await run(() => api.listKeywords({ keywordIds: data.map(d => d.keywordId) }))
-    const keywordsMap = {}
-    keywordsData.forEach(keyword => {
-      keywordsMap[keyword.keywordId] = keyword
-    })
-    setKeywords(keywordsMap)
+    getState(data)
     
     form.resetDirty()
   }
@@ -115,9 +123,9 @@ function SearchTerms() {
     const param = row.matchType === 'TARGETING_EXPRESSION' ? 'targetId' : 'keywordId'
     navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?${param}=${row.keywordId}`)
   }
-
+  
   const enrichedSearchTerms = searchTerms.map(term => ({
-    keywordState: keywords[term.keywordId]?.state,
+    _state: keywords[term.keywordId]?.state || targets[term.keywordId]?.state,
     ...term
   }))
 
@@ -167,10 +175,10 @@ function SearchTerms() {
 
         <RecordTable 
           data={enrichedSearchTerms} 
-          columnOrder={['searchTerm', 'keyword', 'acosClicks7d']}
+          columnOrder={['searchTerm', 'keyword', 'matchType', 'acosClicks7d']}
           hiddenColumns={SEARCH_TERMS_HIDDEN_COLUMNS}
           handleRowClick={handleRowClick}
-          stateProp="keywordState"
+          stateProp="_state"
          />
         
         <TablePagination
