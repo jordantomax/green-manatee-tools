@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Group, Select, NumberInput, Box, Pill, Popover, Stack, TextInput } from '@mantine/core'
+import { Button, Group, Select, NumberInput, Box, Pill, Popover, Stack, TextInput, Text } from '@mantine/core'
 import { DateInput } from '@mantine/dates'
 import isEmpty from 'lodash-es/isEmpty'
 import startCase from 'lodash-es/startCase'
@@ -56,6 +56,7 @@ const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange }) => {
       <Popover.Target>
         <Box onClick={() => setIsEditing(!isEditing)}>
           <Pill 
+            size="xs"
             withRemoveButton 
             onRemove={() => handleFilterRemove(filter.id)}
             classNames={{
@@ -119,7 +120,9 @@ export const ActiveFilters = ({ filters, handleFilterRemove, handleFilterChange 
   if (isEmpty(filters)) return null
 
   return (
-    <Group>
+    <Group gap="xs">
+      <Text size="xs" fw={500}>Filters</Text>
+
       {filters.map((filter, index) => (
         <ActiveFilter 
           key={index} 

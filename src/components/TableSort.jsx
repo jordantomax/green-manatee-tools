@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Group, Select, Box, Pill, Popover, Stack } from '@mantine/core'
+import { Button, Group, Select, Box, Pill, Popover, Stack, Text } from '@mantine/core'
 import startCase from 'lodash-es/startCase'
 
 import { sortDirections, columnTypes } from '@/utils/table'
@@ -43,6 +43,7 @@ const ActiveSort = ({ sort, handleSortRemove, handleSortChange }) => {
       <Popover.Target>
         <Box onClick={() => setIsEditing(!isEditing)}>
           <Pill 
+            size="xs"
             withRemoveButton 
             onRemove={() => handleSortRemove(sort.id)}
             classNames={{
@@ -105,7 +106,9 @@ export const ActiveSorts = ({ sorts, handleSortRemove, handleSortChange }) => {
   if (!sorts || sorts.length === 0) return null
 
   return (
-    <Group>
+    <Group gap="xs">
+      <Text size="xs" fw={500}>Sorts</Text>
+
       {sorts.map((sort, index) => (
         <ActiveSort 
           key={sort.id} 
