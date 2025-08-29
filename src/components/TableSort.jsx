@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Button, Group, Select, Box, Pill, Popover, Stack, Text } from '@mantine/core'
+import { IconArrowsSort } from '@tabler/icons-react'
 import startCase from 'lodash-es/startCase'
 
 import { sortDirections, columnTypes } from '@/utils/table'
@@ -12,16 +13,15 @@ export const AddSort = ({ columns, handleSortAdd }) => {
   return (
     <Group>
       <SearchableSelect
-        label="Add Sort"
+        label={<IconArrowsSort size={20} />}
         options={columns.map(column => ({
           value: column,
           label: startCase(column),
         }))}
         onSelect={handleSortAdd}
-        placeholder="Search columns..."
-        width={300}
+        placeholder="Sort columns..."
         buttonProps={{
-          variant: 'light',
+          p: 'xs',
         }}
       />
     </Group>

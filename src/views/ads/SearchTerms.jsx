@@ -162,7 +162,7 @@ function SearchTerms() {
           {isLoading && <Loader size="sm" />}
         </Group>
 
-        <Group align="flex-end">
+        <Group gap="xs" align="flex-end">
           <DateInput
             {...form.getInputProps('startDate')}
             label="Start Date"

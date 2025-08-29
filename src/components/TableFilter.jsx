@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button, Group, Select, NumberInput, Box, Pill, Popover, Stack, TextInput, Text } from '@mantine/core'
 import { DateInput } from '@mantine/dates'
+import { IconFilter2 } from '@tabler/icons-react'
 import isEmpty from 'lodash-es/isEmpty'
 import startCase from 'lodash-es/startCase'
 
@@ -14,16 +15,15 @@ export const AddFilter = ({ columns, handleFilterAdd }) => {
   return (
     <Group>
       <SearchableSelect
-        label="Add Filter"
+        label={<IconFilter2 size={20} />}
         options={columns.map(column => ({
           value: column,
           label: startCase(column),
         }))}
         onSelect={handleFilterAdd}
-        placeholder="Search columns..."
-        width={300}
+        placeholder="Filter columns..."
         buttonProps={{
-          variant: 'light',
+          p: 'xs',
         }}
       />
     </Group>
