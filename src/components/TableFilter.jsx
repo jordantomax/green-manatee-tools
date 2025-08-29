@@ -1,34 +1,29 @@
 import { useState } from 'react'
-import { Button, Group, Select, NumberInput, Box, Pill, Popover, Stack, TextInput } from '@mantine/core'
+import { Button, Group, Select, NumberInput, Box, Pill, Popover, Stack, TextInput, Text } from '@mantine/core'
 import { DateInput } from '@mantine/dates'
+import { IconFilter2 } from '@tabler/icons-react'
 import isEmpty from 'lodash-es/isEmpty'
 import startCase from 'lodash-es/startCase'
 
-import { createDefaultFilter, conditionLabels } from '@/utils/table'
+import { conditionLabels } from '@/utils/table'
 import SearchableSelect from '@/components/SearchableSelect'
 import styles from '@/styles/TableFilter.module.css'
 
 export const AddFilter = ({ columns, handleFilterAdd }) => {
-  const handleSelect = (column) => {
-    const filter = createDefaultFilter(column)
-    handleFilterAdd(filter)
-  }
-  
   if (!columns) return null
 
   return (
     <Group>
       <SearchableSelect
-        label="Add Filter"
+        label={<IconFilter2 size={20} />}
         options={columns.map(column => ({
           value: column,
           label: startCase(column),
         }))}
-        onSelect={handleSelect}
-        placeholder="Search columns..."
-        width={300}
+        onSelect={handleFilterAdd}
+        placeholder="Filter columns..."
         buttonProps={{
-          variant: 'light',
+          p: 'xs',
         }}
       />
     </Group>
@@ -52,7 +47,7 @@ const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange }) => {
   const FilterInput = FilterInputComponents[filter.type] || TextInput
   
   const handleSave = () => {
-    handleFilterChange(filter, condition, value)
+    handleFilterChange(filter.id, condition, value)
     setIsEditing(false)
   }
   
@@ -61,8 +56,9 @@ const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange }) => {
       <Popover.Target>
         <Box onClick={() => setIsEditing(!isEditing)}>
           <Pill 
+            size="xs"
             withRemoveButton 
-            onRemove={() => handleFilterRemove(filter)}
+            onRemove={() => handleFilterRemove(filter.id)}
             classNames={{
               root: styles.tableFilterPill,
               remove: styles.removeButton,
@@ -124,7 +120,9 @@ export const ActiveFilters = ({ filters, handleFilterRemove, handleFilterChange 
   if (isEmpty(filters)) return null
 
   return (
-    <Group>
+    <Group gap="xs">
+      <Text size="xs" fw={500}>Filters</Text>
+
       {filters.map((filter, index) => (
         <ActiveFilter 
           key={index} 

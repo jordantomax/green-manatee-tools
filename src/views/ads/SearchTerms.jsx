@@ -13,7 +13,8 @@ import { useLocalStorage } from '@/hooks/useLocalStorage'
 import RecordTable from "@/components/RecordTable"
 import TablePagination from "@/components/TablePagination"
 import { AddFilter, ActiveFilters } from "@/components/TableFilter"
-import { columnTypes } from '@/utils/table'
+import { AddSort, ActiveSorts } from "@/components/TableSort"
+import { columnTypes, createDefaultSort, createDefaultFilter, getSortableColumns } from '@/utils/table'
 import { SEARCH_TERMS_HIDDEN_COLUMNS } from '@/utils/constants'
 
 const formatDate = (date) => format(date, 'yyyy-MM-dd')
@@ -31,6 +32,7 @@ function SearchTerms() {
     limit: 10,
     totalPages: 1,
     filters: [],
+    sorts: [],
   })
   
   const { 
@@ -47,7 +49,7 @@ function SearchTerms() {
       startDate: validators.required('Start date'),
       endDate: validators.required('End date'),
     },
-    transformValues: ({ filters, ...values }) => {
+    transformValues: ({ filters, sorts, ...values }) => {
       const filter = filters?.length > 0 ? {
         and: filters.map(f => ({
           [f.column]: {
@@ -56,10 +58,9 @@ function SearchTerms() {
         }))
       } : null
       
-      const sort = [{}]
-      if (filters?.length > 0) {
-        sort[0][filters[0]?.column] = 'desc'
-      }
+      const sort = sorts?.length > 0 ? sorts.map(s => (
+        { [s.column]: s.direction }
+      )) : null
       
       return {
         ...values,
@@ -110,18 +111,37 @@ function SearchTerms() {
     form.onSubmit(handleSubmit)()
   }, [page, limit])
 
-  const handleFilterAdd = (filter) => {
+  const handleFilterAdd = (column) => {
+    const filter = createDefaultFilter(column)
     form.setValues( { filters: [...settings.filters, filter] } )
   }
 
-  const handleFilterRemove = (filter) => {
-    const filters = form.getValues().filters.filter(f => f.id !== filter.id)
+  const handleFilterRemove = (filterId) => {
+    const filters = form.getValues().filters.filter(f => f.id !== filterId)
     form.setFieldValue('filters', filters)
   }
 
-  const handleFilterChange = (filter, condition, value) => {
-    const filters = form.getValues().filters.map(f => f.id === filter.id ? { ...f, condition, value } : f)
+  const handleFilterChange = (filterId, condition, value) => {
+    const filters = form.getValues().filters.map(f => f.id === filterId ? { ...f, condition, value } : f)
     form.setFieldValue('filters', filters)
+  }
+
+  const handleSortAdd = (column) => {
+    const newSort = createDefaultSort(column)
+    const currentSorts = form.getValues().sorts || []
+    form.setFieldValue('sorts', [...currentSorts, newSort])
+  }
+
+  const handleSortRemove = (sortId) => {
+    const sorts = form.getValues().sorts.filter(s => s.id !== sortId)
+    form.setFieldValue('sorts', sorts)
+  }
+
+  const handleSortChange = (sortId, column, direction) => {
+    const sorts = form.getValues().sorts.map(s => 
+      s.id === sortId ? { ...s, column, direction } : s
+    )
+    form.setFieldValue('sorts', sorts)
   }
   
   const handleRowClick = (row) => {
@@ -142,7 +162,7 @@ function SearchTerms() {
           {isLoading && <Loader size="sm" />}
         </Group>
 
-        <Group align="flex-end">
+        <Group gap="xs" align="flex-end">
           <DateInput
             {...form.getInputProps('startDate')}
             label="Start Date"
@@ -164,6 +184,11 @@ function SearchTerms() {
             handleFilterAdd={handleFilterAdd}
           />
 
+          <AddSort
+            columns={getSortableColumns()}
+            handleSortAdd={handleSortAdd}
+          />
+
           <Button 
             variant="light" 
             type="submit" 
@@ -176,6 +201,12 @@ function SearchTerms() {
           filters={form.getValues().filters} 
           handleFilterRemove={handleFilterRemove}
           handleFilterChange={handleFilterChange}
+        />
+
+        <ActiveSorts
+          sorts={form.getValues().sorts}
+          handleSortRemove={handleSortRemove}
+          handleSortChange={handleSortChange}
         />
 
         <RecordTable 

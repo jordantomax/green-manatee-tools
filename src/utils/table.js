@@ -137,3 +137,22 @@ export const createDefaultFilter = (column) => {
     conditionOptions: baseType.conditionOptions,
   }
 }
+
+export const createDefaultSort = (column) => {
+  return {
+    column,
+    id: crypto.randomUUID(),
+    direction: 'desc'
+  }
+}
+
+export const sortDirections = {
+  asc: 'asc',
+  desc: 'desc'
+}
+
+export const getSortableColumns = () => {
+  return Object.keys(columnTypes).filter(key => 
+    !['id', 'boolean'].includes(columnTypes[key])
+  ).sort()
+}
