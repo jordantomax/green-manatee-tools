@@ -4,16 +4,11 @@ import { DateInput } from '@mantine/dates'
 import isEmpty from 'lodash-es/isEmpty'
 import startCase from 'lodash-es/startCase'
 
-import { createDefaultFilter, conditionLabels } from '@/utils/table'
+import { conditionLabels } from '@/utils/table'
 import SearchableSelect from '@/components/SearchableSelect'
 import styles from '@/styles/TableFilter.module.css'
 
 export const AddFilter = ({ columns, handleFilterAdd }) => {
-  const handleSelect = (column) => {
-    const filter = createDefaultFilter(column)
-    handleFilterAdd(filter)
-  }
-  
   if (!columns) return null
 
   return (
@@ -24,7 +19,7 @@ export const AddFilter = ({ columns, handleFilterAdd }) => {
           value: column,
           label: startCase(column),
         }))}
-        onSelect={handleSelect}
+        onSelect={handleFilterAdd}
         placeholder="Search columns..."
         width={300}
         buttonProps={{
@@ -52,7 +47,7 @@ const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange }) => {
   const FilterInput = FilterInputComponents[filter.type] || TextInput
   
   const handleSave = () => {
-    handleFilterChange(filter, condition, value)
+    handleFilterChange(filter.id, condition, value)
     setIsEditing(false)
   }
   
@@ -62,7 +57,7 @@ const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange }) => {
         <Box onClick={() => setIsEditing(!isEditing)}>
           <Pill 
             withRemoveButton 
-            onRemove={() => handleFilterRemove(filter)}
+            onRemove={() => handleFilterRemove(filter.id)}
             classNames={{
               root: styles.tableFilterPill,
               remove: styles.removeButton,
