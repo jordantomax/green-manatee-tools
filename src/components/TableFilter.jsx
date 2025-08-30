@@ -56,7 +56,7 @@ const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange }) => {
       <Popover.Target>
         <Box onClick={() => setIsEditing(!isEditing)}>
           <Pill 
-            size="xs"
+            size="sm"
             withRemoveButton 
             onRemove={() => handleFilterRemove(filter.id)}
             classNames={{
