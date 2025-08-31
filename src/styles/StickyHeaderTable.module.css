@@ -1,0 +1,23 @@
+.stickyHeaderTable {
+    display: block;
+    position: fixed;
+    overflow-x: hidden;
+    visibility: hidden;
+    top: 0;
+    z-index: 100;
+    background: white;
+    white-space: nowrap;
+}
+
+.stickyHeaderTable.stuck {
+    visibility: visible;
+}
+
+.stickyHeaderTable thead tr {
+    display: flex;
+}
+
+.stickyHeaderStickyCol {
+    z-index: 101;
+    background: white;
+}

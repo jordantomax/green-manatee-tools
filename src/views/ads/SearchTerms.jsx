@@ -211,7 +211,7 @@ function SearchTerms() {
 
         <RecordTable 
           data={enrichedSearchTerms} 
-          columnOrder={['searchTerm', 'keyword', 'matchType', 'acosClicks7d']}
+          columnOrder={['keyword', 'searchTerm', 'matchType', 'acosClicks7d']}
           hiddenColumns={SEARCH_TERMS_HIDDEN_COLUMNS}
           handleRowClick={handleRowClick}
           stateProp="_state"

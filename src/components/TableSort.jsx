@@ -43,7 +43,7 @@ const ActiveSort = ({ sort, handleSortRemove, handleSortChange }) => {
       <Popover.Target>
         <Box onClick={() => setIsEditing(!isEditing)}>
           <Pill 
-            size="xs"
+            size="sm"
             withRemoveButton 
             onRemove={() => handleSortRemove(sort.id)}
             classNames={{
