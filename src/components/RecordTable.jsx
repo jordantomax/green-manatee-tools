@@ -1,8 +1,10 @@
+import { useState, useEffect, useRef } from 'react'
 import { Text, Table, Group } from '@mantine/core'
-import { useEffect, useState } from 'react'
-import { startCase, lowerCase } from 'lodash-es'
+import startCase from 'lodash-es/startCase'
+import lowerCase from 'lodash-es/lowerCase'
 
 import styles from '@/styles/RecordTable.module.css'
+import StickyHeaderTable from '@/components/StickyHeaderTable'
 
 const orderColumns = (columns, order) => {
   if (order && Array.isArray(order)) {
@@ -20,6 +22,7 @@ function RecordTable({
   stateProp,
   hiddenColumns = []
 }) {
+  const theadRef = useRef(null)
   const [columns, setColumns] = useState([])
   
   useEffect(() => {
@@ -35,47 +38,49 @@ function RecordTable({
   }
   
   return (
-    <Table size="sm">
-      <Table.Thead className={styles.stickyRow}>
-        <Table.Tr>
-          {columns.map((column, colIdx) => (
-            <Table.Th 
-              className={colIdx === 0 ? styles.stickyCol : styles.th}
-              key={column}>
-              {startCase(column)}
-            </Table.Th>
-          ))}
-        </Table.Tr>
-      </Table.Thead>
-
-      <Table.Tbody>
-        {data.map((row, rowIdx) => (
-          <Table.Tr className={styles.row} key={rowIdx} onClick={() => handleRowClick(row)}>
+    <StickyHeaderTable theadRef={theadRef}>  
+      <Table size="sm">
+        <Table.Thead ref={theadRef}>
+          <Table.Tr>
             {columns.map((column, colIdx) => (
-              <Table.Td 
-                className={colIdx === 0 ? styles.stickyCol : styles.td}
-                key={`${rowIdx}-${column}`}
-              >
-                {colIdx === 0 && stateProp ? (
-                  <Group gap="xs" align="center" wrap="nowrap">
-                    <div 
-                      className={`
-                        ${styles['state-circle']}
-                        ${styles[`state-${(lowerCase(row[stateProp]))}`]}
-                      `}
-                      title={row[stateProp]}
-                    />
-                    <Text size="xs">{row[column]}</Text>
-                  </Group>
-                ) : (
-                  <Text size="xs">{row[column]}</Text>
-                )}
-              </Table.Td>
+              <Table.Th 
+                className={colIdx === 0 ? styles.stickyCol : styles.th}
+                key={column}>
+                {startCase(column)}
+              </Table.Th>
             ))}
           </Table.Tr>
-        ))}
-      </Table.Tbody>
-    </Table>
+        </Table.Thead>
+
+        <Table.Tbody>
+          {data.map((row, rowIdx) => (
+            <Table.Tr className={styles.row} key={rowIdx} onClick={() => handleRowClick(row)}>
+              {columns.map((column, colIdx) => (
+                <Table.Td 
+                  className={colIdx === 0 ? styles.stickyCol : styles.td}
+                  key={`${rowIdx}-${column}`}
+                >
+                  {colIdx === 0 && stateProp ? (
+                    <Group gap="xs" align="center" wrap="nowrap">
+                      <div 
+                        className={`
+                          ${styles['state-circle']}
+                          ${styles[`state-${(lowerCase(row[stateProp]))}`]}
+                        `}
+                        title={row[stateProp]}
+                      />
+                      <Text size="xs">{row[column]}</Text>
+                    </Group>
+                  ) : (
+                    <Text size="xs">{row[column]}</Text>
+                  )}
+                </Table.Td>
+              ))}
+            </Table.Tr>
+          ))}
+        </Table.Tbody>
+      </Table>
+    </StickyHeaderTable>
   )
 }
 
