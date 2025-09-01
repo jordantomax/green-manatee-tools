@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react"
-import { Stack, Title, Group, Loader, Button } from "@mantine/core"
-import { DateInput } from "@mantine/dates"
+import { useState, useEffect, useMemo, useCallback } from "react"
+import { Stack, Title, Group, Loader, Button, Popover } from "@mantine/core"
+import { DatePicker, DateInput } from "@mantine/dates"
 import { useForm } from '@mantine/form'
 import { subDays, format } from 'date-fns'
 import { useNavigate } from 'react-router-dom'
 
 import api from "@/api"
 import { validators } from '@/utils/validation'
+import { dateRangePresets } from '@/utils/date'
 import { useAsync } from '@/hooks/useAsync'
 import { usePagination } from '@/hooks/usePagination'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
@@ -17,6 +18,7 @@ import { AddSort, ActiveSorts } from "@/components/TableSort"
 import { columnTypes, createDefaultSort, createDefaultFilter, getSortableColumns } from '@/utils/table'
 import { SEARCH_TERMS_HIDDEN_COLUMNS } from '@/utils/constants'
 
+
 const formatDate = (date) => format(date, 'yyyy-MM-dd')
 
 function SearchTerms() {
@@ -25,9 +27,12 @@ function SearchTerms() {
   const [searchTerms, setSearchTerms] = useState([])
   const [keywords, setKeywords] = useState({})
   const [targets, setTargets] = useState({})
+
   const [settings, setSettings] = useLocalStorage('adsSearchTermSettings', {
-    startDate: formatDate(subDays(new Date(), 30)),
-    endDate: formatDate(new Date()),
+    dateRange: {
+      startDate: formatDate(subDays(new Date(), 31)),
+      endDate: formatDate(subDays(new Date(), 1)),
+    },
     page: 1,
     limit: 10,
     totalPages: 1,
@@ -43,13 +48,13 @@ function SearchTerms() {
   } = usePagination(settings.page, settings.limit)
 
   const form = useForm({
-    mode: 'uncontrolled',
+    mode: 'controlled',
     initialValues: settings,
     validate: {
-      startDate: validators.required('Start date'),
-      endDate: validators.required('End date'),
+      'dateRange.startDate': validators.required('Start date'),
+      'dateRange.endDate': validators.required('End date'),
     },
-    transformValues: ({ filters, sorts, ...values }) => {
+    transformValues: ({ filters, sorts, dateRange, ...values }) => {
       const filter = filters?.length > 0 ? {
         and: filters.map(f => ({
           [f.column]: {
@@ -64,6 +69,7 @@ function SearchTerms() {
       
       return {
         ...values,
+        dateRange,
         filter,
         sort
       }
@@ -91,9 +97,12 @@ function SearchTerms() {
     setTargets(targetsMap)
   }
 
-  const handleSubmit = async (transformedValues) => {
+  const handleSubmit = async ({ dateRange, ...transformedValues }) => {
+    const { startDate, endDate } = dateRange
     const { data, pagination } = await run(async () => await api.getAdsSearchTerms({
       ...transformedValues,
+      startDate,
+      endDate,
       limit,
       page,
     }))
@@ -113,7 +122,7 @@ function SearchTerms() {
 
   const handleFilterAdd = (column) => {
     const filter = createDefaultFilter(column)
-    form.setValues( { filters: [...settings.filters, filter] } )
+    form.setFieldValue('filters', [...settings.filters, filter])
   }
 
   const handleFilterRemove = (filterId) => {
@@ -144,17 +153,19 @@ function SearchTerms() {
     form.setFieldValue('sorts', sorts)
   }
   
-  const handleRowClick = (row) => {
+  const enrichedSearchTerms = useMemo(() => 
+    searchTerms.map(term => ({
+      _state: keywords[term.keywordId]?.state || targets[term.keywordId]?.state,
+      ...term
+    })), [searchTerms, keywords, targets]
+  )
+
+  const handleRowClick = useCallback((row) => {
     const param = row.matchType === 'TARGETING_EXPRESSION' ? 'targetId' : 'keywordId'
     navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?${param}=${row.keywordId}`)
-  }
-  
-  const enrichedSearchTerms = searchTerms.map(term => ({
-    _state: keywords[term.keywordId]?.state || targets[term.keywordId]?.state,
-    ...term
-  }))
+  }, [navigate])
 
-  return (
+    return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Stack>
         <Group gap="sm">
@@ -163,21 +174,39 @@ function SearchTerms() {
         </Group>
 
         <Group gap="xs" align="flex-end">
-          <DateInput
-            {...form.getInputProps('startDate')}
-            label="Start Date"
-            placeholder="Pick a date"
-            style={{ maxWidth: 150 }}
-            valueFormat="YYYY-MM-DD"
-          />
-
-          <DateInput
-            {...form.getInputProps('endDate')}
-            label="End Date"
-            placeholder="Pick a date"
-            style={{ maxWidth: 150 }}
-            valueFormat="YYYY-MM-DD"
-          />
+          <Popover position="bottom-start">
+            <Popover.Target>
+              <Group gap="xs" align="flex-end">
+                <DateInput
+                  placeholder="Start date"
+                  {...form.getInputProps('dateRange.startDate')}
+                  popoverProps={{ disabled: true }}
+                  style={{ minWidth: 120 }}
+                />
+                <DateInput
+                  placeholder="End date"
+                  {...form.getInputProps('dateRange.endDate')}
+                  popoverProps={{ disabled: true }}
+                  style={{ minWidth: 120 }}
+                />
+              </Group>
+            </Popover.Target>
+            <Popover.Dropdown>
+              <DatePicker 
+                size="xs"
+                type="range" 
+                numberOfColumns={2} 
+                value={[form.values.dateRange.startDate, form.values.dateRange.endDate]}
+                onChange={(range) => {
+                  form.setFieldValue('dateRange', {
+                    startDate: range?.[0] || null,
+                    endDate: range?.[1] || null
+                  })
+                }}
+                presets={dateRangePresets}
+              />
+            </Popover.Dropdown>
+          </Popover>
 
           <AddFilter 
             columns={Object.keys(columnTypes)}
@@ -210,12 +239,14 @@ function SearchTerms() {
         />
 
         <RecordTable 
-          data={enrichedSearchTerms} 
-          columnOrder={['keyword', 'searchTerm', 'matchType', 'acosClicks7d']}
-          hiddenColumns={SEARCH_TERMS_HIDDEN_COLUMNS}
-          handleRowClick={handleRowClick}
-          stateProp="_state"
-         />
+          {...useMemo(() => ({
+            data: enrichedSearchTerms,
+            columnOrder: ['keyword', 'searchTerm', 'matchType', 'acosClicks7d'],
+            hiddenColumns: SEARCH_TERMS_HIDDEN_COLUMNS,
+            handleRowClick,
+            stateProp: '_state'
+          }), [enrichedSearchTerms, handleRowClick])} 
+        />
         
         <TablePagination
           page={page}
