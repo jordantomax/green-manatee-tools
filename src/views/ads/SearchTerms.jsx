@@ -1,13 +1,11 @@
 import { useState, useEffect, useMemo, useCallback } from "react"
-import { Stack, Title, Group, Loader, Button, Popover } from "@mantine/core"
-import { DatePicker, DateInput } from "@mantine/dates"
+import { Stack, Title, Group, Loader, Button } from "@mantine/core"
 import { useForm } from '@mantine/form'
 import { subDays, format } from 'date-fns'
 import { useNavigate } from 'react-router-dom'
 
 import api from "@/api"
 import { validators } from '@/utils/validation'
-import { dateRangePresets } from '@/utils/date'
 import { useAsync } from '@/hooks/useAsync'
 import { usePagination } from '@/hooks/usePagination'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
@@ -15,6 +13,7 @@ import RecordTable from "@/components/RecordTable"
 import TablePagination from "@/components/TablePagination"
 import { AddFilter, ActiveFilters } from "@/components/TableFilter"
 import { AddSort, ActiveSorts } from "@/components/TableSort"
+import DateRangePicker from "@/components/DateRangePicker"
 import { columnTypes, createDefaultSort, createDefaultFilter, getSortableColumns } from '@/utils/table'
 import { SEARCH_TERMS_HIDDEN_COLUMNS } from '@/utils/constants'
 
@@ -48,7 +47,6 @@ function SearchTerms() {
   } = usePagination(settings.page, settings.limit)
 
   const form = useForm({
-    mode: 'controlled',
     initialValues: settings,
     validate: {
       'dateRange.startDate': validators.required('Start date'),
@@ -107,7 +105,7 @@ function SearchTerms() {
       page,
     }))
     setSettings({
-      ...form.getValues(),
+      ...form.values,
       ...pagination,
     })
     setSearchTerms(data)
@@ -126,28 +124,28 @@ function SearchTerms() {
   }
 
   const handleFilterRemove = (filterId) => {
-    const filters = form.getValues().filters.filter(f => f.id !== filterId)
+    const filters = form.values.filters.filter(f => f.id !== filterId)
     form.setFieldValue('filters', filters)
   }
 
   const handleFilterChange = (filterId, condition, value) => {
-    const filters = form.getValues().filters.map(f => f.id === filterId ? { ...f, condition, value } : f)
+    const filters = form.values.filters.map(f => f.id === filterId ? { ...f, condition, value } : f)
     form.setFieldValue('filters', filters)
   }
 
   const handleSortAdd = (column) => {
     const newSort = createDefaultSort(column)
-    const currentSorts = form.getValues().sorts || []
+    const currentSorts = form.values.sorts || []
     form.setFieldValue('sorts', [...currentSorts, newSort])
   }
 
   const handleSortRemove = (sortId) => {
-    const sorts = form.getValues().sorts.filter(s => s.id !== sortId)
+    const sorts = form.values.sorts.filter(s => s.id !== sortId)
     form.setFieldValue('sorts', sorts)
   }
 
   const handleSortChange = (sortId, column, direction) => {
-    const sorts = form.getValues().sorts.map(s => 
+    const sorts = form.values.sorts.map(s => 
       s.id === sortId ? { ...s, column, direction } : s
     )
     form.setFieldValue('sorts', sorts)
@@ -174,39 +172,10 @@ function SearchTerms() {
         </Group>
 
         <Group gap="xs" align="flex-end">
-          <Popover position="bottom-start">
-            <Popover.Target>
-              <Group gap="xs" align="flex-end">
-                <DateInput
-                  placeholder="Start date"
-                  {...form.getInputProps('dateRange.startDate')}
-                  popoverProps={{ disabled: true }}
-                  style={{ minWidth: 120 }}
-                />
-                <DateInput
-                  placeholder="End date"
-                  {...form.getInputProps('dateRange.endDate')}
-                  popoverProps={{ disabled: true }}
-                  style={{ minWidth: 120 }}
-                />
-              </Group>
-            </Popover.Target>
-            <Popover.Dropdown>
-              <DatePicker 
-                size="xs"
-                type="range" 
-                numberOfColumns={2} 
-                value={[form.values.dateRange.startDate, form.values.dateRange.endDate]}
-                onChange={(range) => {
-                  form.setFieldValue('dateRange', {
-                    startDate: range?.[0] || null,
-                    endDate: range?.[1] || null
-                  })
-                }}
-                presets={dateRangePresets}
-              />
-            </Popover.Dropdown>
-          </Popover>
+          <DateRangePicker 
+            value={form.values.dateRange}
+            onChange={(dateRange) => form.setFieldValue('dateRange', dateRange)}
+          />
 
           <AddFilter 
             columns={Object.keys(columnTypes)}
@@ -227,13 +196,13 @@ function SearchTerms() {
         </Group>
 
         <ActiveFilters 
-          filters={form.getValues().filters} 
+          filters={form.values.filters} 
           handleFilterRemove={handleFilterRemove}
           handleFilterChange={handleFilterChange}
         />
 
         <ActiveSorts
-          sorts={form.getValues().sorts}
+          sorts={form.values.sorts}
           handleSortRemove={handleSortRemove}
           handleSortChange={handleSortChange}
         />
