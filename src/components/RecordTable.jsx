@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, memo } from 'react'
 import { Text, Table, Group } from '@mantine/core'
 import startCase from 'lodash-es/startCase'
 import lowerCase from 'lodash-es/lowerCase'
@@ -15,7 +15,7 @@ const orderColumns = (columns, order) => {
   return columns
 }
 
-function RecordTable({ 
+const RecordTable = memo(function RecordTable({ 
   data,
   columnOrder,
   handleRowClick,
@@ -82,6 +82,6 @@ function RecordTable({
       </Table>
     </StickyHeaderTable>
   )
-}
+})
 
 export default RecordTable

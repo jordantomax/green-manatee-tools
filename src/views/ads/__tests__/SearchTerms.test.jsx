@@ -30,12 +30,15 @@ vi.mock('@/hooks/useAsync', () => ({
 vi.mock('@/hooks/useLocalStorage', () => ({
   useLocalStorage: () => [
     {
-      startDate: '2024-01-01',
-      endDate: '2024-01-31',
+      dateRange: {
+        startDate: '2024-01-01',
+        endDate: '2024-01-31'
+      },
       page: 1,
       limit: 10,
       totalPages: 1,
-      filters: []
+      filters: [],
+      sorts: []
     },
     vi.fn()
   ]
