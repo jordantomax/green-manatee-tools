@@ -13,7 +13,7 @@ import RecordTable from "@/components/RecordTable"
 import TablePagination from "@/components/TablePagination"
 import { AddFilter, ActiveFilters } from "@/components/TableFilter"
 import { AddSort, ActiveSorts } from "@/components/TableSort"
-import DateRangePicker from "@/components/DateRangePicker"
+import DateRangeInputPicker from "@/components/DateRangeInputPicker"
 import { columnTypes, createDefaultSort, createDefaultFilter, getSortableColumns } from '@/utils/table'
 import { SEARCH_TERMS_HIDDEN_COLUMNS } from '@/utils/constants'
 
@@ -172,7 +172,7 @@ function SearchTerms() {
         </Group>
 
         <Group gap="xs" align="flex-end">
-          <DateRangePicker 
+          <DateRangeInputPicker 
             value={form.values.dateRange}
             onChange={(dateRange) => form.setFieldValue('dateRange', dateRange)}
           />

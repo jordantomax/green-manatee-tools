@@ -4,7 +4,7 @@ import { IconChevronRight } from '@tabler/icons-react'
 import { dateRangePresets } from '@/utils/date'
 
 
-function DateRangePicker({ 
+function DateRangeInputPicker({ 
   value, 
   onChange
 }) {
@@ -65,4 +65,4 @@ function DateRangePicker({
   )
 }
 
-export default DateRangePicker
+export default DateRangeInputPicker
