@@ -1,7 +1,9 @@
-import { Group, Popover, Paper } from "@mantine/core"
+import { Group, Popover } from "@mantine/core"
 import { DatePicker, DateInput } from "@mantine/dates"
-import { IconChevronRight } from '@tabler/icons-react'
+import { IconArrowRight, IconCalendarFilled } from '@tabler/icons-react'
 import { dateRangePresets } from '@/utils/date'
+
+import styles from '@/styles/DateRangeInputPicker.module.css'
 
 
 function DateRangeInputPicker({ 
@@ -11,40 +13,32 @@ function DateRangeInputPicker({
   return (
     <Popover position="bottom-start">
       <Popover.Target>
-        <Paper p="0">
-          <Group 
-            gap="0" 
-            style={{ 
-              flexWrap: 'nowrap', 
-              overflow: 'hidden', 
-              width: 250
-            }}
-          >
-            <DateInput
-              size="sm"
-              variant="unstyled"
-              placeholder="Start Date"
-              value={value.startDate}
-              onChange={(date) => onChange({ ...value, startDate: date })}
-              popoverProps={{ disabled: true }}
-              px="xs"
-              valueFormat="M/D/YYYY"
-              styles={{ input: { fieldSizing: 'content' } }}
-            />
-            <IconChevronRight size={16} />
-            <DateInput
-              size="sm"
-              variant="unstyled"
-              placeholder="End Date"
-              value={value.endDate}
-              onChange={(date) => onChange({ ...value, endDate: date })}
-              popoverProps={{ disabled: true }}
-              px="xs"
-              valueFormat="M/D/YYYY"
-              styles={{ input: { fieldSizing: 'content' } }}
-            />
-          </Group>
-        </Paper>
+        <Group gap="0" className={styles.inputGroup}>
+          <Group pl="xs"><IconCalendarFilled size={21} /></Group>
+          <DateInput
+            variant="unstyled"
+            size="sm"
+            px="xs"
+            placeholder="Start Date"
+            value={value.startDate}
+            onChange={(date) => onChange({ ...value, startDate: date })}
+            popoverProps={{ disabled: true }}
+            valueFormat="M/D/YYYY"
+            className={styles.input}
+          />
+          <IconArrowRight size={16} />
+          <DateInput
+            variant="unstyled"
+            size="sm"
+            px="xs"
+            placeholder="End Date"
+            value={value.endDate}
+            onChange={(date) => onChange({ ...value, endDate: date })}
+            popoverProps={{ disabled: true }}
+            valueFormat="M/D/YYYY"
+            className={styles.input}
+          />
+        </Group>
       </Popover.Target>
       <Popover.Dropdown>
         <DatePicker 
