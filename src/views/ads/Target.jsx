@@ -27,7 +27,7 @@ function Target({ asin, targetId, recordsAggregate }) {
   
   const refreshNegativeTargets = () => {
     run(async () => {
-      const negativeTargets = await api.listNegativeTargets([recordsAggregate.adGroupId])
+      const negativeTargets = await api.listNegativeTargets({ filters: { adGroupIds: [recordsAggregate.adGroupId] } })
       setNegativeTargets(negativeTargets)
     }, 'negativeTargets')
   }

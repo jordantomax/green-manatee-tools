@@ -24,7 +24,7 @@ function Keyword({ searchTerm, keywordId, recordsAggregate }) {
   
   const refreshNegativeKeywords = () => {
     run(async () => {
-      const negativeKeywords = await api.listNegativeKeywords({ adGroupIds: [recordsAggregate.adGroupId] })
+      const negativeKeywords = await api.listNegativeKeywords({ filters: { adGroupIds: [recordsAggregate.adGroupId] } })
       setNegativeKeywords(negativeKeywords)
     }, 'negativeKeywords')
   }

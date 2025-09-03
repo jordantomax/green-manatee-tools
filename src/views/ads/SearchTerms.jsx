@@ -26,6 +26,8 @@ function SearchTerms() {
   const [searchTerms, setSearchTerms] = useState([])
   const [keywords, setKeywords] = useState({})
   const [targets, setTargets] = useState({})
+  const [negativeKeywords, setNegativeKeywords] = useState([])
+  const [negativeTargets, setNegativeTargets] = useState([])
 
   const [settings, setSettings] = useLocalStorage('adsSearchTermSettings', {
     dateRange: {
@@ -79,8 +81,8 @@ function SearchTerms() {
   
   const getState = async (data) => {
     const [keywordsData, targetsData] = await Promise.all([
-      run(() => api.listKeywords({ keywordIds: data.map(d => d.keywordId) })),
-      run(() => api.listTargets({ targetIds: data.map(d => d.keywordId) }))
+      run(() => api.listKeywords({ filters: { keywordIds: data.map(d => d.keywordId) } })),
+      run(() => api.listTargets({ filters: { targetIds: data.map(d => d.keywordId) } }))
     ])
     
     const keywordsMap = keywordsData?.reduce(
@@ -93,6 +95,16 @@ function SearchTerms() {
 
     setKeywords(keywordsMap)
     setTargets(targetsMap)
+  }
+  
+  const getNegatives = async (data) => {
+    const [negativeKeywords, negativeTargets] = await Promise.all([
+      api.listNegativeKeywords({ filters: { adGroupIds: data.map(d => d.adGroupId) } }),
+      api.listNegativeTargets({ filters: { adGroupIds: data.map(d => d.adGroupId) } })
+    ])
+    setNegativeKeywords(negativeKeywords)
+    setNegativeTargets(negativeTargets)
+    console.log(negativeKeywords, negativeTargets)
   }
 
   const handleSubmit = async ({ dateRange, ...transformedValues }) => {
@@ -110,6 +122,7 @@ function SearchTerms() {
     })
     setSearchTerms(data)
     getState(data)
+    getNegatives(data)
     
     form.resetDirty()
   }
@@ -151,6 +164,11 @@ function SearchTerms() {
     form.setFieldValue('sorts', sorts)
   }
   
+  const handleRowClick = useCallback((row) => {
+    const param = row.matchType === 'TARGETING_EXPRESSION' ? 'targetId' : 'keywordId'
+    navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?${param}=${row.keywordId}`)
+  }, [navigate])
+
   const enrichedSearchTerms = useMemo(() => 
     searchTerms.map(term => ({
       _state: keywords[term.keywordId]?.state || targets[term.keywordId]?.state,
@@ -158,12 +176,7 @@ function SearchTerms() {
     })), [searchTerms, keywords, targets]
   )
 
-  const handleRowClick = useCallback((row) => {
-    const param = row.matchType === 'TARGETING_EXPRESSION' ? 'targetId' : 'keywordId'
-    navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?${param}=${row.keywordId}`)
-  }, [navigate])
-
-    return (
+  return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Stack>
         <Group gap="sm">
