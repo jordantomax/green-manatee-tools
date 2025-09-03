@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, memo } from 'react'
-import { Text, Table, Group } from '@mantine/core'
+import { Text, Table, Group, Box } from '@mantine/core'
 import startCase from 'lodash-es/startCase'
 import lowerCase from 'lodash-es/lowerCase'
 
@@ -20,7 +20,8 @@ const RecordTable = memo(function RecordTable({
   columnOrder,
   handleRowClick,
   stateProp,
-  hiddenColumns = []
+  hiddenColumns = [],
+  negativeKeywordProp,
 }) {
   const theadRef = useRef(null)
   const [columns, setColumns] = useState([])
@@ -60,15 +61,25 @@ const RecordTable = memo(function RecordTable({
                   className={colIdx === 0 ? styles.stickyCol : styles.td}
                   key={`${rowIdx}-${column}`}
                 >
-                  {colIdx === 0 && stateProp ? (
+                  {colIdx === 0 ? (
                     <Group gap="xs" align="center" wrap="nowrap">
-                      <div 
-                        className={`
-                          ${styles['state-circle']}
-                          ${styles[`state-${(lowerCase(row[stateProp]))}`]}
-                        `}
-                        title={row[stateProp]}
-                      />
+                      {stateProp && (
+                        <Box
+                          className={`
+                            ${styles['state-circle']}
+                            ${styles[`state-${(lowerCase(row[stateProp]))}`]}
+                          `}
+                          title={row[stateProp]}
+                        />
+                      )}
+                      {negativeKeywordProp && row[negativeKeywordProp] === 'ENABLED' && (
+                        <Box 
+                          className={styles.negativeKeyword}
+                          title="Negative Keyword"
+                        >
+                          N
+                        </Box>
+                      )}
                       <Text size="xs">{row[column]}</Text>
                     </Group>
                   ) : (

@@ -56,3 +56,16 @@
 .state-archived {
   background-color: var(--mantine-color-red-6);
 }
+
+.negativeKeyword {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 0.2rem;
+    height: 1.1rem;
+    border-radius: var(--mantine-radius-sm);
+    border: 1px solid var(--mantine-color-red-5);
+    color: var(--mantine-color-red-5);
+}

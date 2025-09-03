@@ -16,6 +16,7 @@ import { AddSort, ActiveSorts } from "@/components/TableSort"
 import DateRangeInputPicker from "@/components/DateRangeInputPicker"
 import { columnTypes, createDefaultSort, createDefaultFilter, getSortableColumns } from '@/utils/table'
 import { SEARCH_TERMS_HIDDEN_COLUMNS } from '@/utils/constants'
+import { getEntityType } from '@/utils/amazon-ads'
 
 
 const formatDate = (date) => format(date, 'yyyy-MM-dd')
@@ -98,13 +99,13 @@ function SearchTerms() {
   }
   
   const getNegatives = async (data) => {
+    const keywordTexts = data.filter(d => getEntityType(d.matchType) === 'keyword').map(d => d.searchTerm)
     const [negativeKeywords, negativeTargets] = await Promise.all([
-      api.listNegativeKeywords({ filters: { adGroupIds: data.map(d => d.adGroupId) } }),
-      api.listNegativeTargets({ filters: { adGroupIds: data.map(d => d.adGroupId) } })
+      api.listNegativeKeywords({ filters: { keywordTexts } }),
+      // api.listNegativeTargets({ filters: { adGroupIds: data.map(d => d.adGroupId) } })
     ])
     setNegativeKeywords(negativeKeywords)
-    setNegativeTargets(negativeTargets)
-    console.log(negativeKeywords, negativeTargets)
+    // setNegativeTargets(negativeTargets)
   }
 
   const handleSubmit = async ({ dateRange, ...transformedValues }) => {
@@ -165,13 +166,20 @@ function SearchTerms() {
   }
   
   const handleRowClick = useCallback((row) => {
-    const param = row.matchType === 'TARGETING_EXPRESSION' ? 'targetId' : 'keywordId'
-    navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?${param}=${row.keywordId}`)
+    const entityType = getEntityType(row.matchType)
+    const entityId = row.keywordId
+    const paramMap = { target: 'targetId', keyword: 'keywordId' }
+    const param = paramMap[entityType]
+    navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?${param}=${entityId}`)
   }, [navigate])
 
   const enrichedSearchTerms = useMemo(() => 
     searchTerms.map(term => ({
       _state: keywords[term.keywordId]?.state || targets[term.keywordId]?.state,
+      _negativeKeyword: negativeKeywords.find(k => (
+        k.keywordText === term.searchTerm && 
+        k.adGroupId === term.adGroupId
+      ))?.state,
       ...term
     })), [searchTerms, keywords, targets]
   )
@@ -226,7 +234,8 @@ function SearchTerms() {
             columnOrder: ['keyword', 'searchTerm', 'matchType', 'acosClicks7d'],
             hiddenColumns: SEARCH_TERMS_HIDDEN_COLUMNS,
             handleRowClick,
-            stateProp: '_state'
+            stateProp: '_state',
+            negativeKeywordProp: '_negativeKeyword',
           }), [enrichedSearchTerms, handleRowClick])} 
         />
         
