@@ -4,8 +4,10 @@ export async function listKeywords({ adGroupIds, keywordIds }) {
   return call(`amazon/ads/keywords/list`, {
     method: 'POST',
     body: {
-      adGroupIds,
-      keywordIds
+      filters: {
+        adGroupIds,
+        keywordIds
+      }
     },
   })
 }
@@ -27,7 +29,9 @@ export async function listNegativeKeywords({ adGroupIds }) {
   return call(`amazon/ads/negative-keywords/list`, {
     method: 'POST',
     body: {
-      adGroupIds
+      filters: {
+        adGroupIds
+      }
     }
   })
 }
