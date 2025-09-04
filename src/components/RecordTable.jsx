@@ -5,6 +5,7 @@ import lowerCase from 'lodash-es/lowerCase'
 
 import styles from '@/styles/RecordTable.module.css'
 import StickyHeaderTable from '@/components/StickyHeaderTable'
+import { TARGET_STATES } from '@/utils/constants'
 
 const orderColumns = (columns, order) => {
   if (order && Array.isArray(order)) {
@@ -22,6 +23,7 @@ const RecordTable = memo(function RecordTable({
   stateProp,
   hiddenColumns = [],
   negativeKeywordProp,
+  negativeTargetProp,
 }) {
   const theadRef = useRef(null)
   const [columns, setColumns] = useState([])
@@ -72,7 +74,8 @@ const RecordTable = memo(function RecordTable({
                           title={row[stateProp]}
                         />
                       )}
-                      {negativeKeywordProp && row[negativeKeywordProp] === 'ENABLED' && (
+
+                      {negativeKeywordProp && row[negativeKeywordProp] === TARGET_STATES.ENABLED && (
                         <Box 
                           className={styles.negativeKeyword}
                           title="Negative Keyword"
@@ -80,6 +83,16 @@ const RecordTable = memo(function RecordTable({
                           N
                         </Box>
                       )}
+
+                      {negativeTargetProp && row[negativeTargetProp] === TARGET_STATES.ENABLED && (
+                        <Box 
+                          className={styles.negativeTarget}
+                          title="Negative Target"
+                        >
+                          N
+                        </Box>
+                      )}
+
                       <Text size="xs">{row[column]}</Text>
                     </Group>
                   ) : (

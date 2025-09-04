@@ -100,12 +100,14 @@ function SearchTerms() {
   
   const getNegatives = async (data) => {
     const keywordTexts = data.filter(d => getEntityType(d.matchType) === 'keyword').map(d => d.searchTerm)
+    const asins = data.filter(d => getEntityType(d.matchType) === 'target').map(d => d.searchTerm)
+
     const [negativeKeywords, negativeTargets] = await Promise.all([
       api.listNegativeKeywords({ filters: { keywordTexts } }),
-      // api.listNegativeTargets({ filters: { adGroupIds: data.map(d => d.adGroupId) } })
+      api.listNegativeTargets({ filters: { asins } })
     ])
     setNegativeKeywords(negativeKeywords)
-    // setNegativeTargets(negativeTargets)
+    setNegativeTargets(negativeTargets)
   }
 
   const handleSubmit = async ({ dateRange, ...transformedValues }) => {
@@ -180,6 +182,10 @@ function SearchTerms() {
         k.keywordText === term.searchTerm && 
         k.adGroupId === term.adGroupId
       ))?.state,
+      _negativeTarget: negativeTargets.find(t => (
+        t.expression?.[0]?.value === term.searchTerm && 
+        t.adGroupId === term.adGroupId
+      ))?.state,
       ...term
     })), [searchTerms, keywords, targets]
   )
@@ -236,6 +242,7 @@ function SearchTerms() {
             handleRowClick,
             stateProp: '_state',
             negativeKeywordProp: '_negativeKeyword',
+            negativeTargetProp: '_negativeTarget',
           }), [enrichedSearchTerms, handleRowClick])} 
         />
         
