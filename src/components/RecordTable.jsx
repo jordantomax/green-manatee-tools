@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef, memo } from 'react'
-import { Text, Table, Group, Box } from '@mantine/core'
+import { Text, Table } from '@mantine/core'
 import startCase from 'lodash-es/startCase'
-import lowerCase from 'lodash-es/lowerCase'
+import isFunction from 'lodash-es/isFunction'
 
 import styles from '@/styles/RecordTable.module.css'
 import StickyHeaderTable from '@/components/StickyHeaderTable'
-import { TARGET_STATES } from '@/utils/constants'
 
 const orderColumns = (columns, order) => {
   if (order && Array.isArray(order)) {
@@ -20,21 +19,18 @@ const RecordTable = memo(function RecordTable({
   data,
   columnOrder,
   handleRowClick,
-  stateProp,
   hiddenColumns = [],
-  negativeKeywordProp,
-  negativeTargetProp,
+  columnComponents = {},
 }) {
   const theadRef = useRef(null)
   const [columns, setColumns] = useState([])
   
   useEffect(() => {
     let columns = Object.keys(data[0] || {})
-    columns = columns.filter(col => col !== stateProp)
     columns = columns.filter(col => !hiddenColumns.includes(col))
     columns = orderColumns(columns, columnOrder)
     setColumns(columns)
-  }, [data, columnOrder, stateProp, hiddenColumns])
+  }, [data, columnOrder, hiddenColumns])
 
   if (data.length === 0) {
     return <Text>No records found</Text>
@@ -58,48 +54,21 @@ const RecordTable = memo(function RecordTable({
         <Table.Tbody>
           {data.map((row, rowIdx) => (
             <Table.Tr className={styles.row} key={rowIdx} onClick={() => handleRowClick(row)}>
-              {columns.map((column, colIdx) => (
-                <Table.Td 
-                  className={colIdx === 0 ? styles.stickyCol : styles.td}
-                  key={`${rowIdx}-${column}`}
-                >
-                  {colIdx === 0 ? (
-                    <Group gap="xs" align="center" wrap="nowrap">
-                      {stateProp && (
-                        <Box
-                          className={`
-                            ${styles['state-circle']}
-                            ${styles[`state-${(lowerCase(row[stateProp]))}`]}
-                          `}
-                          title={row[stateProp]}
-                        />
-                      )}
-
-                      {negativeKeywordProp && row[negativeKeywordProp] === TARGET_STATES.ENABLED && (
-                        <Box 
-                          className={styles.negativeKeyword}
-                          title="Negative Keyword"
-                        >
-                          N
-                        </Box>
-                      )}
-
-                      {negativeTargetProp && row[negativeTargetProp] === TARGET_STATES.ENABLED && (
-                        <Box 
-                          className={styles.negativeTarget}
-                          title="Negative Target"
-                        >
-                          N
-                        </Box>
-                      )}
-
+              {columns.map((column, colIdx) => {
+                const columnComponent = columnComponents[column]
+                return (
+                  <Table.Td 
+                    className={colIdx === 0 ? styles.stickyCol : styles.td}
+                    key={`${rowIdx}-${column}`}
+                  >
+                    {columnComponent && isFunction(columnComponent) ? (
+                      columnComponent(row, { column, rowIdx, colIdx })
+                    ) : (
                       <Text size="xs">{row[column]}</Text>
-                    </Group>
-                  ) : (
-                    <Text size="xs">{row[column]}</Text>
-                  )}
-                </Table.Td>
-              ))}
+                    )}
+                  </Table.Td>
+                )
+              })}
             </Table.Tr>
           ))}
         </Table.Tbody>

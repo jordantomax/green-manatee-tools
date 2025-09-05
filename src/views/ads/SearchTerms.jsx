@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from "react"
-import { Stack, Title, Group, Loader, Button } from "@mantine/core"
+import { Stack, Title, Group, Loader, Button, Text, Box } from "@mantine/core"
 import { useForm } from '@mantine/form'
 import { subDays, format } from 'date-fns'
 import { useNavigate } from 'react-router-dom'
+import lowerCase from 'lodash-es/lowerCase'
 
 import api from "@/api"
 import { validators } from '@/utils/validation'
@@ -15,8 +16,9 @@ import { AddFilter, ActiveFilters } from "@/components/TableFilter"
 import { AddSort, ActiveSorts } from "@/components/TableSort"
 import DateRangeInputPicker from "@/components/DateRangeInputPicker"
 import { columnTypes, createDefaultSort, createDefaultFilter, getSortableColumns } from '@/utils/table'
-import { SEARCH_TERMS_HIDDEN_COLUMNS } from '@/utils/constants'
+import { SEARCH_TERMS_HIDDEN_COLUMNS, TARGET_STATES } from '@/utils/constants'
 import { getEntityType } from '@/utils/amazon-ads'
+import styles from '@/styles/RecordTable.module.css'
 
 
 const formatDate = (date) => format(date, 'yyyy-MM-dd')
@@ -175,20 +177,41 @@ function SearchTerms() {
     navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?${param}=${entityId}`)
   }, [navigate])
 
-  const enrichedSearchTerms = useMemo(() => 
-    searchTerms.map(term => ({
-      _state: keywords[term.keywordId]?.state || targets[term.keywordId]?.state,
-      _negativeKeyword: negativeKeywords.find(k => (
-        k.keywordText === term.searchTerm && 
-        k.adGroupId === term.adGroupId
-      ))?.state,
-      _negativeTarget: negativeTargets.find(t => (
-        t.expression?.[0]?.value === term.searchTerm && 
-        t.adGroupId === term.adGroupId
-      ))?.state,
-      ...term
-    })), [searchTerms, keywords, targets]
-  )
+  const columnComponents = useMemo(() => ({
+    keyword: (row) => {
+      const state = keywords[row.keywordId]?.state || targets[row.keywordId]?.state
+
+      const negativeKeyword = negativeKeywords.find(k => (
+        k.keywordText === row.searchTerm && 
+        k.adGroupId === row.adGroupId
+      ))?.state
+
+      const negativeTarget = negativeTargets.find(t => (
+        t.expression?.[0]?.value === row.searchTerm && 
+        t.adGroupId === row.adGroupId
+      ))?.state
+
+      return (
+        <Group gap="xs" align="center" wrap="nowrap">
+          <Box className={`
+              ${styles['state-circle']} ${styles[`state-${(lowerCase(state))}`]}
+            `}
+            title={state}
+          />
+
+          {negativeKeyword === TARGET_STATES.ENABLED && (
+            <Box className={styles.negativeKeyword} title="Negative Keyword" >N</Box>
+          )}
+
+          {negativeTarget === TARGET_STATES.ENABLED && (
+            <Box className={styles.negativeTarget} title="Negative Target" >N</Box>
+          )}
+
+          <Text size="xs">{row.keyword}</Text>
+        </Group>
+      )
+    }
+  }), [keywords, targets, negativeKeywords, negativeTargets])
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -236,14 +259,12 @@ function SearchTerms() {
 
         <RecordTable 
           {...useMemo(() => ({
-            data: enrichedSearchTerms,
+            data: searchTerms,
+            columnComponents,
             columnOrder: ['keyword', 'searchTerm', 'matchType', 'acosClicks7d'],
             hiddenColumns: SEARCH_TERMS_HIDDEN_COLUMNS,
             handleRowClick,
-            stateProp: '_state',
-            negativeKeywordProp: '_negativeKeyword',
-            negativeTargetProp: '_negativeTarget',
-          }), [enrichedSearchTerms, handleRowClick])} 
+          }), [searchTerms, columnComponents, handleRowClick])}
         />
         
         <TablePagination
