@@ -61,7 +61,7 @@ const RecordTable = memo(function RecordTable({
                     className={colIdx === 0 ? styles.stickyCol : styles.td}
                     key={`${rowIdx}-${column}`}
                   >
-                    {columnComponent && isFunction(columnComponent) ? (
+                    {isFunction(columnComponent) ? (
                       columnComponent(row, { column, rowIdx, colIdx })
                     ) : (
                       <Text size="xs">{row[column]}</Text>

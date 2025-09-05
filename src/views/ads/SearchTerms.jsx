@@ -192,10 +192,9 @@ function SearchTerms() {
       ))?.state
 
       return (
-        <Group gap="xs" align="center" wrap="nowrap">
-          <Box className={`
-              ${styles['state-circle']} ${styles[`state-${(lowerCase(state))}`]}
-            `}
+        <Group gap="xs" wrap="nowrap">
+          <Box 
+            className={`${styles['state-circle']} ${styles[`state-${(lowerCase(state))}`]}`}
             title={state}
           />
 
