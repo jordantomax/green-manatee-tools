@@ -4,12 +4,12 @@ import { TARGET_STATES } from '@/utils/constants'
 import styles from '@/styles/RecordTable.module.css'
 
 function SearchTermColumn({ row, negativeKeywords, negativeTargets }) {
-  const negativeKeyword = negativeKeywords.find(k => (
+  const negativeKeyword = negativeKeywords?.find(k => (
     k.keywordText === row.searchTerm && 
     k.adGroupId === row.adGroupId
   ))
 
-  const negativeTarget = negativeTargets.find(t => {
+  const negativeTarget = negativeTargets?.find(t => {
     return (
       toUpper(t.expression?.[0]?.value) === toUpper(row.searchTerm) && 
       t.adGroupId === row.adGroupId
