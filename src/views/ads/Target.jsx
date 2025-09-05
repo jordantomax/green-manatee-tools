@@ -5,7 +5,7 @@ import api from '@/api'
 import { useAsync } from '@/hooks/useAsync'
 import NotFound from '@/views/NotFound'
 import DataList from '@/components/DataList'
-import StateSelect from '@/components/amazon_ads/StateSelect'
+import StateSelect from '@/components/amazon-ads/StateSelect'
 import NegativeTargetButton from '@/components/NegativeTargetButton'
 import { TARGET_STATES } from '@/utils/constants'
 

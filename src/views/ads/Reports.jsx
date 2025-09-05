@@ -6,7 +6,7 @@ import { Title, Button, Stack, Group, Table, Menu, Modal, Loader } from '@mantin
 import api from '@/api'
 import { useAsync } from '@/hooks/useAsync'
 import classes from '@/styles/Ads.module.css'
-import CreateReport from '@/components/amazon_ads/CreateReport'
+import CreateReport from '@/components/amazon-ads/CreateReport'
 
 function Reports() {
   const navigate = useNavigate()
