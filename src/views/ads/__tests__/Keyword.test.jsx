@@ -54,10 +54,10 @@ describe('Keyword view', () => {
     describe('keywordText matches, state not archived', () => {
       it('finds active negative keyword', async () => {
         const searchTerm = faker.lorem.word()
-        const adGroupId = faker.amazon.id()
+        const campaignId = faker.amazon.id()
         const negativeKeywords = [{
           keywordText: searchTerm,
-          adGroupId,
+          campaignId,
           matchType: 'EXACT',
           state: TARGET_STATES.ENABLED
         }]
@@ -65,7 +65,12 @@ describe('Keyword view', () => {
         setup({ 
           searchTerm,
           negativeKeywords,
-          recordsAggregate: { adGroupId }
+          recordsAggregate: { 
+            campaignId,
+            adGroupId: faker.amazon.id(),
+            campaignName: faker.lorem.words(2),
+            adGroupName: faker.lorem.words(2)
+          }
         })
         
         await waitFor(() => {
@@ -77,10 +82,10 @@ describe('Keyword view', () => {
     describe('keywordText matches, state archived', () => {
       it('does not find active negative keyword', async () => {
         const searchTerm = faker.lorem.word()
-        const adGroupId = faker.amazon.id()
+        const campaignId = faker.amazon.id()
         const negativeKeywords = [{
           keywordText: searchTerm,
-          adGroupId,
+          campaignId,
           matchType: 'EXACT',
           state: TARGET_STATES.ARCHIVED
         }]
@@ -88,7 +93,12 @@ describe('Keyword view', () => {
         setup({ 
           searchTerm,
           negativeKeywords,
-          recordsAggregate: { adGroupId }
+          recordsAggregate: { 
+            campaignId,
+            adGroupId: faker.amazon.id(),
+            campaignName: faker.lorem.words(2),
+            adGroupName: faker.lorem.words(2)
+          }
         })
         
         await waitFor(() => {

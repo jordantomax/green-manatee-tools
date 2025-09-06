@@ -7,34 +7,34 @@ describe('amazon-ads utils', () => {
 
   describe('findActiveNegativeKeyword', () => {
 
-    describe('when keywordText and adGroupId match', () => {
+    describe('when keywordText and campaignId match', () => {
       it('returns the matching negative keyword', () => {
         const keywordText = faker.lorem.word()
-        const adGroupId = faker.amazon.id()
+        const campaignId = faker.amazon.id()
         const negativeKeywords = [{
           keywordText,
-          adGroupId,
+          campaignId,
           state: TARGET_STATES.ENABLED,
           matchType: 'EXACT'
         }]
 
-        const result = findActiveNegativeKeyword(negativeKeywords, keywordText, adGroupId)
+        const result = findActiveNegativeKeyword(negativeKeywords, keywordText, campaignId)
 
         expect(result).toEqual(negativeKeywords[0])
       })
     })
 
-    describe('when keywordText matches but adGroupId does not', () => {
+    describe('when keywordText matches but campaignId does not', () => {
       it('returns undefined', () => {
         const keywordText = faker.lorem.word()
-        const adGroupId = faker.amazon.id()
+        const campaignId = faker.amazon.id()
         const negativeKeywords = [{
           keywordText,
-          adGroupId: faker.amazon.id(),
+          campaignId: faker.amazon.id(),
           state: TARGET_STATES.ENABLED
         }]
 
-        const result = findActiveNegativeKeyword(negativeKeywords, keywordText, adGroupId)
+        const result = findActiveNegativeKeyword(negativeKeywords, keywordText, campaignId)
 
         expect(result).toBeUndefined()
       })
@@ -43,14 +43,14 @@ describe('amazon-ads utils', () => {
     describe('when keyword is archived', () => {
       it('returns undefined', () => {
         const keywordText = faker.lorem.word()
-        const adGroupId = faker.amazon.id()
+        const campaignId = faker.amazon.id()
         const negativeKeywords = [{
           keywordText,
-          adGroupId,
+          campaignId,
           state: TARGET_STATES.ARCHIVED
         }]
 
-        const result = findActiveNegativeKeyword(negativeKeywords, keywordText, adGroupId)
+        const result = findActiveNegativeKeyword(negativeKeywords, keywordText, campaignId)
 
         expect(result).toBeUndefined()
       })

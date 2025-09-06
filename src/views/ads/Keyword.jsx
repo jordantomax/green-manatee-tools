@@ -16,7 +16,7 @@ function Keyword({ searchTerm, keywordId, recordsAggregate }) {
   const activeNegativeKeyword = findActiveNegativeKeyword(
     negativeKeywords, 
     searchTerm, 
-    recordsAggregate.adGroupId
+    recordsAggregate.campaignId
   )
 
   const handleStateChange = (keywordId, newState) => {

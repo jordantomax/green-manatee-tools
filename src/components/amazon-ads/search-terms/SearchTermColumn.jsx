@@ -8,7 +8,7 @@ function SearchTermColumn({ row, negativeKeywords, negativeTargets }) {
   const negativeKeyword = findActiveNegativeKeyword(
     negativeKeywords, 
     row.searchTerm, 
-    row.adGroupId
+    row.campaignId
   )
 
   const negativeTarget = negativeTargets?.find(t => {

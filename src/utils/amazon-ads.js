@@ -4,10 +4,10 @@ export const getEntityType = (matchType) => {
   return matchType === 'TARGETING_EXPRESSION' ? 'target' : 'keyword'
 }
 
-export const findActiveNegativeKeyword = (negativeKeywords, keywordText, adGroupId) => {
+export const findActiveNegativeKeyword = (negativeKeywords, keywordText, campaignId) => {
   return negativeKeywords?.find(k => (
     k.keywordText === keywordText && 
-    k.adGroupId === adGroupId &&
+    k.campaignId === campaignId &&
     k.state !== TARGET_STATES.ARCHIVED
   ))
 }
