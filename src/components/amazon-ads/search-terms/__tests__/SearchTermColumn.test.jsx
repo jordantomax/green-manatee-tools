@@ -9,7 +9,7 @@ const setup = (props = {}) => {
   const defaultProps = {
     row: {
       searchTerm: faker.lorem.word(),
-      adGroupId: faker.amazon.id()
+      campaignId: faker.amazon.id()
     },
     negativeKeywords: [],
     negativeTargets: [],
@@ -28,13 +28,13 @@ describe('SearchTermColumn', () => {
   describe('when keywordText matches searchTerm', () => {
     it('outputs negative keyword mark', () => {
       const searchTerm = faker.lorem.word()
-      const adGroupId = faker.amazon.id()
+      const campaignId = faker.amazon.id()
       
       setup({
-        row: { searchTerm, adGroupId },
+        row: { searchTerm, campaignId },
         negativeKeywords: [{
           keywordText: searchTerm,
-          adGroupId,
+          campaignId,
           state: TARGET_STATES.ENABLED
         }]
       })
@@ -43,15 +43,15 @@ describe('SearchTermColumn', () => {
     })
   })
 
-  describe('when adGroupIds do not match', () => {
+  describe('when campaignIds do not match', () => {
     it('does not output negative keyword', () => {
       const searchTerm = faker.lorem.word()
       
       setup({
-        row: { searchTerm, adGroupId: faker.amazon.id() },
+        row: { searchTerm, campaignId: faker.amazon.id() },
         negativeKeywords: [{
           keywordText: searchTerm,
-          adGroupId: faker.amazon.id(),
+          campaignId: faker.amazon.id(),
           state: TARGET_STATES.ENABLED
         }]
       })
@@ -66,7 +66,7 @@ describe('SearchTermColumn', () => {
       const adGroupId = faker.amazon.id()
       
       setup({
-        row: { searchTerm, adGroupId },
+        row: { searchTerm, campaignId: faker.amazon.id(), adGroupId },
         negativeTargets: [{
           expression: [{ value: searchTerm.toLowerCase() }],
           adGroupId,
@@ -84,7 +84,7 @@ describe('SearchTermColumn', () => {
       const adGroupId = faker.amazon.id()
       
       setup({
-        row: { searchTerm, adGroupId },
+        row: { searchTerm, campaignId: faker.amazon.id(), adGroupId },
         negativeTargets: [{
           expression: [{ value: searchTerm.toUpperCase() }],
           adGroupId,
@@ -101,7 +101,7 @@ describe('SearchTermColumn', () => {
       const searchTerm = faker.lorem.word()
       
       setup({
-        row: { searchTerm, adGroupId: faker.amazon.id() },
+        row: { searchTerm, campaignId: faker.amazon.id(), adGroupId: faker.amazon.id() },
         negativeTargets: [{
           expression: [{ value: searchTerm }],
           adGroupId: faker.amazon.id(),
@@ -118,7 +118,7 @@ describe('SearchTermColumn', () => {
       const searchTerm = faker.lorem.word()
       
       setup({
-        row: { searchTerm, adGroupId: faker.amazon.id() },
+        row: { searchTerm, campaignId: faker.amazon.id() },
         negativeKeywords: null,
         negativeTargets: []
       })
@@ -132,7 +132,7 @@ describe('SearchTermColumn', () => {
       const searchTerm = faker.lorem.word()
       
       setup({
-        row: { searchTerm, adGroupId: faker.amazon.id() },
+        row: { searchTerm, campaignId: faker.amazon.id() },
         negativeKeywords: [],
         negativeTargets: null
       })

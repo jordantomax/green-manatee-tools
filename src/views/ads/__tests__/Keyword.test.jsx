@@ -54,13 +54,24 @@ describe('Keyword view', () => {
     describe('keywordText matches, state not archived', () => {
       it('finds active negative keyword', async () => {
         const searchTerm = faker.lorem.word()
+        const campaignId = faker.amazon.id()
         const negativeKeywords = [{
           keywordText: searchTerm,
+          campaignId,
           matchType: 'EXACT',
           state: TARGET_STATES.ENABLED
         }]
         
-        setup({ searchTerm, negativeKeywords })
+        setup({ 
+          searchTerm,
+          negativeKeywords,
+          recordsAggregate: { 
+            campaignId,
+            adGroupId: faker.amazon.id(),
+            campaignName: faker.lorem.words(2),
+            adGroupName: faker.lorem.words(2)
+          }
+        })
         
         await waitFor(() => {
           expect(screen.getByText('EXACT')).toBeInTheDocument()
@@ -71,13 +82,24 @@ describe('Keyword view', () => {
     describe('keywordText matches, state archived', () => {
       it('does not find active negative keyword', async () => {
         const searchTerm = faker.lorem.word()
+        const campaignId = faker.amazon.id()
         const negativeKeywords = [{
           keywordText: searchTerm,
+          campaignId,
           matchType: 'EXACT',
           state: TARGET_STATES.ARCHIVED
         }]
         
-        setup({ searchTerm, negativeKeywords })
+        setup({ 
+          searchTerm,
+          negativeKeywords,
+          recordsAggregate: { 
+            campaignId,
+            adGroupId: faker.amazon.id(),
+            campaignName: faker.lorem.words(2),
+            adGroupName: faker.lorem.words(2)
+          }
+        })
         
         await waitFor(() => {
           expect(screen.queryByText('EXACT')).not.toBeInTheDocument()
