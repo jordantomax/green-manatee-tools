@@ -1,13 +1,11 @@
 import { Group, Box, Text } from "@mantine/core"
 import toUpper from 'lodash-es/toUpper'
 import { TARGET_STATES } from '@/utils/constants'
+import { findActiveNegativeKeyword } from '@/utils/amazon-ads'
 import styles from '@/styles/RecordTable.module.css'
 
 function SearchTermColumn({ row, negativeKeywords, negativeTargets }) {
-  const negativeKeyword = negativeKeywords?.find(k => (
-    k.keywordText === row.searchTerm && 
-    k.adGroupId === row.adGroupId
-  ))
+  const negativeKeyword = findActiveNegativeKeyword(negativeKeywords, row)
 
   const negativeTarget = negativeTargets?.find(t => {
     return (

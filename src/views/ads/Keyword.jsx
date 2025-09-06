@@ -7,16 +7,13 @@ import api from '@/api'
 import DataList from '@/components/DataList'
 import { KeywordStateSelect } from '@/components/amazon-ads/Keyword'
 import NegativeKeywordButton from '@/components/NegativeKeywordButton'
-import { TARGET_STATES } from '@/utils/constants'
+import { findActiveNegativeKeyword } from '@/utils/amazon-ads'
 
 function Keyword({ searchTerm, keywordId, recordsAggregate }) {
   const { run, isLoading, loadingStates } = useAsync()
   const [keyword, setKeyword] = useState(null)
   const [negativeKeywords, setNegativeKeywords] = useState([])
-  const activeNegativeKeyword = negativeKeywords.find(k => (
-    k.keywordText === searchTerm && 
-    k.state !== TARGET_STATES.ARCHIVED
-  ))
+  const activeNegativeKeyword = findActiveNegativeKeyword(negativeKeywords, recordsAggregate)
 
   const handleStateChange = (keywordId, newState) => {
     setKeyword(prev => ({ ...prev, state: newState }))
