@@ -17,13 +17,17 @@ function SearchTermColumn({ row, negativeKeywords, negativeTargets }) {
   })
 
   return (
-    <Group gap="xs" wrap="nowrap">
+    <Group gap="0" wrap="nowrap">
       {negativeKeyword?.state === TARGET_STATES.ENABLED && (
-        <Box className={styles.negative} title="Negative Keyword">N</Box>
+        <Box className={`${styles.negative} ${styles.visible}`} title="Negative Keyword">
+          N
+        </Box>
       )}
 
       {negativeTarget?.state === TARGET_STATES.ENABLED && (
-        <Box className={styles.negative} title="Negative Target">N</Box>
+        <Box className={`${styles.negative} ${styles.visible}`} title="Negative Target">
+          N
+        </Box>
       )}
 
       <Text size="xs">{row.searchTerm}</Text>
