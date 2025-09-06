@@ -11,7 +11,6 @@ describe('amazon-ads utils', () => {
       it('returns the matching negative keyword', () => {
         const keywordText = faker.lorem.word()
         const adGroupId = faker.amazon.id()
-        const record = { searchTerm: keywordText, adGroupId }
         const negativeKeywords = [{
           keywordText,
           adGroupId,
@@ -19,7 +18,7 @@ describe('amazon-ads utils', () => {
           matchType: 'EXACT'
         }]
 
-        const result = findActiveNegativeKeyword(negativeKeywords, record)
+        const result = findActiveNegativeKeyword(negativeKeywords, keywordText, adGroupId)
 
         expect(result).toEqual(negativeKeywords[0])
       })
@@ -28,14 +27,14 @@ describe('amazon-ads utils', () => {
     describe('when keywordText matches but adGroupId does not', () => {
       it('returns undefined', () => {
         const keywordText = faker.lorem.word()
-        const record = { searchTerm: keywordText, adGroupId: faker.amazon.id() }
+        const adGroupId = faker.amazon.id()
         const negativeKeywords = [{
           keywordText,
           adGroupId: faker.amazon.id(),
           state: TARGET_STATES.ENABLED
         }]
 
-        const result = findActiveNegativeKeyword(negativeKeywords, record)
+        const result = findActiveNegativeKeyword(negativeKeywords, keywordText, adGroupId)
 
         expect(result).toBeUndefined()
       })
@@ -45,14 +44,13 @@ describe('amazon-ads utils', () => {
       it('returns undefined', () => {
         const keywordText = faker.lorem.word()
         const adGroupId = faker.amazon.id()
-        const record = { searchTerm: keywordText, adGroupId }
         const negativeKeywords = [{
           keywordText,
           adGroupId,
           state: TARGET_STATES.ARCHIVED
         }]
 
-        const result = findActiveNegativeKeyword(negativeKeywords, record)
+        const result = findActiveNegativeKeyword(negativeKeywords, keywordText, adGroupId)
 
         expect(result).toBeUndefined()
       })
@@ -60,8 +58,7 @@ describe('amazon-ads utils', () => {
 
     describe('when negativeKeywords is null', () => {
       it('returns undefined', () => {
-        const record = { searchTerm: faker.lorem.word(), adGroupId: faker.amazon.id() }
-        const result = findActiveNegativeKeyword(null, record)
+        const result = findActiveNegativeKeyword(null, faker.lorem.word(), faker.amazon.id())
 
         expect(result).toBeUndefined()
       })
@@ -69,8 +66,7 @@ describe('amazon-ads utils', () => {
 
     describe('when negativeKeywords is undefined', () => {
       it('returns undefined', () => {
-        const record = { searchTerm: faker.lorem.word(), adGroupId: faker.amazon.id() }
-        const result = findActiveNegativeKeyword(undefined, record)
+        const result = findActiveNegativeKeyword(undefined, faker.lorem.word(), faker.amazon.id())
 
         expect(result).toBeUndefined()
       })

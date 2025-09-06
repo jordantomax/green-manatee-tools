@@ -13,7 +13,11 @@ function Keyword({ searchTerm, keywordId, recordsAggregate }) {
   const { run, isLoading, loadingStates } = useAsync()
   const [keyword, setKeyword] = useState(null)
   const [negativeKeywords, setNegativeKeywords] = useState([])
-  const activeNegativeKeyword = findActiveNegativeKeyword(negativeKeywords, recordsAggregate)
+  const activeNegativeKeyword = findActiveNegativeKeyword(
+    negativeKeywords, 
+    searchTerm, 
+    recordsAggregate.adGroupId
+  )
 
   const handleStateChange = (keywordId, newState) => {
     setKeyword(prev => ({ ...prev, state: newState }))

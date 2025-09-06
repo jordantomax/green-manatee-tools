@@ -5,7 +5,11 @@ import { findActiveNegativeKeyword } from '@/utils/amazon-ads'
 import styles from '@/styles/RecordTable.module.css'
 
 function SearchTermColumn({ row, negativeKeywords, negativeTargets }) {
-  const negativeKeyword = findActiveNegativeKeyword(negativeKeywords, row)
+  const negativeKeyword = findActiveNegativeKeyword(
+    negativeKeywords, 
+    row.searchTerm, 
+    row.adGroupId
+  )
 
   const negativeTarget = negativeTargets?.find(t => {
     return (

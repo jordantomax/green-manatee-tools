@@ -63,8 +63,9 @@ describe('Keyword view', () => {
         }]
         
         setup({ 
+          searchTerm,
           negativeKeywords,
-          recordsAggregate: { adGroupId, searchTerm }
+          recordsAggregate: { adGroupId }
         })
         
         await waitFor(() => {
@@ -85,8 +86,9 @@ describe('Keyword view', () => {
         }]
         
         setup({ 
+          searchTerm,
           negativeKeywords,
-          recordsAggregate: { adGroupId, searchTerm }
+          recordsAggregate: { adGroupId }
         })
         
         await waitFor(() => {
