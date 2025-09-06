@@ -5,7 +5,7 @@ import api from '@/api'
 import { useAsync } from '@/hooks/useAsync'
 import NotFound from '@/views/NotFound'
 import DataList from '@/components/DataList'
-import StateSelect from '@/components/amazon_ads/StateSelect'
+import StateSelect from '@/components/amazon-ads/StateSelect'
 import NegativeTargetButton from '@/components/NegativeTargetButton'
 import { TARGET_STATES } from '@/utils/constants'
 
@@ -27,7 +27,7 @@ function Target({ asin, targetId, recordsAggregate }) {
   
   const refreshNegativeTargets = () => {
     run(async () => {
-      const negativeTargets = await api.listNegativeTargets([recordsAggregate.adGroupId])
+      const negativeTargets = await api.listNegativeTargets({ filters: { adGroupIds: [recordsAggregate.adGroupId] } })
       setNegativeTargets(negativeTargets)
     }, 'negativeTargets')
   }

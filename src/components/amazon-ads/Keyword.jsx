@@ -4,7 +4,7 @@ import isFunction from 'lodash-es/isFunction'
 
 import api from '@/api'
 import { useAsync } from '@/hooks/useAsync'
-import StateSelect from '@/components/amazon_ads/StateSelect'
+import StateSelect from '@/components/amazon-ads/StateSelect'
 
 
 export const KeywordStateSelect = ({ 

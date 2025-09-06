@@ -5,7 +5,7 @@ import NotFound from '@/views/NotFound'
 import { useAsync } from '@/hooks/useAsync'
 import api from '@/api'
 import DataList from '@/components/DataList'
-import { KeywordStateSelect } from '@/components/amazon_ads/Keyword'
+import { KeywordStateSelect } from '@/components/amazon-ads/Keyword'
 import NegativeKeywordButton from '@/components/NegativeKeywordButton'
 import { TARGET_STATES } from '@/utils/constants'
 
@@ -24,7 +24,7 @@ function Keyword({ searchTerm, keywordId, recordsAggregate }) {
   
   const refreshNegativeKeywords = () => {
     run(async () => {
-      const negativeKeywords = await api.listNegativeKeywords({ adGroupIds: [recordsAggregate.adGroupId] })
+      const negativeKeywords = await api.listNegativeKeywords({ filters: { adGroupIds: [recordsAggregate.adGroupId] } })
       setNegativeKeywords(negativeKeywords)
     }, 'negativeKeywords')
   }

@@ -15,7 +15,9 @@ import { AddFilter, ActiveFilters } from "@/components/TableFilter"
 import { AddSort, ActiveSorts } from "@/components/TableSort"
 import DateRangeInputPicker from "@/components/DateRangeInputPicker"
 import { columnTypes, createDefaultSort, createDefaultFilter, getSortableColumns } from '@/utils/table'
-import { SEARCH_TERMS_HIDDEN_COLUMNS } from '@/utils/constants'
+import { SEARCH_TERMS_HIDDEN_COLUMNS, TARGET_STATES } from '@/utils/constants'
+import { getEntityType } from '@/utils/amazon-ads'
+import { KeywordColumn, SearchTermColumn } from '@/components/amazon-ads/search-terms'
 
 
 const formatDate = (date) => format(date, 'yyyy-MM-dd')
@@ -26,6 +28,8 @@ function SearchTerms() {
   const [searchTerms, setSearchTerms] = useState([])
   const [keywords, setKeywords] = useState({})
   const [targets, setTargets] = useState({})
+  const [negativeKeywords, setNegativeKeywords] = useState([])
+  const [negativeTargets, setNegativeTargets] = useState([])
 
   const [settings, setSettings] = useLocalStorage('adsSearchTermSettings', {
     dateRange: {
@@ -79,8 +83,8 @@ function SearchTerms() {
   
   const getState = async (data) => {
     const [keywordsData, targetsData] = await Promise.all([
-      run(() => api.listKeywords({ keywordIds: data.map(d => d.keywordId) })),
-      run(() => api.listTargets({ targetIds: data.map(d => d.keywordId) }))
+      run(() => api.listKeywords({ filters: { keywordIds: data.map(d => d.keywordId) } })),
+      run(() => api.listTargets({ filters: { targetIds: data.map(d => d.keywordId) } }))
     ])
     
     const keywordsMap = keywordsData?.reduce(
@@ -93,6 +97,18 @@ function SearchTerms() {
 
     setKeywords(keywordsMap)
     setTargets(targetsMap)
+  }
+  
+  const getNegatives = async (data) => {
+    const keywordTexts = data.filter(d => getEntityType(d.matchType) === 'keyword').map(d => d.searchTerm)
+    const asins = data.filter(d => getEntityType(d.matchType) === 'target').map(d => d.searchTerm)
+
+    const [negativeKeywords, negativeTargets] = await Promise.all([
+      api.listNegativeKeywords({ filters: { keywordTexts } }),
+      api.listNegativeTargets({ filters: { asins } })
+    ])
+    setNegativeKeywords(negativeKeywords)
+    setNegativeTargets(negativeTargets)
   }
 
   const handleSubmit = async ({ dateRange, ...transformedValues }) => {
@@ -110,6 +126,7 @@ function SearchTerms() {
     })
     setSearchTerms(data)
     getState(data)
+    getNegatives(data)
     
     form.resetDirty()
   }
@@ -151,19 +168,31 @@ function SearchTerms() {
     form.setFieldValue('sorts', sorts)
   }
   
-  const enrichedSearchTerms = useMemo(() => 
-    searchTerms.map(term => ({
-      _state: keywords[term.keywordId]?.state || targets[term.keywordId]?.state,
-      ...term
-    })), [searchTerms, keywords, targets]
-  )
-
   const handleRowClick = useCallback((row) => {
-    const param = row.matchType === 'TARGETING_EXPRESSION' ? 'targetId' : 'keywordId'
-    navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?${param}=${row.keywordId}`)
+    const entityType = getEntityType(row.matchType)
+    const entityId = row.keywordId
+    const paramMap = { target: 'targetId', keyword: 'keywordId' }
+    const param = paramMap[entityType]
+    navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?${param}=${entityId}`)
   }, [navigate])
 
-    return (
+  const columnComponents = useMemo(() => ({
+    keyword: (row) => (
+      <KeywordColumn 
+        row={row}
+        state={keywords[row.keywordId]?.state || targets[row.keywordId]?.state}
+      />
+    ),
+    searchTerm: (row) => (
+      <SearchTermColumn 
+        row={row}
+        negativeKeywords={negativeKeywords}
+        negativeTargets={negativeTargets}
+      />
+    )
+  }), [keywords, targets, negativeKeywords, negativeTargets])
+
+  return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Stack>
         <Group gap="sm">
@@ -209,12 +238,12 @@ function SearchTerms() {
 
         <RecordTable 
           {...useMemo(() => ({
-            data: enrichedSearchTerms,
+            data: searchTerms,
+            columnComponents,
             columnOrder: ['keyword', 'searchTerm', 'matchType', 'acosClicks7d'],
             hiddenColumns: SEARCH_TERMS_HIDDEN_COLUMNS,
             handleRowClick,
-            stateProp: '_state'
-          }), [enrichedSearchTerms, handleRowClick])} 
+          }), [searchTerms, columnComponents, handleRowClick])}
         />
         
         <TablePagination

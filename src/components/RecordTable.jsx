@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, memo } from 'react'
-import { Text, Table, Group } from '@mantine/core'
+import { Text, Table } from '@mantine/core'
 import startCase from 'lodash-es/startCase'
-import lowerCase from 'lodash-es/lowerCase'
+import isFunction from 'lodash-es/isFunction'
 
 import styles from '@/styles/RecordTable.module.css'
 import StickyHeaderTable from '@/components/StickyHeaderTable'
@@ -19,19 +19,18 @@ const RecordTable = memo(function RecordTable({
   data,
   columnOrder,
   handleRowClick,
-  stateProp,
-  hiddenColumns = []
+  hiddenColumns = [],
+  columnComponents = {},
 }) {
   const theadRef = useRef(null)
   const [columns, setColumns] = useState([])
   
   useEffect(() => {
     let columns = Object.keys(data[0] || {})
-    columns = columns.filter(col => col !== stateProp)
     columns = columns.filter(col => !hiddenColumns.includes(col))
     columns = orderColumns(columns, columnOrder)
     setColumns(columns)
-  }, [data, columnOrder, stateProp, hiddenColumns])
+  }, [data, columnOrder, hiddenColumns])
 
   if (data.length === 0) {
     return <Text>No records found</Text>
@@ -55,27 +54,21 @@ const RecordTable = memo(function RecordTable({
         <Table.Tbody>
           {data.map((row, rowIdx) => (
             <Table.Tr className={styles.row} key={rowIdx} onClick={() => handleRowClick(row)}>
-              {columns.map((column, colIdx) => (
-                <Table.Td 
-                  className={colIdx === 0 ? styles.stickyCol : styles.td}
-                  key={`${rowIdx}-${column}`}
-                >
-                  {colIdx === 0 && stateProp ? (
-                    <Group gap="xs" align="center" wrap="nowrap">
-                      <div 
-                        className={`
-                          ${styles['state-circle']}
-                          ${styles[`state-${(lowerCase(row[stateProp]))}`]}
-                        `}
-                        title={row[stateProp]}
-                      />
+              {columns.map((column, colIdx) => {
+                const columnComponent = columnComponents[column]
+                return (
+                  <Table.Td 
+                    className={colIdx === 0 ? styles.stickyCol : styles.td}
+                    key={`${rowIdx}-${column}`}
+                  >
+                    {isFunction(columnComponent) ? (
+                      columnComponent(row, { column, rowIdx, colIdx })
+                    ) : (
                       <Text size="xs">{row[column]}</Text>
-                    </Group>
-                  ) : (
-                    <Text size="xs">{row[column]}</Text>
-                  )}
-                </Table.Td>
-              ))}
+                    )}
+                  </Table.Td>
+                )
+              })}
             </Table.Tr>
           ))}
         </Table.Tbody>

@@ -56,3 +56,45 @@
 .state-archived {
   background-color: var(--mantine-color-red-6);
 }
+
+.negative {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+    height: 1.1rem;
+    color: var(--mantine-color-red-5);
+    border-color: var(--mantine-color-red-5);
+    border-radius: var(--mantine-radius-sm);
+    opacity: 0;
+    width: 0;
+    padding: 0;
+    margin-right: 0;
+}
+
+.negative.visible {
+    width: auto;
+    opacity: 1;
+    padding: 0.2rem;
+    margin-right: var(--mantine-spacing-xs);
+    border: 1px solid var(--mantine-color-red-5);
+    animation: fadeInScale 0.3s ease-out;
+}
+
+@keyframes fadeInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+        width: 0;
+        padding: 0;
+        margin-right: 0;
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+        width: auto;
+        padding: 0.2rem;
+        margin-right: var(--mantine-spacing-xs);
+    }
+}

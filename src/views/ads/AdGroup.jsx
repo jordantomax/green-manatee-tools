@@ -4,7 +4,7 @@ import { Title, Stack, SimpleGrid, Loader } from '@mantine/core'
 
 import api from '@/api'
 import { useAsync } from '@/hooks/useAsync'
-import { KeywordRows } from '@/components/amazon_ads/Keyword'
+import { KeywordRows } from '@/components/amazon-ads/Keyword'
 
 function AdGroup() {
   const { adGroupId } = useParams()
@@ -15,8 +15,8 @@ function AdGroup() {
   useEffect(() => {
     run(async () => {
       const [negativeKeywords, keywords] = await Promise.all([
-        api.listNegativeKeywords({ adGroupIds: [adGroupId] }),
-        api.listKeywords({ adGroupIds: [adGroupId] })
+        api.listNegativeKeywords({ filters: { adGroupIds: [adGroupId] } }),
+        api.listKeywords({ filters: { adGroupIds: [adGroupId] } })
       ])
       setNegativeKeywords(negativeKeywords)
       setKeywords(keywords)

@@ -1,11 +1,10 @@
 import { call } from '../core'
 
-export async function listKeywords({ adGroupIds, keywordIds }) {
+export async function listKeywords({ filters }) {
   return call(`amazon/ads/keywords/list`, {
     method: 'POST',
     body: {
-      adGroupIds,
-      keywordIds
+      filters
     },
   })
 }
@@ -23,11 +22,11 @@ export async function updateKeyword(keywordId, body) {
   })
 }
 
-export async function listNegativeKeywords({ adGroupIds }) {
+export async function listNegativeKeywords({ filters }) {
   return call(`amazon/ads/negative-keywords/list`, {
     method: 'POST',
     body: {
-      adGroupIds
+      filters
     }
   })
 }

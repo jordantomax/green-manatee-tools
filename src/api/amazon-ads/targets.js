@@ -1,9 +1,9 @@
 import { call } from '../core'
 
-export async function listTargets({ targetIds, adGroupId }) {
+export async function listTargets({ filters }) {
   return call(`amazon/ads/targets/list`, {
     method: 'POST',
-    body: { targetIds, adGroupId }
+    body: { filters }
   })
 }
 
@@ -20,10 +20,10 @@ export async function updateTarget(targetId, body) {
   })
 }
 
-export async function listNegativeTargets(adGroupIds) {
+export async function listNegativeTargets({ filters }) {
   return call(`amazon/ads/negative-targets/list`, {
     method: 'POST',
-    body: { adGroupIds }
+    body: { filters }
   })
 }
 
