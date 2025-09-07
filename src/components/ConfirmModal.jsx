@@ -1,5 +1,5 @@
 import React from 'react'
-import { Modal, Button, Group, Text } from '@mantine/core'
+import { Button, Group, Text } from '@mantine/core'
 
 const ConfirmModal = ({ 
   onClose, 
@@ -20,13 +20,7 @@ const ConfirmModal = ({
   }
 
   return (
-    <Modal
-      opened={true}
-      onClose={onClose}
-      title={title}
-      size="sm"
-      centered
-    >
+    <>
       <Text mb="lg">{message}</Text>
       <Group justify="center">
         <Button variant="default" onClick={handleCancel}>
@@ -36,7 +30,7 @@ const ConfirmModal = ({
           {confirmText}
         </Button>
       </Group>
-    </Modal>
+    </>
   )
 }
 

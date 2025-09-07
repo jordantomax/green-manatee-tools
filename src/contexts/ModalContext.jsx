@@ -1,30 +1,52 @@
 import React, { createContext, useState } from 'react'
+import { Modal } from '@mantine/core'
 
 export const ModalContext = createContext()
 
 export function ModalProvider({ children }) {
-  const [modals, setModals] = useState([])
+  const [modalState, setModalState] = useState({
+    opened: false,
+    title: '',
+    content: null,
+    props: {}
+  })
 
   const showModal = (modal) => {
-    const id = Date.now() + Math.random()
-    setModals(prev => [...prev, { id, ...modal }])
-    return id
+    setModalState({
+      opened: true,
+      title: modal.title || '',
+      content: modal.content,
+      props: modal.props || {}
+    })
   }
 
-  const hideModal = (id) => {
-    setModals(prev => prev.filter(modal => modal.id !== id))
+  const hideModal = () => {
+    setModalState({
+      opened: false,
+      title: '',
+      content: null,
+      props: {}
+    })
   }
 
   return (
-    <ModalContext.Provider value={{ showModal, hideModal, modals }}>
+    <ModalContext.Provider value={{ showModal, hideModal }}>
       {children}
-      {modals.map(modal => (
-        <modal.component
-          key={modal.id}
-          {...modal.props}
-          onClose={() => hideModal(modal.id)}
-        />
-      ))}
+      <Modal
+        opened={modalState.opened}
+        onClose={hideModal}
+        title={modalState.title}
+        size="sm"
+      >
+        {modalState.content ? (
+          <modalState.content
+            {...modalState.props}
+            onClose={hideModal}
+          />
+        ) : (
+          <div>No content</div>
+        )}
+      </Modal>
     </ModalContext.Provider>
   )
 }

@@ -3,7 +3,7 @@ import { ModalContext } from '@/contexts/ModalContext'
 import ConfirmModal from '@/components/ConfirmModal'
 
 export function useConfirm() {
-  const { showModal } = useContext(ModalContext)
+  const { showModal, hideModal } = useContext(ModalContext)
   if (!showModal) {
     throw new Error('useConfirm must be used within a ModalProvider')
   }
@@ -19,13 +19,19 @@ export function useConfirm() {
     return new Promise((resolve) => {
       const mergedOptions = { ...defaultOptions, ...options }
       
+      const handleConfirm = (result) => {
+        resolve(result)
+        hideModal()
+      }
+
       showModal({
-        component: ConfirmModal,
+        title: mergedOptions.title,
+        content: ConfirmModal,
         props: {
-          ...mergedOptions,
-          onConfirm: (result) => {
-            resolve(result)
-          }
+          onConfirm: handleConfirm,
+          message: mergedOptions.message,
+          confirmText: mergedOptions.confirmText,
+          confirmColor: mergedOptions.confirmColor
         }
       })
     })
