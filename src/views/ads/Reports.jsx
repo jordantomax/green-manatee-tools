@@ -61,7 +61,11 @@ function Reports() {
   }
 
   const handleDeleteReport = async (report) => {
-    const confirmed = await confirm('Are you sure you want to delete this report?')
+    const confirmed = await confirm({
+      title: 'Deleting a report cannot be undone.',
+      confirmText: 'Delete',
+      confirmColor: 'red'
+    })
     if (confirmed) {
       await run(async () => await api.deleteAdsReport(report.id))
       await handleRefreshReports()

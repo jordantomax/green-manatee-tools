@@ -1,7 +1,14 @@
 import React from 'react'
 import { Modal, Button, Group, Text } from '@mantine/core'
 
-const ConfirmModal = ({ opened, onClose, onConfirm, message }) => {
+const ConfirmModal = ({ 
+  onClose, 
+  onConfirm, 
+  title,
+  message,
+  confirmText,
+  confirmColor
+}) => {
   const handleConfirm = () => {
     onConfirm(true)
     onClose()
@@ -14,19 +21,19 @@ const ConfirmModal = ({ opened, onClose, onConfirm, message }) => {
 
   return (
     <Modal
-      opened={opened}
+      opened={true}
       onClose={onClose}
-      title="Confirm Action"
+      title={title}
       size="sm"
       centered
     >
       <Text mb="lg">{message}</Text>
-      <Group justify="flex-end">
+      <Group justify="center">
         <Button variant="default" onClick={handleCancel}>
           Cancel
         </Button>
-        <Button onClick={handleConfirm}>
-          Confirm
+        <Button color={confirmColor} onClick={handleConfirm}>
+          {confirmText}
         </Button>
       </Group>
     </Modal>

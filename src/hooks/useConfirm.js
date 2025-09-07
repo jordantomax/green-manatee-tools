@@ -1,10 +1,35 @@
 import { useContext } from 'react'
 import { ModalContext } from '@/contexts/ModalContext'
+import ConfirmModal from '@/components/ConfirmModal'
 
 export function useConfirm() {
-  const context = useContext(ModalContext)
-  if (!context) {
+  const { showModal } = useContext(ModalContext)
+  if (!showModal) {
     throw new Error('useConfirm must be used within a ModalProvider')
   }
-  return context.confirm
+
+  const defaultOptions = {
+    title: 'Confirm Action',
+    message: 'Are you sure?',
+    confirmText: 'Confirm',
+    confirmColor: 'blue'
+  }
+
+  const confirm = (options) => {
+    return new Promise((resolve) => {
+      const mergedOptions = { ...defaultOptions, ...options }
+      
+      showModal({
+        component: ConfirmModal,
+        props: {
+          ...mergedOptions,
+          onConfirm: (result) => {
+            resolve(result)
+          }
+        }
+      })
+    })
+  }
+
+  return confirm
 }
