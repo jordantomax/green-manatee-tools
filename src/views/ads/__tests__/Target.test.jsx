@@ -54,12 +54,18 @@ describe('Target view', () => {
     describe('expression matches and state is not archived', () => {
       it('finds active negative target', async () => {
         const asin = faker.amazon.asin()
+        const campaignId = faker.amazon.id()
         const negativeTargets = [{
           expression: [{ value: asin, type: 'ASIN_SAME_AS' }],
+          campaignId,
           state: TARGET_STATES.ENABLED
         }]
         
-        setup({ asin, negativeTargets })
+        setup({ 
+          asin, 
+          negativeTargets,
+          recordsAggregate: { campaignId, adGroupId: faker.amazon.id() }
+        })
         
         await waitFor(() => {
           expect(screen.getByText('ASIN_SAME_AS')).toBeInTheDocument()
@@ -70,12 +76,18 @@ describe('Target view', () => {
     describe('expression matches and state is archived', () => {
       it('does not find active negative target', async () => {
         const asin = faker.amazon.asin()
+        const campaignId = faker.amazon.id()
         const negativeTargets = [{
           expression: [{ value: asin, type: 'ASIN_SAME_AS' }],
+          campaignId,
           state: TARGET_STATES.ARCHIVED
         }]
         
-        setup({ asin, negativeTargets })
+        setup({ 
+          asin, 
+          negativeTargets,
+          recordsAggregate: { campaignId, adGroupId: faker.amazon.id() }
+        })
         
         await waitFor(() => {
           expect(screen.queryByText('ASIN_SAME_AS')).not.toBeInTheDocument()

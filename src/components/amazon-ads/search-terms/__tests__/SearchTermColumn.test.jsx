@@ -63,13 +63,13 @@ describe('SearchTermColumn', () => {
   describe('when expression is lowercase', () => {
     it('outputs negative target mark', () => {
       const searchTerm = faker.lorem.word().toUpperCase()
-      const adGroupId = faker.amazon.id()
+      const campaignId = faker.amazon.id()
       
       setup({
-        row: { searchTerm, campaignId: faker.amazon.id(), adGroupId },
+        row: { searchTerm, campaignId },
         negativeTargets: [{
           expression: [{ value: searchTerm.toLowerCase() }],
-          adGroupId,
+          campaignId,
           state: TARGET_STATES.ENABLED
         }]
       })
@@ -81,13 +81,13 @@ describe('SearchTermColumn', () => {
   describe('when row.searchTerm is lowercase', () => {
     it('outputs negative target mark', () => {
       const searchTerm = faker.lorem.word().toLowerCase()
-      const adGroupId = faker.amazon.id()
+      const campaignId = faker.amazon.id()
       
       setup({
-        row: { searchTerm, campaignId: faker.amazon.id(), adGroupId },
+        row: { searchTerm, campaignId },
         negativeTargets: [{
           expression: [{ value: searchTerm.toUpperCase() }],
-          adGroupId,
+          campaignId,
           state: TARGET_STATES.ENABLED
         }]
       })
@@ -96,15 +96,15 @@ describe('SearchTermColumn', () => {
     })
   })
 
-  describe('when adGroupIds do not match for targets', () => {
+  describe('when campaignIds do not match for targets', () => {
     it('does not output negative target', () => {
       const searchTerm = faker.lorem.word()
       
       setup({
-        row: { searchTerm, campaignId: faker.amazon.id(), adGroupId: faker.amazon.id() },
+        row: { searchTerm, campaignId: faker.amazon.id() },
         negativeTargets: [{
           expression: [{ value: searchTerm }],
-          adGroupId: faker.amazon.id(),
+          campaignId: faker.amazon.id(),
           state: TARGET_STATES.ENABLED
         }]
       })
