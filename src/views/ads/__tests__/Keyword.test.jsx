@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
+import renderWithProviders from '@/test-utils/renderWithProviders'
 import { BrowserRouter } from 'react-router-dom'
-import { MantineProvider } from '@mantine/core'
 import { faker } from '@faker-js/faker'
 import Keyword from '../Keyword'
 import api from '@/api'
@@ -38,12 +38,10 @@ const setup = (props = {}) => {
   vi.mocked(api.getKeywordById).mockResolvedValue({ state: 'ENABLED' })
   vi.mocked(api.listNegativeKeywords).mockResolvedValue(props.negativeKeywords || [])
   
-  render(
-    <MantineProvider>
-      <BrowserRouter>
-        <Keyword {...defaultProps} />
-      </BrowserRouter>
-    </MantineProvider>
+  renderWithProviders(
+    <BrowserRouter>
+      <Keyword {...defaultProps} />
+    </BrowserRouter>
   )
 }
 
