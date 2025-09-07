@@ -1,9 +1,24 @@
 import { Select, Loader } from '@mantine/core'
 import isFunction from 'lodash-es/isFunction'
+import { useConfirm } from '@/hooks/useConfirm'
 
 const StateSelect = ({ value, onChange, isLoading }) => {
-  const handleChange = (newState) => {
+  const confirm = useConfirm()
+
+  const handleChange = async (newState) => {
     if (newState === value) return
+    
+    if (newState === 'ARCHIVED') {
+      const confirmed = await confirm({
+        title: 'Archive Item',
+        message: 'Are you sure? Archiving cannot be undone.',
+        confirmText: 'Archive',
+        confirmColor: 'red'
+      })
+      
+      if (!confirmed) return
+    }
+    
     isFunction(onChange) && onChange(newState)
   }
 
