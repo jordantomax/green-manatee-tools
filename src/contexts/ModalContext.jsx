@@ -21,12 +21,10 @@ export function ModalProvider({ children }) {
   }
 
   const hideModal = () => {
-    setModalState({
-      opened: false,
-      title: '',
-      content: null,
-      props: {}
-    })
+    setModalState(prev => ({
+      ...prev,
+      opened: false
+    }))
   }
 
   return (
