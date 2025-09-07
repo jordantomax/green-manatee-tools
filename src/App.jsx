@@ -8,6 +8,7 @@ import { MantineProvider, AppShell } from '@mantine/core'
 
 import { theme } from '@/utils/theme'
 import { ErrorProvider, useError } from '@/contexts/Error'
+import { ModalProvider } from '@/contexts/ModalContext'
 import { setErrorHandler } from '@/api'
 import Login from '@/views/Login'
 import Signup from '@/views/Signup'
@@ -86,7 +87,9 @@ export default function App () {
       <BrowserRouter>
         <AuthProvider>
           <ErrorProvider>
-            <AppContent />
+            <ModalProvider>
+              <AppContent />
+            </ModalProvider>
           </ErrorProvider>
         </AuthProvider>
       </BrowserRouter>
