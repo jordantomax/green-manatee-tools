@@ -8,15 +8,13 @@ import DataList from '@/components/DataList'
 import StateSelect from '@/components/amazon-ads/StateSelect'
 import NegativeTargetButton from '@/components/NegativeTargetButton'
 import { TARGET_STATES } from '@/utils/constants'
+import { findActiveNegativeTarget } from '@/utils/amazon-ads'
 
 function Target({ asin, targetId, recordsAggregate }) {
   const { run, isLoading, loadingStates } = useAsync()
   const [target, setTarget] = useState(null)
   const [negativeTargets, setNegativeTargets] = useState([])
-  const activeNegativeTarget = negativeTargets.find(k => (
-    k.expression?.[0]?.value === asin && 
-    k.state !== TARGET_STATES.ARCHIVED   
-  ))
+  const activeNegativeTarget = findActiveNegativeTarget(negativeTargets, asin, recordsAggregate.campaignId)
 
   const handleStateChange = (newState) => {
     run(async () => {
