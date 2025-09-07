@@ -7,7 +7,6 @@ import NotFound from '@/views/NotFound'
 import DataList from '@/components/DataList'
 import StateSelect from '@/components/amazon-ads/StateSelect'
 import NegativeTargetButton from '@/components/NegativeTargetButton'
-import { TARGET_STATES } from '@/utils/constants'
 import { findActiveNegativeTarget } from '@/utils/amazon-ads'
 
 function Target({ asin, targetId, recordsAggregate }) {

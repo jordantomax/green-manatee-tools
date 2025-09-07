@@ -14,7 +14,7 @@ const StateSelect = ({ value, onChange, isLoading }) => {
       variant="filled"
       value={value}
       onChange={handleChange}
-      disabled={isLoading}
+      disabled={isLoading || value === 'ARCHIVED'}
       rightSection={isLoading ? <Loader size="xs" /> : null}
       data={[
         { value: 'ENABLED', label: 'Enabled' },
