@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import renderWithProviders from '@/test-utils/renderWithProviders'
+import { render } from '@testing-library/react'
 import App from './App'
 
 describe('App', () => {
   it('renders without crashing', () => {
-    renderWithProviders(<App />)
+    render(<App />)
     expect(document.body).toBeInTheDocument()
   })
 })
