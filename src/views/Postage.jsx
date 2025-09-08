@@ -239,11 +239,7 @@ function Postage () {
                       data={form.values.customsDeclaration}
                       handleChange={(e) => {
                         const { name, value } = e.target
-                        if (name === 'customsDeclaration.items') {
-                          form.setFieldValue('customsDeclaration.items', value)
-                        } else {
-                          form.setFieldValue(`customsDeclaration.${name}`, value)
-                        }
+                        form.setFieldValue(name, value)
                       }}
                     />
                   </Card>
