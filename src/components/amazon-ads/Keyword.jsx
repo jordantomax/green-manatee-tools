@@ -5,6 +5,7 @@ import isFunction from 'lodash-es/isFunction'
 import api from '@/api'
 import { useAsync } from '@/hooks/useAsync'
 import StateSelect from '@/components/amazon-ads/StateSelect'
+import { TARGET_STATES } from '@/utils/constants'
 
 
 export const KeywordStateSelect = ({ 
@@ -19,7 +20,11 @@ export const KeywordStateSelect = ({
 
   const handleStateChange = (newState) => {
     run(async () => {
-      await method(keywordId, { state: newState })
+      if (newState === TARGET_STATES.ARCHIVED) {
+        await api.archiveKeywords([keywordId])
+      } else {
+        await method(keywordId, { state: newState })
+      }
       isFunction(onChange) && onChange(keywordId, newState)
     })
   }
