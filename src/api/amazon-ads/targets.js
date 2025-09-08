@@ -20,6 +20,13 @@ export async function updateTarget(targetId, body) {
   })
 }
 
+export async function archiveTargets(targetIds) {
+  return call(`amazon/ads/targets/archive`, {
+    method: 'POST',
+    body: { targetIds }
+  })
+}
+
 export async function listNegativeTargets({ filters }) {
   return call(`amazon/ads/negative-targets/list`, {
     method: 'POST',

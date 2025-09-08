@@ -8,6 +8,7 @@ import DataList from '@/components/DataList'
 import StateSelect from '@/components/amazon-ads/StateSelect'
 import NegativeTargetButton from '@/components/NegativeTargetButton'
 import { findActiveNegativeTarget } from '@/utils/amazon-ads'
+import { TARGET_STATES } from '@/utils/constants'
 
 function Target({ asin, targetId, recordsAggregate }) {
   const { run, isLoading, loadingStates } = useAsync()
@@ -17,7 +18,11 @@ function Target({ asin, targetId, recordsAggregate }) {
 
   const handleStateChange = (newState) => {
     run(async () => {
-      await api.updateTarget(targetId, { state: newState })
+      if (newState === TARGET_STATES.ARCHIVED) {
+        await api.archiveTargets([targetId])
+      } else {
+        await api.updateTarget(targetId, { state: newState })
+      }
       setTarget(prev => ({ ...prev, state: newState }))
     }, 'updateTarget')
   }

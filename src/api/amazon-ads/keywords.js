@@ -22,6 +22,13 @@ export async function updateKeyword(keywordId, body) {
   })
 }
 
+export async function archiveKeywords(keywordIds) {
+  return call(`amazon/ads/keywords/archive`, {
+    method: 'POST',
+    body: { keywordIds }
+  })
+}
+
 export async function listNegativeKeywords({ filters }) {
   return call(`amazon/ads/negative-keywords/list`, {
     method: 'POST',

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, fireEvent } from '@testing-library/react'
 import renderWithProviders from '@/test-utils/renderWithProviders'
 import { BrowserRouter } from 'react-router-dom'
 import { faker } from '@faker-js/faker'
@@ -21,6 +21,10 @@ vi.mock('@/hooks/useAsync', () => ({
   })
 }))
 
+vi.mock('@/hooks/useConfirm', () => ({
+  useConfirm: () => vi.fn().mockResolvedValue(true)
+}))
+
 const setup = (props = {}) => {
   const defaultProps = {
     asin: faker.amazon.asin(),
@@ -37,6 +41,8 @@ const setup = (props = {}) => {
   // Mock API responses
   vi.mocked(api.getTarget).mockResolvedValue({ state: 'ENABLED' })
   vi.mocked(api.listNegativeTargets).mockResolvedValue(props.negativeTargets || [])
+  vi.mocked(api.archiveTargets).mockResolvedValue({})
+  vi.mocked(api.updateTarget).mockResolvedValue({})
   
   renderWithProviders(
     <BrowserRouter>
@@ -89,6 +95,43 @@ describe('Target view', () => {
         
         await waitFor(() => {
           expect(screen.queryByText('ASIN_SAME_AS')).not.toBeInTheDocument()
+        })
+      })
+    })
+  })
+
+  describe('handleStateChange', () => {
+
+    describe('State is ARCHIVED', () => {
+      it('Calls archiveTargets with targetId', async () => {
+        const targetId = faker.amazon.id()
+        setup({ targetId })
+        
+        const select = screen.getByRole('textbox')
+        fireEvent.click(select)
+        
+        const archivedOption = screen.getByText('Archived')
+        fireEvent.click(archivedOption)
+        
+        await waitFor(() => {
+          expect(api.archiveTargets).toHaveBeenCalledWith([targetId])
+        })
+      })
+    })
+
+    describe('State is not ARCHIVED', () => {
+      it('Calls updateTarget with state', async () => {
+        const targetId = faker.amazon.id()
+        setup({ targetId })
+        
+        const select = screen.getByRole('textbox')
+        fireEvent.click(select)
+        
+        const pausedOption = screen.getByText('Paused')
+        fireEvent.click(pausedOption)
+        
+        await waitFor(() => {
+          expect(api.updateTarget).toHaveBeenCalledWith(targetId, { state: TARGET_STATES.PAUSED })
         })
       })
     })
