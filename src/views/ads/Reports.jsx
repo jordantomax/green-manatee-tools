@@ -5,6 +5,7 @@ import { Title, Button, Stack, Group, Table, Menu, Modal, Loader } from '@mantin
 
 import api from '@/api'
 import { useAsync } from '@/hooks/useAsync'
+import { useConfirm } from '@/hooks/useConfirm'
 import classes from '@/styles/Ads.module.css'
 import CreateReport from '@/components/amazon-ads/CreateReport'
 
@@ -14,6 +15,7 @@ function Reports() {
   const [loadingReports, setLoadingReports] = useState({})
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const { isLoading, run } = useAsync()
+  const confirm = useConfirm()
 
   useEffect(() => {
     handleRefreshReports()
@@ -59,7 +61,12 @@ function Reports() {
   }
 
   const handleDeleteReport = async (report) => {
-    if (window.confirm('Are you sure you want to delete this report?')) {
+    const confirmed = await confirm({
+      title: 'Deleting a report cannot be undone.',
+      confirmText: 'Delete',
+      confirmColor: 'red'
+    })
+    if (confirmed) {
       await run(async () => await api.deleteAdsReport(report.id))
       await handleRefreshReports()
     }

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import { MantineProvider } from '@mantine/core'
+import { screen } from '@testing-library/react'
+import renderWithProviders from '@/test-utils/renderWithProviders'
 import { faker } from '@faker-js/faker'
 import SearchTermColumn from '../SearchTermColumn'
 import { TARGET_STATES } from '@/utils/constants'
@@ -16,11 +16,7 @@ const setup = (props = {}) => {
     ...props
   }
   
-  render(
-    <MantineProvider>
-      <SearchTermColumn {...defaultProps} />
-    </MantineProvider>
-  )
+  renderWithProviders(<SearchTermColumn {...defaultProps} />)
 }
 
 describe('SearchTermColumn', () => {

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
-import { MantineProvider } from '@mantine/core'
+import { screen, fireEvent } from '@testing-library/react'
+import renderWithProviders from '@/test-utils/renderWithProviders'
 import { faker } from '@faker-js/faker'
 import NegativeKeywordButton from '../NegativeKeywordButton'
 import api from '@/api'
@@ -27,11 +27,7 @@ const setup = (props = {}) => {
     ...props
   }
   
-  render(
-    <MantineProvider>
-      <NegativeKeywordButton {...defaultProps} />
-    </MantineProvider>
-  )
+  renderWithProviders(<NegativeKeywordButton {...defaultProps} />)
 }
 
 describe('NegativeKeywordButton', () => {

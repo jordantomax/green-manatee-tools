@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { screen, fireEvent } from '@testing-library/react'
+import renderWithProviders from '@/test-utils/renderWithProviders'
 import { BrowserRouter } from 'react-router-dom'
-import { MantineProvider } from '@mantine/core'
 import SearchTerms from '../SearchTerms'
 import api from '@/api'
 
@@ -61,12 +61,10 @@ const setup = (searchTerms = []) => {
   })
   vi.mocked(api.listKeywords).mockResolvedValue([])
   
-  render(
-    <MantineProvider>
-      <BrowserRouter>
-        <SearchTerms />
-      </BrowserRouter>
-    </MantineProvider>
+  renderWithProviders(
+    <BrowserRouter>
+      <SearchTerms />
+    </BrowserRouter>
   )
 }
 
