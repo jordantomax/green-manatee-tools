@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button, Group, Select, NumberInput, Box, Pill, Popover, Stack, TextInput, Text } from '@mantine/core'
 import { DateInput } from '@mantine/dates'
 import { IconFilter2 } from '@tabler/icons-react'
@@ -40,7 +40,7 @@ const FilterInputComponents = {
   boolean: Select,
 }
 
-const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange }) => {
+const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange, isNewlyAdded }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [condition, setCondition] = useState(filter.condition)
   const [value, setValue] = useState(filter.value)
@@ -56,6 +56,12 @@ const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange }) => {
     e.stopPropagation()
     handleSave()
   }
+
+  useEffect(() => {
+    if (isNewlyAdded) {
+      setIsOpen(true)
+    }
+  }, [isNewlyAdded])
   
   return (
     <Popover 
@@ -134,6 +140,13 @@ const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange }) => {
 }
 
 export const ActiveFilters = ({ filters, handleFilterRemove, handleFilterChange }) => {
+  const prevFilterCount = useRef(filters.length)
+  const isNewlyAdded = filters.length > prevFilterCount.current
+  
+  useEffect(() => {
+    prevFilterCount.current = filters.length
+  }, [filters.length])
+
   if (isEmpty(filters)) return null
 
   return (
@@ -145,7 +158,8 @@ export const ActiveFilters = ({ filters, handleFilterRemove, handleFilterChange 
           key={index} 
           filter={filter} 
           handleFilterRemove={handleFilterRemove} 
-          handleFilterChange={handleFilterChange} 
+          handleFilterChange={handleFilterChange}
+          isNewlyAdded={isNewlyAdded && index === filters.length - 1}
         />
       ))}
     </Group>
