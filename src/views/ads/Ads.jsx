@@ -18,8 +18,8 @@ function Ads() {
           onChange={(value) => navigate(`/ads/${value}`)}
         >
           <Tabs.List>
-            <Tabs.Tab value="reports">Reports</Tabs.Tab>
             <Tabs.Tab value="search-terms">Search Terms</Tabs.Tab>
+            <Tabs.Tab value="reports">Reports</Tabs.Tab>
           </Tabs.List>
         </Tabs>
       ) : (

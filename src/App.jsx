@@ -65,12 +65,12 @@ function AppContent() {
           <Route path='shipping' element={<Shipping />} />
           <Route path='inventory' element={<Inventory />} />
           <Route path='ads/*' element={<Ads />}>
-            <Route index element={<Navigate to="/ads/reports" replace />} />
-            <Route path='reports' element={<Reports />} />
-            <Route path='reports/:id' element={<Report />} />
+            <Route index element={<Navigate to="/ads/search-terms" replace />} />
             <Route path='search-terms' element={<SearchTerms />} />
             <Route path='search-terms/:searchTerm' element={<SearchTerm />} />
             <Route path='ad-groups/:adGroupId' element={<AdGroup />} />
+            <Route path='reports' element={<Reports />} />
+            <Route path='reports/:id' element={<Report />} />
             <Route path='*' element={<NotFound />} />
           </Route>
           <Route path='pricing' element={<Pricing />} />
