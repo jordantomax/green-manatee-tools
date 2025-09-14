@@ -1,6 +1,6 @@
 import { Select, Loader } from '@mantine/core'
 import isFunction from 'lodash-es/isFunction'
-import { useConfirm } from '@/hooks/useConfirm'
+import useConfirm from '@/hooks/useConfirm'
 import { TARGET_STATES } from '@/utils/constants'
 
 const StateSelect = ({ value, onChange, isLoading }) => {
