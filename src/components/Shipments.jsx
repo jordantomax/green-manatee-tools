@@ -59,6 +59,15 @@ function Shipments ({ children, inline = false }) {
     setShipments(newShipments)
   }
 
+  function handleSelectAll () {
+    const allSelected = data && shipments.length === data.length
+    if (allSelected) {
+      setShipments([])
+    } else {
+      setShipments([...data])
+    }
+  }
+
   // Create context object with all the values and handlers children might need
   const context = {
     isLoading,
@@ -98,7 +107,12 @@ function Shipments ({ children, inline = false }) {
         <Table highlightOnHover>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th style={{ width: 40 }}></Table.Th>
+              <Table.Th style={{ width: 40 }}>
+                <Checkbox
+                  checked={data && shipments.length === data.length}
+                  onChange={handleSelectAll}
+                />
+              </Table.Th>
               <Table.Th>Shipment ID</Table.Th>
               <Table.Th>Status</Table.Th>
             </Table.Tr>
@@ -112,7 +126,7 @@ function Shipments ({ children, inline = false }) {
                 >
                 <Table.Td>
                   <Checkbox
-                    checked={shipments.find(s => s.id === shipment.id) || false}
+                    checked={!!shipments.find(s => s.id === shipment.id)}
                     onChange={() => handleCheck(shipment)}
                   />
                 </Table.Td>
