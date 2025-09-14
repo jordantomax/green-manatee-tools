@@ -33,6 +33,7 @@ function Shipments ({ children, inline = false }) {
       if (!data || forceUpdate) {
         data = await api.queryResources('shipments', body)
         setLocalData('shipments', data)
+        setShipments([])
       }
       setData(data)
     } catch (error) {
