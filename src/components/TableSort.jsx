@@ -13,7 +13,7 @@ export const AddSort = ({ columns, handleSortAdd }) => {
   return (
     <Group>
       <SearchableSelect
-        label={<IconArrowsSort size={20} />}
+        label={<IconArrowsSort size={21} />}
         options={columns.map(column => ({
           value: column,
           label: startCase(column),

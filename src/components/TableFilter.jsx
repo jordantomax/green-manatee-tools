@@ -15,7 +15,7 @@ export const AddFilter = ({ columns, handleFilterAdd }) => {
   return (
     <Group>
       <SearchableSelect
-        label={<IconFilter2 size={20} />}
+        label={<IconFilter2 size={21} />}
         options={columns.map(column => ({
           value: column,
           label: startCase(column),

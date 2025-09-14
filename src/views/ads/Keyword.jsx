@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Title, Stack, Group, Badge } from '@mantine/core'
 
 import NotFound from '@/views/NotFound'
-import { useAsync } from '@/hooks/useAsync'
+import useAsync from '@/hooks/useAsync'
 import api from '@/api'
 import DataList from '@/components/DataList'
 import { KeywordStateSelect } from '@/components/amazon-ads/Keyword'

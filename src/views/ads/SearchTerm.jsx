@@ -4,7 +4,7 @@ import { Stack, Group } from '@mantine/core'
 import { LineChart } from '@mantine/charts'
 import omit from 'lodash-es/omit'
 
-import { useAsync } from '@/hooks/useAsync'
+import useAsync from '@/hooks/useAsync'
 import api from '@/api'
 import Keyword from './Keyword'
 import Target from './Target'

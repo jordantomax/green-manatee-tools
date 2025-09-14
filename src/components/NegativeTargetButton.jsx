@@ -1,7 +1,7 @@
 import isFunction from 'lodash-es/isFunction'
 
 import api from '@/api'
-import { useAsync } from '@/hooks/useAsync'
+import useAsync from '@/hooks/useAsync'
 import { Button } from '@mantine/core'
 import { NEGATIVE_TARGET_EXPRESSION_TYPES } from '@/utils/constants'
 

@@ -4,7 +4,7 @@ import { DateInput } from '@mantine/dates'
 import { useForm } from '@mantine/form'
 
 import api from '@/api'
-import { useAsync } from '@/hooks/useAsync'
+import useAsync from '@/hooks/useAsync'
 import { validators } from '@/utils/validation'
 
 const CreateReport = ({ setCreateModalOpen, handleRefreshReports }) => {

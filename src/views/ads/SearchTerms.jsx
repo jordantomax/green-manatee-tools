@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 
 import api from "@/api"
 import { validators } from '@/utils/validation'
-import { useAsync } from '@/hooks/useAsync'
+import useAsync from '@/hooks/useAsync'
 import { usePagination } from '@/hooks/usePagination'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import RecordTable from "@/components/RecordTable"
@@ -14,8 +14,9 @@ import TablePagination from "@/components/TablePagination"
 import { AddFilter, ActiveFilters } from "@/components/TableFilter"
 import { AddSort, ActiveSorts } from "@/components/TableSort"
 import DateRangeInputPicker from "@/components/DateRangeInputPicker"
+import ViewManager from "@/components/ViewManager"
 import { columnTypes, createDefaultSort, createDefaultFilter, getSortableColumns } from '@/utils/table'
-import { SEARCH_TERMS_HIDDEN_COLUMNS, TARGET_STATES } from '@/utils/constants'
+import { SEARCH_TERMS_HIDDEN_COLUMNS, RECORD_TYPES } from '@/utils/constants'
 import { getEntityType } from '@/utils/amazon-ads'
 import { KeywordColumn, SearchTermColumn } from '@/components/amazon-ads/search-terms'
 
@@ -195,46 +196,59 @@ function SearchTerms() {
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Stack>
-        <Group gap="sm">
-          <Title order={2}>Search Terms</Title>
-          {isLoading && <Loader size="sm" />}
+        <Group justify="space-between" align="flex-start">
+          <Group gap="sm">
+            <Title order={2}>Search Terms</Title>
+            {isLoading && <Loader size="sm" />}
+          </Group>
+
+          <Group gap="xs" align="flex-end">
+            <DateRangeInputPicker 
+              value={form.values.dateRange}
+              onChange={(dateRange) => form.setFieldValue('dateRange', dateRange)}
+            />
+
+            <AddFilter 
+              columns={Object.keys(columnTypes)}
+              handleFilterAdd={handleFilterAdd}
+            />
+
+            <AddSort
+              columns={getSortableColumns()}
+              handleSortAdd={handleSortAdd}
+            />
+
+            <Button 
+              variant="light" 
+              type="submit" 
+              disabled={!form.isDirty()}
+              children="Refresh"
+            />
+          </Group>
         </Group>
 
-        <Group gap="xs" align="flex-end">
-          <DateRangeInputPicker 
-            value={form.values.dateRange}
-            onChange={(dateRange) => form.setFieldValue('dateRange', dateRange)}
+        <Stack>
+          <ViewManager
+            resourceType={RECORD_TYPES.SEARCH_TERMS}
+            currentFilters={form.values.filters}
+            currentSorts={form.values.sorts}
+            onViewLoad={(view) => {
+              // TODO: Parse and load view filters/sorts
+            }}
+          />
+          
+          <ActiveFilters 
+            filters={form.values.filters} 
+            handleFilterRemove={handleFilterRemove}
+            handleFilterChange={handleFilterChange}
           />
 
-          <AddFilter 
-            columns={Object.keys(columnTypes)}
-            handleFilterAdd={handleFilterAdd}
+          <ActiveSorts
+            sorts={form.values.sorts}
+            handleSortRemove={handleSortRemove}
+            handleSortChange={handleSortChange}
           />
-
-          <AddSort
-            columns={getSortableColumns()}
-            handleSortAdd={handleSortAdd}
-          />
-
-          <Button 
-            variant="light" 
-            type="submit" 
-            disabled={!form.isDirty()}
-            children="Refresh"
-          />
-        </Group>
-
-        <ActiveFilters 
-          filters={form.values.filters} 
-          handleFilterRemove={handleFilterRemove}
-          handleFilterChange={handleFilterChange}
-        />
-
-        <ActiveSorts
-          sorts={form.values.sorts}
-          handleSortRemove={handleSortRemove}
-          handleSortChange={handleSortChange}
-        />
+        </Stack>
 
         <RecordTable 
           {...useMemo(() => ({
