@@ -28,7 +28,7 @@ vi.mock('@/hooks/useAsync', () => ({
 }))
 
 vi.mock('@/hooks/useLocalStorage', () => ({
-  useLocalStorage: () => [
+  default: () => [
     {
       dateRange: {
         startDate: '2024-01-01',
@@ -45,7 +45,7 @@ vi.mock('@/hooks/useLocalStorage', () => ({
 }))
 
 vi.mock('@/hooks/usePagination', () => ({
-  usePagination: () => ({
+  default: () => ({
     page: 1,
     limit: 10,
     handlePageChange: vi.fn(),

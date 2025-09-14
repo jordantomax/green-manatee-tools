@@ -7,8 +7,8 @@ import { useNavigate } from 'react-router-dom'
 import api from "@/api"
 import { validators } from '@/utils/validation'
 import useAsync from '@/hooks/useAsync'
-import { usePagination } from '@/hooks/usePagination'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
+import usePagination from '@/hooks/usePagination'
+import useLocalStorage from '@/hooks/useLocalStorage'
 import RecordTable from "@/components/RecordTable"
 import TablePagination from "@/components/TablePagination"
 import { AddFilter, ActiveFilters } from "@/components/TableFilter"

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getLocalData, setLocalData } from '@/utils/storage'
 
-export function useLocalStorage(key, defaultValues = {}) {
+export default function useLocalStorage(key, defaultValues = {}) {
   if (typeof defaultValues !== 'object' || defaultValues === null || Array.isArray(defaultValues)) {
     throw new Error('useLocalStorage: defaultValues must be a plain object')
   }
