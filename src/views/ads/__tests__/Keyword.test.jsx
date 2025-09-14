@@ -14,7 +14,7 @@ const mockRun = vi.fn().mockImplementation(async (apiCall) => {
 })
 
 vi.mock('@/hooks/useAsync', () => ({
-  useAsync: () => ({
+  default: () => ({
     run: mockRun,
     isLoading: false,
     loadingStates: {}

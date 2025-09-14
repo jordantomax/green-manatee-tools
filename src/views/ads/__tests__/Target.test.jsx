@@ -14,7 +14,7 @@ const mockRun = vi.fn().mockImplementation(async (apiCall) => {
 })
 
 vi.mock('@/hooks/useAsync', () => ({
-  useAsync: () => ({
+  default: () => ({
     run: mockRun,
     isLoading: false,
     loadingStates: {}
@@ -22,7 +22,7 @@ vi.mock('@/hooks/useAsync', () => ({
 }))
 
 vi.mock('@/hooks/useConfirm', () => ({
-  useConfirm: () => vi.fn().mockResolvedValue(true)
+  default: () => vi.fn().mockResolvedValue(true)
 }))
 
 const setup = (props = {}) => {
