@@ -9,7 +9,7 @@ export const conditionLabels = {
   between: 'Between'
 }
 
-export const baseTypes = {
+export const primitiveTypes = {
   id: {
     conditionOptions: ['eq', 'ne'],
     defaultCondition: 'eq',
@@ -125,26 +125,6 @@ export const numberTypeColumns = Object.keys(columnTypes).filter(key =>
   ['integer', 'float', 'currency'].includes(columnTypes[key])
 ).sort()
 
-export const createDefaultFilter = (column) => {
-  const baseTypeName = columnTypes[column] || 'string'
-  const baseType = baseTypes[baseTypeName]
-  return {
-    column,
-    id: crypto.randomUUID(),
-    type: baseTypeName,
-    value: baseType.defaultValue,
-    condition: baseType.defaultCondition,
-    conditionOptions: baseType.conditionOptions,
-  }
-}
-
-export const createDefaultSort = (column) => {
-  return {
-    column,
-    id: crypto.randomUUID(),
-    direction: 'desc'
-  }
-}
 
 export const sortDirections = {
   asc: 'asc',

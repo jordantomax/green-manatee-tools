@@ -15,7 +15,8 @@ import { AddFilter, ActiveFilters } from "@/components/TableFilter"
 import { AddSort, ActiveSorts } from "@/components/TableSort"
 import DateRangeInputPicker from "@/components/DateRangeInputPicker"
 import ViewManager from "@/components/ViewManager"
-import { columnTypes, createDefaultSort, createDefaultFilter, getSortableColumns } from '@/utils/table'
+import { columnTypes, getSortableColumns } from '@/utils/table'
+import { Filter, Sort } from '@/utils/filter-sort'
 import { SEARCH_TERMS_HIDDEN_COLUMNS, RECORD_TYPES } from '@/utils/constants'
 import { getEntityType } from '@/utils/amazon-ads'
 import { KeywordColumn, SearchTermColumn } from '@/components/amazon-ads/search-terms'
@@ -58,23 +59,11 @@ function SearchTerms() {
       'dateRange.endDate': validators.required('End date'),
     },
     transformValues: ({ filters, sorts, dateRange, ...values }) => {
-      const filter = filters?.length > 0 ? {
-        and: filters.map(f => ({
-          [f.column]: {
-            [f.condition]: f.value
-          }
-        }))
-      } : null
-      
-      const sort = sorts?.length > 0 ? sorts.map(s => (
-        { [s.column]: s.direction }
-      )) : null
-      
       return {
         ...values,
         dateRange,
-        filter,
-        sort
+        filter: Filter.toAPI(filters),
+        sort: Sort.toAPI(sorts)
       }
     },
     onValuesChange: (values) => {
@@ -137,7 +126,7 @@ function SearchTerms() {
   }, [page, limit])
 
   const handleFilterAdd = (column) => {
-    const filter = createDefaultFilter(column)
+    const filter = Filter.create(column)
     form.setFieldValue('filters', [...settings.filters, filter])
   }
 
