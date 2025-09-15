@@ -9,6 +9,8 @@ import { validators } from '@/utils/validation'
 import useAsync from '@/hooks/useAsync'
 import usePagination from '@/hooks/usePagination'
 import useLocalStorage from '@/hooks/useLocalStorage'
+import useFilterHandlers from '@/hooks/useFilterHandlers'
+import useSortHandlers from '@/hooks/useSortHandlers'
 import RecordTable from "@/components/RecordTable"
 import TablePagination from "@/components/TablePagination"
 import { AddFilter, ActiveFilters } from "@/components/TableFilter"
@@ -70,6 +72,15 @@ function SearchTerms() {
       setSettings({ ...settings, ...values })
     },
   })
+
+  const filterHandlers = useFilterHandlers(
+    form.values.filters, 
+    (newFilters) => form.setFieldValue('filters', newFilters)
+  )
+  const sortHandlers = useSortHandlers(
+    form.values.sorts,
+    (newSorts) => form.setFieldValue('sorts', newSorts)
+  )
   
   const getState = async (data) => {
     const [keywordsData, targetsData] = await Promise.all([
@@ -125,38 +136,6 @@ function SearchTerms() {
     form.onSubmit(handleSubmit)()
   }, [page, limit])
 
-  const handleFilterAdd = (column) => {
-    const filter = Filter.create(column)
-    form.setFieldValue('filters', [...settings.filters, filter])
-  }
-
-  const handleFilterRemove = (filterId) => {
-    const filters = form.values.filters.filter(f => f.id !== filterId)
-    form.setFieldValue('filters', filters)
-  }
-
-  const handleFilterChange = (filterId, condition, value) => {
-    const filters = form.values.filters.map(f => f.id === filterId ? { ...f, condition, value } : f)
-    form.setFieldValue('filters', filters)
-  }
-
-  const handleSortAdd = (column) => {
-    const newSort = createDefaultSort(column)
-    const currentSorts = form.values.sorts || []
-    form.setFieldValue('sorts', [...currentSorts, newSort])
-  }
-
-  const handleSortRemove = (sortId) => {
-    const sorts = form.values.sorts.filter(s => s.id !== sortId)
-    form.setFieldValue('sorts', sorts)
-  }
-
-  const handleSortChange = (sortId, column, direction) => {
-    const sorts = form.values.sorts.map(s => 
-      s.id === sortId ? { ...s, column, direction } : s
-    )
-    form.setFieldValue('sorts', sorts)
-  }
   
   const handleRowClick = useCallback((row) => {
     const entityType = getEntityType(row.matchType)
@@ -199,12 +178,12 @@ function SearchTerms() {
 
             <AddFilter 
               columns={Object.keys(columnTypes)}
-              handleFilterAdd={handleFilterAdd}
+              handleFilterAdd={filterHandlers.add}
             />
 
             <AddSort
               columns={getSortableColumns()}
-              handleSortAdd={handleSortAdd}
+              handleSortAdd={sortHandlers.add}
             />
 
             <Button 
@@ -228,14 +207,14 @@ function SearchTerms() {
           
           <ActiveFilters 
             filters={form.values.filters} 
-            handleFilterRemove={handleFilterRemove}
-            handleFilterChange={handleFilterChange}
+            handleFilterRemove={filterHandlers.remove}
+            handleFilterChange={filterHandlers.update}
           />
 
           <ActiveSorts
             sorts={form.values.sorts}
-            handleSortRemove={handleSortRemove}
-            handleSortChange={handleSortChange}
+            handleSortRemove={sortHandlers.remove}
+            handleSortChange={sortHandlers.update}
           />
         </Stack>
 
