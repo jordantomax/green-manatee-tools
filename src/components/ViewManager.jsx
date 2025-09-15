@@ -4,6 +4,7 @@ import { IconPlus } from '@tabler/icons-react'
 
 import api from '@/api'
 import useAsync from '@/hooks/useAsync'
+import { Filter, Sort } from '@/utils/filter-sort'
 
 export default function ViewManager({ 
   resourceType, 
@@ -23,8 +24,8 @@ export default function ViewManager({
     await run(async () => await api.createView({
       name: 'New View',
       resourceType,
-      filter: currentFilters,
-      sort: currentSorts
+      filter: Filter.toAPI(currentFilters),
+      sort: Sort.toAPI(currentSorts)
     }), 'createView')
   }
 
