@@ -1,16 +1,15 @@
-import { useState, useEffect, useMemo, useCallback } from "react"
+import { useEffect, useMemo, useCallback } from "react"
 import { Stack, Title, Group, Loader, Button } from "@mantine/core"
 import { useForm } from '@mantine/form'
 import { subDays, format } from 'date-fns'
 import { useNavigate } from 'react-router-dom'
 
-import api from "@/api"
 import { validators } from '@/utils/validation'
-import useAsync from '@/hooks/useAsync'
 import usePagination from '@/hooks/usePagination'
 import useLocalStorage from '@/hooks/useLocalStorage'
 import useFilterHandlers from '@/hooks/useFilterHandlers'
 import useSortHandlers from '@/hooks/useSortHandlers'
+import useSearchTermsData from '@/hooks/useSearchTermsData'
 import RecordTable from "@/components/RecordTable"
 import TablePagination from "@/components/TablePagination"
 import { AddFilter, ActiveFilters } from "@/components/TableFilter"
@@ -28,14 +27,19 @@ const formatDate = (date) => format(date, 'yyyy-MM-dd')
 
 function SearchTerms() {
   const navigate = useNavigate()
-  const { run, isLoading } = useAsync()
-  const [searchTerms, setSearchTerms] = useState([])
-  const [keywords, setKeywords] = useState({})
-  const [targets, setTargets] = useState({})
-  const [negativeKeywords, setNegativeKeywords] = useState([])
-  const [negativeTargets, setNegativeTargets] = useState([])
 
-  const [settings, setSettings] = useLocalStorage('adsSearchTermSettings', {
+  const {
+    searchTerms,
+    entities,
+    negativeEntities,
+    getSearchTermsData,
+    isLoading: searchTermsLoading
+  } = useSearchTermsData()
+
+  const [
+    settings, 
+    setSettings
+  ] = useLocalStorage('adsSearchTermSettings', {
     dateRange: {
       startDate: formatDate(subDays(new Date(), 31)),
       endDate: formatDate(subDays(new Date(), 1)),
@@ -74,61 +78,23 @@ function SearchTerms() {
   })
 
   const filterHandlers = useFilterHandlers(
-    form.values.filters, 
-    (newFilters) => form.setFieldValue('filters', newFilters)
+    form.values.filters, (newFilters) => form.setFieldValue('filters', newFilters)
   )
   const sortHandlers = useSortHandlers(
-    form.values.sorts,
-    (newSorts) => form.setFieldValue('sorts', newSorts)
+    form.values.sorts, (newSorts) => form.setFieldValue('sorts', newSorts)
   )
   
-  const getState = async (data) => {
-    const [keywordsData, targetsData] = await Promise.all([
-      run(() => api.listKeywords({ filters: { keywordIds: data.map(d => d.keywordId) } })),
-      run(() => api.listTargets({ filters: { targetIds: data.map(d => d.keywordId) } }))
-    ])
-    
-    const keywordsMap = keywordsData?.reduce(
-      (map, keyword) => ({ ...map, [keyword.keywordId]: keyword }), {}
-    ) || {}
-
-    const targetsMap = targetsData?.reduce(
-      (map, target) => ({ ...map, [target.targetId]: target }), {}
-    ) || {}
-
-    setKeywords(keywordsMap)
-    setTargets(targetsMap)
-  }
-  
-  const getNegatives = async (data) => {
-    const keywordTexts = data.filter(d => getEntityType(d.matchType) === 'keyword').map(d => d.searchTerm)
-    const asins = data.filter(d => getEntityType(d.matchType) === 'target').map(d => d.searchTerm)
-
-    const [negativeKeywords, negativeTargets] = await Promise.all([
-      api.listNegativeKeywords({ filters: { keywordTexts } }),
-      api.listNegativeTargets({ filters: { asins } })
-    ])
-    setNegativeKeywords(negativeKeywords)
-    setNegativeTargets(negativeTargets)
-  }
-
   const handleSubmit = async ({ dateRange, ...transformedValues }) => {
-    const { startDate, endDate } = dateRange
-    const { data, pagination } = await run(async () => await api.getAdsSearchTerms({
+    const { pagination } = await getSearchTermsData({
       ...transformedValues,
-      startDate,
-      endDate,
+      dateRange,
       limit,
       page,
-    }))
+    })
     setSettings({
       ...form.values,
       ...pagination,
     })
-    setSearchTerms(data)
-    getState(data)
-    getNegatives(data)
-    
     form.resetDirty()
   }
 
@@ -149,17 +115,20 @@ function SearchTerms() {
     keyword: (row) => (
       <KeywordColumn 
         row={row}
-        state={keywords[row.keywordId]?.state || targets[row.keywordId]?.state}
+        state={
+          entities.keywords[row.keywordId]?.state || 
+          entities.targets[row.keywordId]?.state
+        }
       />
     ),
     searchTerm: (row) => (
       <SearchTermColumn 
         row={row}
-        negativeKeywords={negativeKeywords}
-        negativeTargets={negativeTargets}
+        negativeKeywords={negativeEntities.keywords}
+        negativeTargets={negativeEntities.targets}
       />
     )
-  }), [keywords, targets, negativeKeywords, negativeTargets])
+  }), [entities, negativeEntities])
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -167,7 +136,7 @@ function SearchTerms() {
         <Group justify="space-between" align="flex-start">
           <Group gap="sm">
             <Title order={2}>Search Terms</Title>
-            {isLoading && <Loader size="sm" />}
+            {searchTermsLoading && <Loader size="sm" />}
           </Group>
 
           <Group gap="xs" align="flex-end">
