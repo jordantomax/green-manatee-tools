@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useCallback } from "react"
+import { useEffect, useMemo } from "react"
 import { Stack, Title, Group, Loader, Button } from "@mantine/core"
 import { useForm } from '@mantine/form'
 import { subDays, format } from 'date-fns'
@@ -19,7 +19,6 @@ import ViewManager from "@/components/ViewManager"
 import { columnTypes, getSortableColumns } from '@/utils/table'
 import { Filter, Sort } from '@/utils/filter-sort'
 import { SEARCH_TERMS_HIDDEN_COLUMNS, RECORD_TYPES } from '@/utils/constants'
-import { getEntityType } from '@/utils/amazon-ads'
 import { KeywordColumn, SearchTermColumn } from '@/components/amazon-ads/search-terms'
 
 
@@ -35,6 +34,22 @@ function SearchTerms() {
     getSearchTermsData,
     isLoading: searchTermsLoading
   } = useSearchTermsData()
+  
+  const columnComponents = useMemo(() => ({
+    keyword: (row) => (
+      <KeywordColumn 
+        row={row}
+        state={entities.keywords[row.keywordId]?.state || entities.targets[row.keywordId]?.state}
+      />
+    ),
+    searchTerm: (row) => (
+      <SearchTermColumn 
+        row={row}
+        negativeKeywords={negativeEntities.keywords}
+        negativeTargets={negativeEntities.targets}
+      />
+    )
+  }), [entities, negativeEntities])
 
   const [
     settings, 
@@ -101,25 +116,6 @@ function SearchTerms() {
   useEffect(() => { 
     form.onSubmit(handleSubmit)()
   }, [page, limit])
-  
-  const columnComponents = useMemo(() => ({
-    keyword: (row) => (
-      <KeywordColumn 
-        row={row}
-        state={
-          entities.keywords[row.keywordId]?.state || 
-          entities.targets[row.keywordId]?.state
-        }
-      />
-    ),
-    searchTerm: (row) => (
-      <SearchTermColumn 
-        row={row}
-        negativeKeywords={negativeEntities.keywords}
-        negativeTargets={negativeEntities.targets}
-      />
-    )
-  }), [entities, negativeEntities])
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
