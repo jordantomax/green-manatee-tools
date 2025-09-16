@@ -61,11 +61,12 @@ function useSearchTermsData() {
     setSearchTerms(data)
     
     run(async () => {
-      const [entitiesData, negativeEntitiesData] = await Promise.all([
-        getEntities(data),
-        getNegativeEntities(data)
-      ])
+      const entitiesData = await getEntities(data)
       setEntities(entitiesData)
+    })
+    
+    run(async () => {
+      const negativeEntitiesData = await getNegativeEntities(data)
       setNegativeEntities(negativeEntitiesData)
     })
     
