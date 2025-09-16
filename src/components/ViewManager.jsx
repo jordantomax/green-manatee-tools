@@ -1,42 +1,46 @@
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Group, Tabs, Tooltip } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 
-import api from '@/api'
 import useAsync from '@/hooks/useAsync'
-import { Filter, Sort } from '@/utils/filter-sort'
+import useLocalStorage from '@/hooks/useLocalStorage'
 
 export default function ViewManager({ 
+  views = [],
   resourceType, 
   currentFilters = [], 
   currentSorts = [], 
-  onViewLoad 
+  onViewLoad,
+  handlers
 }) {
-  const [views, setViews] = useState([])
-  const [activeTab, setActiveTab] = useState(null)
+  const [viewState, setViewState] = useLocalStorage(
+    `viewManager-${resourceType}`, { activeViewId: null }
+  )
   const { run, isLoading, loadingStates } = useAsync()
 
+  useEffect(() => {
+    if (views.length > 0 && !viewState.activeViewId) {
+      setViewState('activeViewId', views[0].id)
+    }
+  }, [views, viewState.activeViewId, setViewState])
+
   const handleTabChange = (value) => {
-    setActiveTab(value)
+    setViewState('activeViewId', value)
+    onViewLoad?.(views.find(view => view.id === value))
   }
 
-  const handleCreateView = async () => {
-    await run(async () => await api.createView({
-      name: 'New View',
-      resourceType,
-      filter: Filter.toAPI(currentFilters),
-      sort: Sort.toAPI(currentSorts)
-    }), 'createView')
+  const handleCreateView = () => {
+    run(() => handlers.create(), 'createView')
   }
-
+  
   return (
     <Group gap="xs">
-      {views.length > 0 && (
-        <Tabs value={activeTab} onChange={handleTabChange}>
+      {views.length > 0 && viewState.activeViewId && (
+        <Tabs value={String(viewState.activeViewId)} onChange={handleTabChange}>
           <Tabs.List>
-            {views.map(view => (
-              <Tabs.Tab key={view.id} value={view.id}>
-                {view.name}
+            {views.map(({ id, name }) => (
+              <Tabs.Tab key={id} value={String(id)}>
+                {name}
               </Tabs.Tab>
             ))}
           </Tabs.List>

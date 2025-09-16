@@ -70,6 +70,7 @@ function useSearchTermsData() {
       setNegativeEntities(negativeEntitiesData)
     })
     
+    
     return { data, pagination }
   }, [])
 

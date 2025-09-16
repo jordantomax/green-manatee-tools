@@ -8,6 +8,7 @@ import usePagination from '@/hooks/usePagination'
 import useLocalStorage from '@/hooks/useLocalStorage'
 import useFilterHandlers from '@/hooks/useFilterHandlers'
 import useSortHandlers from '@/hooks/useSortHandlers'
+import useViews from '@/hooks/useViews'
 import useSearchTermsData from '@/hooks/useSearchTermsData'
 import useSearchTermsNavigation from '@/hooks/useSearchTermsNavigation'
 import RecordTable from "@/components/RecordTable"
@@ -98,6 +99,11 @@ function SearchTerms() {
   const sortHandlers = useSortHandlers(
     form.values.sorts, (newSorts) => form.setFieldValue('sorts', newSorts)
   )
+  const { views, handlers: viewHandlers } = useViews(
+    RECORD_TYPES.SEARCH_TERMS,
+    form.values.filters,
+    form.values.sorts
+  )
   
   const handleSubmit = async ({ dateRange, ...transformedValues }) => {
     const { pagination } = await getSearchTermsData({
@@ -153,12 +159,14 @@ function SearchTerms() {
 
         <Stack>
           <ViewManager
+            views={views}
             resourceType={RECORD_TYPES.SEARCH_TERMS}
             currentFilters={form.values.filters}
             currentSorts={form.values.sorts}
             onViewLoad={(view) => {
               // TODO: Parse and load view filters/sorts
             }}
+            handlers={viewHandlers}
           />
           
           <ActiveFilters 
