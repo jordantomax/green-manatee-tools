@@ -5,14 +5,11 @@ import { Filter, Sort } from '@/utils/filter-sort'
 export default function useViewHandlers(resourceType, currentFilters, currentSorts) {
   const [views, setViews] = useState([])
 
-  // Load views on mount
-  useEffect(() => {
-    const loadViews = async () => {
-      const viewsData = await api.listViews(resourceType)
-      setViews(viewsData)
-    }
-    loadViews()
+  const load = useCallback(async () => {
+    const viewsData = await api.listViews(resourceType)
+    setViews(viewsData.map(view => ({ ...view, id: String(view.id) })))
   }, [resourceType])
+
   const create = useCallback(async () => {
     const newView = await api.createView({
       name: 'New View',
@@ -20,7 +17,7 @@ export default function useViewHandlers(resourceType, currentFilters, currentSor
       filter: Filter.toAPI(currentFilters),
       sort: Sort.toAPI(currentSorts)
     })
-    setViews(prev => [...prev, newView])
+    setViews(prev => [...prev, { ...newView, id: String(newView.id) }])
   }, [resourceType, currentFilters, currentSorts])
 
   const update = useCallback(async (viewId, updates) => {
@@ -35,9 +32,14 @@ export default function useViewHandlers(resourceType, currentFilters, currentSor
     setViews(prev => prev.filter(view => view.id !== viewId))
   }, [])
 
+  useEffect(() => {
+    load()
+  }, [load])
+
   return {
     views,
     handlers: {
+      load,
       create,
       update,
       remove

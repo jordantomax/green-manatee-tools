@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Group, Tabs, Tooltip } from '@mantine/core'
+import { Button, Group, Tabs, Tooltip, TextInput, Loader } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 
 import useAsync from '@/hooks/useAsync'
 import useLocalStorage from '@/hooks/useLocalStorage'
+import styles from '@/styles/ViewManager.module.css'
 
 export default function ViewManager({ 
   views = [],
@@ -16,11 +17,13 @@ export default function ViewManager({
   const [viewState, setViewState] = useLocalStorage(
     `viewManager-${resourceType}`, { activeViewId: null }
   )
+  const [isEditing, setIsEditing] = useState(false)
+  const [editingName, setEditingName] = useState('')
   const { run, isLoading, loadingStates } = useAsync()
 
   useEffect(() => {
     if (views.length > 0 && !viewState.activeViewId) {
-      setViewState('activeViewId', views[0].id)
+      setViewState('activeViewId', String(views[0].id))
     }
   }, [views, viewState.activeViewId, setViewState])
 
@@ -31,18 +34,79 @@ export default function ViewManager({
 
   const handleCreateView = () => {
     run(() => handlers.create(), 'createView')
+    handlers.load()
+  }
+
+  const handleStartEdit = (currentName) => {
+    setIsEditing(true)
+    setEditingName(currentName)
+  }
+
+  const handleSaveEdit = async () => {
+    if (isEditing && viewState.activeViewId) {
+      await run(() => handlers.update(viewState.activeViewId, { name: editingName.trim() }), 'updateView')
+    }
+    setIsEditing(false)
+    setEditingName('')
+  }
+
+  const handleCancelEdit = () => {
+    setIsEditing(false)
+    setEditingName('')
+  }
+
+  const handleKeyDown = (e) => {
+    e.stopPropagation()
+    if (e.key === 'Enter') {
+      handleSaveEdit()
+    } else if (e.key === 'Escape') {
+      handleCancelEdit()
+    }
   }
   
   return (
     <Group gap="xs">
       {views.length > 0 && viewState.activeViewId && (
-        <Tabs value={String(viewState.activeViewId)} onChange={handleTabChange}>
+        <Tabs 
+          value={viewState.activeViewId} 
+          onChange={handleTabChange}
+        >
           <Tabs.List>
-            {views.map(({ id, name }) => (
-              <Tabs.Tab key={id} value={String(id)}>
-                {name}
-              </Tabs.Tab>
-            ))}
+            {views.map((view) => {
+              const id = String(view.id)
+              const name = view.name
+
+              return (
+                <Tabs.Tab 
+                  key={id} 
+                  value={id}
+                  onDoubleClick={() => viewState.activeViewId === id && handleStartEdit(name)}
+                  classNames={{ tab: styles.tab }}
+                  style={{ 
+                    cursor: viewState.activeViewId === id ? 'pointer' : 'default'
+                  }}
+                >
+                  {isEditing && viewState.activeViewId === id ? (
+                    <TextInput
+                      value={editingName}
+                      onChange={(e) => setEditingName(e.target.value)}
+                      onBlur={handleSaveEdit}
+                      onKeyDown={handleKeyDown}
+                      variant="unstyled"
+                      autoFocus
+                      classNames={{input: styles.editInput}}
+                      rightSection={
+                        loadingStates.updateView ? <Loader size="xs" /> : null
+                      }
+                    />
+                  ) : (
+                    <>
+                      {name}
+                    </>
+                  )}
+                </Tabs.Tab>
+              )
+            })}
           </Tabs.List>
         </Tabs>
       )}
