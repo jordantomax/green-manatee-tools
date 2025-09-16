@@ -2,7 +2,6 @@ import { useEffect, useMemo, useCallback } from "react"
 import { Stack, Title, Group, Loader, Button } from "@mantine/core"
 import { useForm } from '@mantine/form'
 import { subDays, format } from 'date-fns'
-import { useNavigate } from 'react-router-dom'
 
 import { validators } from '@/utils/validation'
 import usePagination from '@/hooks/usePagination'
@@ -10,6 +9,7 @@ import useLocalStorage from '@/hooks/useLocalStorage'
 import useFilterHandlers from '@/hooks/useFilterHandlers'
 import useSortHandlers from '@/hooks/useSortHandlers'
 import useSearchTermsData from '@/hooks/useSearchTermsData'
+import useSearchTermsNavigation from '@/hooks/useSearchTermsNavigation'
 import RecordTable from "@/components/RecordTable"
 import TablePagination from "@/components/TablePagination"
 import { AddFilter, ActiveFilters } from "@/components/TableFilter"
@@ -26,7 +26,7 @@ import { KeywordColumn, SearchTermColumn } from '@/components/amazon-ads/search-
 const formatDate = (date) => format(date, 'yyyy-MM-dd')
 
 function SearchTerms() {
-  const navigate = useNavigate()
+  const { handleRowClick } = useSearchTermsNavigation()
 
   const {
     searchTerms,
@@ -101,16 +101,7 @@ function SearchTerms() {
   useEffect(() => { 
     form.onSubmit(handleSubmit)()
   }, [page, limit])
-
   
-  const handleRowClick = useCallback((row) => {
-    const entityType = getEntityType(row.matchType)
-    const entityId = row.keywordId
-    const paramMap = { target: 'targetId', keyword: 'keywordId' }
-    const param = paramMap[entityType]
-    navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?${param}=${entityId}`)
-  }, [navigate])
-
   const columnComponents = useMemo(() => ({
     keyword: (row) => (
       <KeywordColumn 
