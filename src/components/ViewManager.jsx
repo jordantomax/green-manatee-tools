@@ -44,7 +44,12 @@ export default function ViewManager({
 
   const handleSaveEdit = async () => {
     if (isEditing && viewState.activeViewId) {
-      await run(() => handlers.update(viewState.activeViewId, { name: editingName.trim() }), 'updateView')
+      const trimmedName = editingName.trim()
+      const currentView = views.find(view => String(view.id) === viewState.activeViewId)
+      
+      if (currentView && currentView.name !== trimmedName) {
+        await run(() => handlers.update(viewState.activeViewId, { name: trimmedName }), 'updateView')
+      }
     }
     setIsEditing(false)
     setEditingName('')
