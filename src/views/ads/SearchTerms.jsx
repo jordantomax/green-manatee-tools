@@ -52,35 +52,39 @@ function SearchTerms() {
     )
   }), [entities, negativeEntities])
 
-  const [
-    settings, 
-    setSettings
-  ] = usePersistentState('adsSearchTermSettings', {
-    dateRange: {
-      startDate: formatDate(subDays(new Date(), 31)),
-      endDate: formatDate(subDays(new Date(), 1)),
-    },
+  const [dateRange, setDateRange] = usePersistentState('searchTerms-dateRange', {
+    startDate: formatDate(subDays(new Date(), 31)),
+    endDate: formatDate(subDays(new Date(), 1)),
+  })
+  
+  const [pagination, setPagination] = usePersistentState('searchTerms-pagination', {
     page: 1,
     limit: 10,
     totalPages: 1,
-    filters: [],
-    sorts: [],
   })
+  
+  const [filters, setFilters] = usePersistentState('searchTerms-filters', [])
+  const [sorts, setSorts] = usePersistentState('searchTerms-sorts', [])
   
   const { 
     page,
     limit,
     handlePageChange,
     handleLimitChange,
-  } = usePagination(settings.page, settings.limit)
+  } = usePagination(pagination.page, pagination.limit)
 
   const form = useForm({
-    initialValues: settings,
+    initialValues: { 
+      dateRange,
+      filters,
+      sorts,
+      ...pagination
+    },
     validate: {
       'dateRange.startDate': validators.required('Start date'),
       'dateRange.endDate': validators.required('End date'),
     },
-    transformValues: ({ filters, sorts, dateRange, ...values }) => {
+    transformValues: ({ dateRange, filters, sorts, ...values }) => {
       return {
         ...values,
         dateRange,
@@ -88,40 +92,44 @@ function SearchTerms() {
         sort: Sort.toAPI(sorts)
       }
     },
-    onValuesChange: (values) => {
-      setSettings({ ...settings, ...values })
-    },
   })
 
   const filterHandlers = useFilterHandlers(
-    form.values.filters, (newFilters) => form.setFieldValue('filters', newFilters)
+    filters, setFilters
   )
   const sortHandlers = useSortHandlers(
-    form.values.sorts, (newSorts) => form.setFieldValue('sorts', newSorts)
+    sorts, setSorts
   )
   const { views, handlers: viewHandlers } = useViews(
     RECORD_TYPES.SEARCH_TERMS,
-    form.values.filters,
-    form.values.sorts
+    filters,
+    sorts
   )
   
   const handleSubmit = async ({ dateRange, ...transformedValues }) => {
-    const { pagination } = await getSearchTermsData({
+    const { pagination: newPagination } = await getSearchTermsData({
       ...transformedValues,
       dateRange,
       limit,
       page,
     })
-    setSettings({
-      ...form.values,
-      ...pagination,
-    })
+    setPagination(newPagination)
     form.resetDirty()
   }
 
   useEffect(() => { 
     form.onSubmit(handleSubmit)()
   }, [page, limit])
+  
+  // Sync form values when separate state changes
+  useEffect(() => {
+    form.setValues({
+      dateRange,
+      filters,
+      sorts,
+      ...pagination
+    })
+  }, [dateRange, filters, sorts, pagination])
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -134,8 +142,8 @@ function SearchTerms() {
 
           <Group gap="xs" align="flex-end">
             <DateRangeInputPicker 
-              value={form.values.dateRange}
-              onChange={(dateRange) => form.setFieldValue('dateRange', dateRange)}
+              value={dateRange}
+              onChange={setDateRange}
             />
 
             <AddFilter 
@@ -161,8 +169,8 @@ function SearchTerms() {
           <ViewManager
             views={views}
             resourceType={RECORD_TYPES.SEARCH_TERMS}
-            currentFilters={form.values.filters}
-            currentSorts={form.values.sorts}
+            currentFilters={filters}
+            currentSorts={sorts}
             onViewLoad={(view) => {
               // TODO: Parse and load view filters/sorts
             }}
@@ -170,13 +178,13 @@ function SearchTerms() {
           />
           
           <ActiveFilters 
-            filters={form.values.filters} 
+            filters={filters} 
             handleFilterRemove={filterHandlers.remove}
             handleFilterChange={filterHandlers.update}
           />
 
           <ActiveSorts
-            sorts={form.values.sorts}
+            sorts={sorts}
             handleSortRemove={sortHandlers.remove}
             handleSortChange={sortHandlers.update}
           />
@@ -195,7 +203,7 @@ function SearchTerms() {
         <TablePagination
           page={page}
           limit={limit}
-          totalPages={settings.totalPages}
+          totalPages={pagination.totalPages}
           handlePageChange={handlePageChange}
           handleLimitChange={handleLimitChange}
         />
