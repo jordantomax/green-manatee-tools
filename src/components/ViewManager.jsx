@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Button, Group, Tabs, Tooltip, TextInput, Loader } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 
@@ -15,6 +15,7 @@ export default function ViewManager({
 }) {
   const [isEditing, setIsEditing] = useState(false)
   const [editingName, setEditingName] = useState('')
+  const inputRef = useRef(null)
   const { run, isLoading, loadingStates } = useAsync()
 
   const handleTabChange = (value) => {
@@ -31,6 +32,12 @@ export default function ViewManager({
     setIsEditing(true)
     setEditingName(currentName)
   }
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.select()
+    }
+  }, [isEditing])
 
   const handleSaveEdit = async () => {
     if (isEditing && activeViewId) {
@@ -77,12 +84,10 @@ export default function ViewManager({
                   value={id}
                   onDoubleClick={() => activeViewId === id && handleStartEdit(name)}
                   classNames={{ tab: styles.tab }}
-                  style={{ 
-                    cursor: activeViewId === id ? 'pointer' : 'default'
-                  }}
                 >
                   {isEditing && activeViewId === id ? (
                     <TextInput
+                      ref={inputRef}
                       value={editingName}
                       onChange={(e) => setEditingName(e.target.value)}
                       onBlur={handleSaveEdit}
