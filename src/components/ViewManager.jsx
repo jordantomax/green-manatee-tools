@@ -23,12 +23,12 @@ export default function ViewManager({
 
   useEffect(() => {
     if (views.length > 0 && !viewState.activeViewId) {
-      setViewState('activeViewId', String(views[0].id))
+      setViewState({ ...viewState, activeViewId: String(views[0].id) })
     }
   }, [views, viewState.activeViewId, setViewState])
 
   const handleTabChange = (value) => {
-    setViewState('activeViewId', value)
+    setViewState({ ...viewState, activeViewId: value })
     onViewLoad?.(views.find(view => view.id === value))
   }
 
