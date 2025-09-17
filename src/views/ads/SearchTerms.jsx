@@ -94,7 +94,7 @@ function SearchTerms() {
   })
 
   const handleSubmit = async ({ dateRange, ...transformedValues }) => {
-    const { pagination: newPagination } = await getSearchTermsData({
+    await getSearchTermsData({
       dateRange,
       ...transformedValues,
       ...pagination,
@@ -106,7 +106,6 @@ function SearchTerms() {
     form.onSubmit(handleSubmit)()
   }, [pagination])
   
-  // Sync form values when separate state changes
   useEffect(() => {
     form.setValues({
       dateRange,
