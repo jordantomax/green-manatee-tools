@@ -90,6 +90,16 @@ export default function useViews(persistentStateKey, resourceType) {
       setActiveViewId(String(views[0].id))
     }
   }, [views, activeViewId, setActiveViewId])
+  
+  useEffect(() => {
+    if (activeViewId && views.length > 0) {
+      const activeView = views.find(view => String(view.id) === activeViewId)
+      if (activeView) {
+        setFilters(Filter.fromAPI(activeView.filter))
+        setSorts(Sort.fromAPI(activeView.sort))
+      }
+    }
+  }, [activeViewId, views, setFilters, setSorts])
 
   return {
     views,
