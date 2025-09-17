@@ -1,9 +1,14 @@
 import { useState, useCallback, useEffect } from 'react'
 import api from '@/api'
 import { Filter, Sort } from '@/utils/filter-sort'
+import useFilterHandlers from '@/hooks/useFilterHandlers'
+import useSortHandlers from '@/hooks/useSortHandlers'
+import usePersistentState from '@/hooks/usePersistentState'
 
-export default function useViewHandlers(resourceType, currentFilters, currentSorts) {
+export default function useViewHandlers(persistentStateKey, resourceType) {
   const [views, setViews] = useState([])
+  const [filters, setFilters] = usePersistentState(`${persistentStateKey}-filters`, [])
+  const [sorts, setSorts] = usePersistentState(`${persistentStateKey}-sorts`, [])
 
   const load = useCallback(async () => {
     const viewsData = await api.listViews(resourceType)
@@ -14,11 +19,11 @@ export default function useViewHandlers(resourceType, currentFilters, currentSor
     const newView = await api.createView({
       name: 'New View',
       resourceType,
-      filter: Filter.toAPI(currentFilters),
-      sort: Sort.toAPI(currentSorts)
+      filter: Filter.toAPI(filters),
+      sort: Sort.toAPI(sorts)
     })
     setViews(prev => [...prev, { ...newView, id: String(newView.id) }])
-  }, [resourceType, currentFilters, currentSorts])
+  }, [resourceType, filters, sorts])
 
   const update = useCallback(async (viewId, updates) => {
     await api.updateView(viewId, updates)
@@ -32,13 +37,24 @@ export default function useViewHandlers(resourceType, currentFilters, currentSor
     setViews(prev => prev.filter(view => view.id !== viewId))
   }, [])
 
+  const filterHandlers = useFilterHandlers(
+    filters, setFilters
+  )
+  const sortHandlers = useSortHandlers(
+    sorts, setSorts
+  )
+
   useEffect(() => {
     load()
   }, [load])
 
   return {
     views,
-    handlers: {
+    filters,
+    sorts,
+    filterHandlers,
+    sortHandlers,
+    viewHandlers: {
       load,
       create,
       update,

@@ -6,8 +6,6 @@ import { subDays, format } from 'date-fns'
 import { validators } from '@/utils/validation'
 import usePagination from '@/hooks/usePagination'
 import usePersistentState from '@/hooks/usePersistentState'
-import useFilterHandlers from '@/hooks/useFilterHandlers'
-import useSortHandlers from '@/hooks/useSortHandlers'
 import useViews from '@/hooks/useViews'
 import useSearchTermsData from '@/hooks/useSearchTermsData'
 import useSearchTermsNavigation from '@/hooks/useSearchTermsNavigation'
@@ -57,13 +55,23 @@ function SearchTerms() {
     endDate: formatDate(subDays(new Date(), 1)),
   })
   
-  const [filters, setFilters] = usePersistentState('searchTerms-filters', [])
-  const [sorts, setSorts] = usePersistentState('searchTerms-sorts', [])
   
   const { 
     pagination,
     handlers: paginationHandlers
   } = usePagination('searchTerms-pagination')
+
+  const { 
+    views, 
+    filters,
+    sorts,
+    viewHandlers,
+    filterHandlers,
+    sortHandlers
+  } = useViews(
+    'searchTerms-views',
+    RECORD_TYPES.SEARCH_TERMS,
+  )
 
   const form = useForm({
     initialValues: { 
@@ -86,26 +94,12 @@ function SearchTerms() {
     },
   })
 
-  const filterHandlers = useFilterHandlers(
-    filters, setFilters
-  )
-  const sortHandlers = useSortHandlers(
-    sorts, setSorts
-  )
-  const { views, handlers: viewHandlers } = useViews(
-    RECORD_TYPES.SEARCH_TERMS,
-    filters,
-    sorts
-  )
-  
   const handleSubmit = async ({ dateRange, ...transformedValues }) => {
     const { pagination: newPagination } = await getSearchTermsData({
-      ...transformedValues,
       dateRange,
+      ...transformedValues,
       ...pagination,
     })
-    // Note: We can't update pagination here since it's managed by usePagination hook
-    // The pagination will be updated by the API response handling
     form.resetDirty()
   }
 
