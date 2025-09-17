@@ -57,21 +57,13 @@ function SearchTerms() {
     endDate: formatDate(subDays(new Date(), 1)),
   })
   
-  const [pagination, setPagination] = usePersistentState('searchTerms-pagination', {
-    page: 1,
-    limit: 10,
-    totalPages: 1,
-  })
-  
   const [filters, setFilters] = usePersistentState('searchTerms-filters', [])
   const [sorts, setSorts] = usePersistentState('searchTerms-sorts', [])
   
   const { 
-    page,
-    limit,
-    handlePageChange,
-    handleLimitChange,
-  } = usePagination(pagination.page, pagination.limit)
+    pagination,
+    handlers: paginationHandlers
+  } = usePagination('searchTerms-pagination')
 
   const form = useForm({
     initialValues: { 
@@ -110,16 +102,16 @@ function SearchTerms() {
     const { pagination: newPagination } = await getSearchTermsData({
       ...transformedValues,
       dateRange,
-      limit,
-      page,
+      ...pagination,
     })
-    setPagination(newPagination)
+    // Note: We can't update pagination here since it's managed by usePagination hook
+    // The pagination will be updated by the API response handling
     form.resetDirty()
   }
 
   useEffect(() => { 
     form.onSubmit(handleSubmit)()
-  }, [page, limit])
+  }, [pagination])
   
   // Sync form values when separate state changes
   useEffect(() => {
@@ -201,11 +193,11 @@ function SearchTerms() {
         />
         
         <TablePagination
-          page={page}
-          limit={limit}
+          page={pagination.page}
+          limit={pagination.limit}
           totalPages={pagination.totalPages}
-          handlePageChange={handlePageChange}
-          handleLimitChange={handleLimitChange}
+          handlePageChange={paginationHandlers.pageChange}
+          handleLimitChange={paginationHandlers.limitChange}
         />
       </Stack>
     </form>
