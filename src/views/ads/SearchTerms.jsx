@@ -64,6 +64,7 @@ function SearchTerms() {
     views, 
     filters,
     sorts,
+    activeViewId,
     viewHandlers,
     filterHandlers,
     sortHandlers
@@ -152,7 +153,7 @@ function SearchTerms() {
         <Stack>
           <ViewManager
             views={views}
-            resourceType={RECORD_TYPES.SEARCH_TERMS}
+            activeViewId={activeViewId}
             currentFilters={filters}
             currentSorts={sorts}
             onViewLoad={(view) => {

@@ -7,6 +7,7 @@ export default function useViews(persistentStateKey, resourceType) {
   const [views, setViews] = useState([])
   const [filters, setFilters] = usePersistentState(`${persistentStateKey}-filters`, [])
   const [sorts, setSorts] = usePersistentState(`${persistentStateKey}-sorts`, [])
+  const [activeViewId, setActiveViewId] = usePersistentState(`${persistentStateKey}-activeViewId`, null)
 
   const viewHandlers = {
     load: useCallback(async () => {
@@ -34,7 +35,11 @@ export default function useViews(persistentStateKey, resourceType) {
     remove: useCallback(async (viewId) => {
       await api.deleteView(viewId)
       setViews(prev => prev.filter(view => view.id !== viewId))
-    }, [])
+    }, []),
+
+    setActive: useCallback((viewId) => {
+      setActiveViewId(viewId)
+    }, [setActiveViewId])
   }
 
   const filterHandlers = {
@@ -80,10 +85,17 @@ export default function useViews(persistentStateKey, resourceType) {
     viewHandlers.load()
   }, [viewHandlers.load])
 
+  useEffect(() => {
+    if (views.length > 0 && !activeViewId) {
+      setActiveViewId(String(views[0].id))
+    }
+  }, [views, activeViewId, setActiveViewId])
+
   return {
     views,
     filters,
     sorts,
+    activeViewId,
     viewHandlers,
     filterHandlers,
     sortHandlers,

@@ -1,34 +1,24 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Button, Group, Tabs, Tooltip, TextInput, Loader } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 
 import useAsync from '@/hooks/useAsync'
-import usePersistentState from '@/hooks/usePersistentState'
 import styles from '@/styles/ViewManager.module.css'
 
 export default function ViewManager({ 
   views = [],
-  resourceType, 
+  activeViewId,
   currentFilters = [], 
   currentSorts = [], 
   onViewLoad,
   handlers
 }) {
-  const [viewState, setViewState] = usePersistentState(
-    `viewManager-${resourceType}`, { activeViewId: null }
-  )
   const [isEditing, setIsEditing] = useState(false)
   const [editingName, setEditingName] = useState('')
   const { run, isLoading, loadingStates } = useAsync()
 
-  useEffect(() => {
-    if (views.length > 0 && !viewState.activeViewId) {
-      setViewState({ ...viewState, activeViewId: String(views[0].id) })
-    }
-  }, [views, viewState.activeViewId, setViewState])
-
   const handleTabChange = (value) => {
-    setViewState({ ...viewState, activeViewId: value })
+    handlers.setActive(value)
     onViewLoad?.(views.find(view => view.id === value))
   }
 
@@ -43,12 +33,12 @@ export default function ViewManager({
   }
 
   const handleSaveEdit = async () => {
-    if (isEditing && viewState.activeViewId) {
+    if (isEditing && activeViewId) {
       const trimmedName = editingName.trim()
-      const currentView = views.find(view => String(view.id) === viewState.activeViewId)
+      const currentView = views.find(view => String(view.id) === activeViewId)
       
       if (currentView && currentView.name !== trimmedName) {
-        await run(() => handlers.update(viewState.activeViewId, { name: trimmedName }), 'updateView')
+        await run(() => handlers.update(activeViewId, { name: trimmedName }), 'updateView')
       }
     }
     setIsEditing(false)
@@ -71,9 +61,9 @@ export default function ViewManager({
   
   return (
     <Group gap="xs">
-      {views.length > 0 && viewState.activeViewId && (
+      {views.length > 0 && activeViewId && (
         <Tabs 
-          value={viewState.activeViewId} 
+          value={activeViewId} 
           onChange={handleTabChange}
         >
           <Tabs.List>
@@ -85,13 +75,13 @@ export default function ViewManager({
                 <Tabs.Tab 
                   key={id} 
                   value={id}
-                  onDoubleClick={() => viewState.activeViewId === id && handleStartEdit(name)}
+                  onDoubleClick={() => activeViewId === id && handleStartEdit(name)}
                   classNames={{ tab: styles.tab }}
                   style={{ 
-                    cursor: viewState.activeViewId === id ? 'pointer' : 'default'
+                    cursor: activeViewId === id ? 'pointer' : 'default'
                   }}
                 >
-                  {isEditing && viewState.activeViewId === id ? (
+                  {isEditing && activeViewId === id ? (
                     <TextInput
                       value={editingName}
                       onChange={(e) => setEditingName(e.target.value)}
