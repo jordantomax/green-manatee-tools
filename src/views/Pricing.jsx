@@ -10,7 +10,7 @@ import {
   Text,
 } from '@mantine/core'
 
-import useLocalStorage from '@/hooks/useLocalStorage'
+import usePersistentState from '@/hooks/usePersistentState'
 
 const generatePricingScenarios = ({
   costOfGoods,
@@ -49,7 +49,7 @@ const generatePricingScenarios = ({
 }
 
 function Pricing() {
-  const [settings, setSetting] = useLocalStorage('pricingCalculator', {
+  const [settings, setSetting] = usePersistentState('pricingCalculator', {
     costOfGoods: 0,
     lowSalePrice: 0,
     highSalePrice: 0,

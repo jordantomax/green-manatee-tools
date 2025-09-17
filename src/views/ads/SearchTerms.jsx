@@ -5,7 +5,7 @@ import { subDays, format } from 'date-fns'
 
 import { validators } from '@/utils/validation'
 import usePagination from '@/hooks/usePagination'
-import useLocalStorage from '@/hooks/useLocalStorage'
+import usePersistentState from '@/hooks/usePersistentState'
 import useFilterHandlers from '@/hooks/useFilterHandlers'
 import useSortHandlers from '@/hooks/useSortHandlers'
 import useViews from '@/hooks/useViews'
@@ -55,7 +55,7 @@ function SearchTerms() {
   const [
     settings, 
     setSettings
-  ] = useLocalStorage('adsSearchTermSettings', {
+  ] = usePersistentState('adsSearchTermSettings', {
     dateRange: {
       startDate: formatDate(subDays(new Date(), 31)),
       endDate: formatDate(subDays(new Date(), 1)),

@@ -27,7 +27,7 @@ vi.mock('@/hooks/useAsync', () => ({
   })
 }))
 
-vi.mock('@/hooks/useLocalStorage', () => ({
+vi.mock('@/hooks/usePersistentState', () => ({
   default: () => [
     {
       dateRange: {
@@ -60,6 +60,7 @@ const setup = (searchTerms = []) => {
     data: searchTerms, pagination: { totalPages: 1 }
   })
   vi.mocked(api.listKeywords).mockResolvedValue([])
+  vi.mocked(api.listViews).mockResolvedValue([])
   
   renderWithProviders(
     <BrowserRouter>

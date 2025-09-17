@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { getLocalData, setLocalData } from '@/utils/storage'
 
-export default function useLocalStorage(key, defaultValues = {}) {
+export default function usePersistentState(key, defaultValues = {}) {
   if (typeof defaultValues !== 'object' || defaultValues === null || Array.isArray(defaultValues)) {
-    throw new Error('useLocalStorage: defaultValues must be a plain object')
+    throw new Error('usePersistentState: defaultValues must be a plain object')
   }
 
   const [values, setValues] = useState(() => {

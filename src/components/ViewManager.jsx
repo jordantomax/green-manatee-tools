@@ -3,7 +3,7 @@ import { Button, Group, Tabs, Tooltip, TextInput, Loader } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 
 import useAsync from '@/hooks/useAsync'
-import useLocalStorage from '@/hooks/useLocalStorage'
+import usePersistentState from '@/hooks/usePersistentState'
 import styles from '@/styles/ViewManager.module.css'
 
 export default function ViewManager({ 
@@ -14,7 +14,7 @@ export default function ViewManager({
   onViewLoad,
   handlers
 }) {
-  const [viewState, setViewState] = useLocalStorage(
+  const [viewState, setViewState] = usePersistentState(
     `viewManager-${resourceType}`, { activeViewId: null }
   )
   const [isEditing, setIsEditing] = useState(false)
