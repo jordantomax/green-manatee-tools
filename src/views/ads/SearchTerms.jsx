@@ -55,7 +55,6 @@ function SearchTerms() {
     endDate: formatDate(subDays(new Date(), 1)),
   })
   
-  
   const { 
     pagination,
     handlers: paginationHandlers

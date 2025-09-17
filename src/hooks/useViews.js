@@ -10,32 +10,34 @@ export default function useViewHandlers(persistentStateKey, resourceType) {
   const [filters, setFilters] = usePersistentState(`${persistentStateKey}-filters`, [])
   const [sorts, setSorts] = usePersistentState(`${persistentStateKey}-sorts`, [])
 
-  const load = useCallback(async () => {
-    const viewsData = await api.listViews(resourceType)
-    setViews(viewsData.map(view => ({ ...view, id: String(view.id) })))
-  }, [resourceType])
+  const viewHandlers = {
+    load: useCallback(async () => {
+      const viewsData = await api.listViews(resourceType)
+      setViews(viewsData.map(view => ({ ...view, id: String(view.id) })))
+    }, [resourceType]),
 
-  const create = useCallback(async () => {
-    const newView = await api.createView({
-      name: 'New View',
-      resourceType,
-      filter: Filter.toAPI(filters),
-      sort: Sort.toAPI(sorts)
-    })
-    setViews(prev => [...prev, { ...newView, id: String(newView.id) }])
-  }, [resourceType, filters, sorts])
+    create: useCallback(async () => {
+      const newView = await api.createView({
+        name: 'New View',
+        resourceType,
+        filter: Filter.toAPI(filters),
+        sort: Sort.toAPI(sorts)
+      })
+      setViews(prev => [...prev, { ...newView, id: String(newView.id) }])
+    }, [resourceType, filters, sorts]),
 
-  const update = useCallback(async (viewId, updates) => {
-    await api.updateView(viewId, updates)
-    setViews(prev => prev.map(view => 
-      view.id === viewId ? { ...view, ...updates } : view
-    ))
-  }, [])
+    update: useCallback(async (viewId, updates) => {
+      await api.updateView(viewId, updates)
+      setViews(prev => prev.map(view => 
+        view.id === viewId ? { ...view, ...updates } : view
+      ))
+    }, []),
 
-  const remove = useCallback(async (viewId) => {
-    await api.deleteView(viewId)
-    setViews(prev => prev.filter(view => view.id !== viewId))
-  }, [])
+    remove: useCallback(async (viewId) => {
+      await api.deleteView(viewId)
+      setViews(prev => prev.filter(view => view.id !== viewId))
+    }, [])
+  }
 
   const filterHandlers = useFilterHandlers(
     filters, setFilters
@@ -45,20 +47,15 @@ export default function useViewHandlers(persistentStateKey, resourceType) {
   )
 
   useEffect(() => {
-    load()
-  }, [load])
+    viewHandlers.load()
+  }, [viewHandlers.load])
 
   return {
     views,
     filters,
     sorts,
+    viewHandlers,
     filterHandlers,
     sortHandlers,
-    viewHandlers: {
-      load,
-      create,
-      update,
-      remove
-    }
   }
 }
