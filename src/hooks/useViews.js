@@ -1,11 +1,9 @@
 import { useState, useCallback, useEffect } from 'react'
 import api from '@/api'
 import { Filter, Sort } from '@/utils/filter-sort'
-import useFilterHandlers from '@/hooks/useFilterHandlers'
-import useSortHandlers from '@/hooks/useSortHandlers'
 import usePersistentState from '@/hooks/usePersistentState'
 
-export default function useViewHandlers(persistentStateKey, resourceType) {
+export default function useViews(persistentStateKey, resourceType) {
   const [views, setViews] = useState([])
   const [filters, setFilters] = usePersistentState(`${persistentStateKey}-filters`, [])
   const [sorts, setSorts] = usePersistentState(`${persistentStateKey}-sorts`, [])
@@ -39,12 +37,44 @@ export default function useViewHandlers(persistentStateKey, resourceType) {
     }, [])
   }
 
-  const filterHandlers = useFilterHandlers(
-    filters, setFilters
-  )
-  const sortHandlers = useSortHandlers(
-    sorts, setSorts
-  )
+  const filterHandlers = {
+    add: useCallback((column) => {
+      const filter = Filter.create(column)
+      setFilters([...filters, filter])
+    }, [filters, setFilters]),
+
+    remove: useCallback((filterId) => {
+      const newFilters = filters.filter(f => f.id !== filterId)
+      setFilters(newFilters)
+    }, [filters, setFilters]),
+
+    update: useCallback((filterId, condition, value) => {
+      const newFilters = filters.map(f => 
+        f.id === filterId ? { ...f, condition, value } : f
+      )
+      setFilters(newFilters)
+    }, [filters, setFilters])
+  }
+
+  const sortHandlers = {
+    add: useCallback((column) => {
+      const newSort = Sort.create(column)
+      const currentSorts = sorts || []
+      setSorts([...currentSorts, newSort])
+    }, [sorts, setSorts]),
+
+    remove: useCallback((sortId) => {
+      const newSorts = sorts.filter(s => s.id !== sortId)
+      setSorts(newSorts)
+    }, [sorts, setSorts]),
+
+    update: useCallback((sortId, column, direction) => {
+      const newSorts = sorts.map(s => 
+        s.id === sortId ? { ...s, column, direction } : s
+      )
+      setSorts(newSorts)
+    }, [sorts, setSorts])
+  }
 
   useEffect(() => {
     viewHandlers.load()
