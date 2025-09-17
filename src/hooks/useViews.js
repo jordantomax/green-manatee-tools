@@ -2,40 +2,54 @@ import { useState, useCallback, useEffect } from 'react'
 import api from '@/api'
 import { Filter, Sort } from '@/utils/filter-sort'
 import usePersistentState from '@/hooks/usePersistentState'
+import useAsync from '@/hooks/useAsync'
 
 export default function useViews(persistentStateKey, resourceType) {
   const [views, setViews] = useState([])
   const [filters, setFilters] = usePersistentState(`${persistentStateKey}-filters`, [])
   const [sorts, setSorts] = usePersistentState(`${persistentStateKey}-sorts`, [])
   const [activeViewId, setActiveViewId] = usePersistentState(`${persistentStateKey}-activeViewId`, null)
+  const { run, isLoading, loadingStates } = useAsync()
+
+  const getViewById = useCallback((viewId) => {
+    return views.find(view => String(view.id) === viewId) || null
+  }, [views])
 
   const viewHandlers = {
-    load: useCallback(async () => {
-      const viewsData = await api.listViews(resourceType)
-      setViews(viewsData.map(view => ({ ...view, id: String(view.id) })))
-    }, [resourceType]),
+    load: useCallback(() => {
+      return run(async () => {
+        const viewsData = await api.listViews(resourceType)
+        setViews(viewsData.map(view => ({ ...view, id: String(view.id) })))
+      }, 'loadViews')
+    }, [resourceType, run]),
 
-    create: useCallback(async () => {
-      const newView = await api.createView({
-        name: 'New View',
-        resourceType,
-        filter: Filter.toAPI(filters),
-        sort: Sort.toAPI(sorts)
-      })
-      setViews(prev => [...prev, { ...newView, id: String(newView.id) }])
-    }, [resourceType, filters, sorts]),
+    create: useCallback(() => {
+      return run(async () => {
+        const newView = await api.createView({
+          name: 'New View',
+          resourceType,
+          filter: Filter.toAPI(filters),
+          sort: Sort.toAPI(sorts)
+        })
+        setViews(prev => [...prev, { ...newView, id: String(newView.id) }])
+      }, 'createView')
+    }, [resourceType, filters, sorts, run]),
 
-    update: useCallback(async (viewId, updates) => {
-      await api.updateView(viewId, updates)
-      setViews(prev => prev.map(view => 
-        view.id === viewId ? { ...view, ...updates } : view
-      ))
-    }, []),
+    update: useCallback((viewId, updates) => {
+      return run(async () => {
+        await api.updateView(viewId, updates)
+        setViews(prev => prev.map(view => 
+          view.id === viewId ? { ...view, ...updates } : view
+        ))
+      }, 'updateView')
+    }, [run]),
 
-    remove: useCallback(async (viewId) => {
-      await api.deleteView(viewId)
-      setViews(prev => prev.filter(view => view.id !== viewId))
-    }, []),
+    remove: useCallback((viewId) => {
+      return run(async () => {
+        await api.deleteView(viewId)
+        setViews(prev => prev.filter(view => view.id !== viewId))
+      }, 'removeView')
+    }, [run]),
 
     setActive: useCallback((viewId) => {
       setActiveViewId(viewId)
@@ -83,23 +97,33 @@ export default function useViews(persistentStateKey, resourceType) {
 
   useEffect(() => {
     viewHandlers.load()
-  }, [viewHandlers.load])
+  }, [])
 
   useEffect(() => {
     if (views.length > 0 && !activeViewId) {
       setActiveViewId(String(views[0].id))
     }
-  }, [views, activeViewId, setActiveViewId])
+  }, [views, activeViewId])
   
   useEffect(() => {
-    if (activeViewId && views.length > 0) {
-      const activeView = views.find(view => String(view.id) === activeViewId)
-      if (activeView) {
-        setFilters(Filter.fromAPI(activeView.filter))
-        setSorts(Sort.fromAPI(activeView.sort))
-      }
+    const activeView = getViewById(activeViewId)
+
+    if (activeView) {
+      setFilters(Filter.fromAPI(activeView.filter))
+      setSorts(Sort.fromAPI(activeView.sort))
     }
-  }, [activeViewId, views, setFilters, setSorts])
+  }, [activeViewId])
+
+  useEffect(() => {
+    const activeView = getViewById(activeViewId)
+
+    if (activeView) {
+      viewHandlers.update(activeView.id, {
+        filter: Filter.toAPI(filters),
+        sort: Sort.toAPI(sorts)
+      })
+    }
+  }, [filters, sorts])
 
   return {
     views,
@@ -109,5 +133,7 @@ export default function useViews(persistentStateKey, resourceType) {
     viewHandlers,
     filterHandlers,
     sortHandlers,
+    isLoading,
+    loadingStates,
   }
 }

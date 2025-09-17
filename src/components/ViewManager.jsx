@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Button, Group, Tabs, Tooltip, TextInput, Loader } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 
-import useAsync from '@/hooks/useAsync'
 import styles from '@/styles/ViewManager.module.css'
 
 export default function ViewManager({ 
@@ -11,21 +10,20 @@ export default function ViewManager({
   currentFilters = [], 
   currentSorts = [], 
   onViewLoad,
-  handlers
+  viewHandlers,
+  isLoading = false
 }) {
   const [isEditing, setIsEditing] = useState(false)
   const [editingName, setEditingName] = useState('')
   const inputRef = useRef(null)
-  const { run, isLoading, loadingStates } = useAsync()
-
+  
   const handleTabChange = (value) => {
-    handlers.setActive(value)
+    viewHandlers.setActive(value)
     onViewLoad?.(views.find(view => view.id === value))
   }
 
   const handleCreateView = () => {
-    run(() => handlers.create(), 'createView')
-    handlers.load()
+    viewHandlers.create()
   }
 
   const handleStartEdit = (currentName) => {
@@ -45,7 +43,7 @@ export default function ViewManager({
       const currentView = views.find(view => String(view.id) === activeViewId)
       
       if (currentView && currentView.name !== trimmedName) {
-        await run(() => handlers.update(activeViewId, { name: trimmedName }), 'updateView')
+        await viewHandlers.update(activeViewId, { name: trimmedName })
       }
     }
     setIsEditing(false)
@@ -96,7 +94,7 @@ export default function ViewManager({
                       autoFocus
                       classNames={{input: styles.editInput}}
                       rightSection={
-                        loadingStates.updateView ? <Loader size="xs" /> : null
+                        isLoading ? <Loader size="xs" /> : null
                       }
                     />
                   ) : (
@@ -113,16 +111,17 @@ export default function ViewManager({
 
       <Tooltip label="New view">
         <Button
-          color="gray"
-          variant="subtle"
+          color="black"
+          variant="transparent"
           size="sx"
           p="xs"
           onClick={handleCreateView}
           radius="50%"
           disabled={
             currentFilters.length === 0 && currentSorts.length === 0 ||
-            loadingStates.createView
+            isLoading
           }
+          classNames={{ root: styles.createButton }}
         >
           <IconPlus size={21} />
         </Button>

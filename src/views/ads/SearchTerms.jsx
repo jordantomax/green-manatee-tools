@@ -67,7 +67,8 @@ function SearchTerms() {
     activeViewId,
     viewHandlers,
     filterHandlers,
-    sortHandlers
+    sortHandlers,
+    isLoading: viewsLoading
   } = useViews(
     'searchTerms-views',
     RECORD_TYPES.SEARCH_TERMS,
@@ -159,7 +160,8 @@ function SearchTerms() {
             onViewLoad={(view) => {
               // TODO: Parse and load view filters/sorts
             }}
-            handlers={viewHandlers}
+            viewHandlers={viewHandlers}
+            isLoading={viewsLoading}
           />
           
           <ActiveFilters 

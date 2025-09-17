@@ -14,7 +14,7 @@ export default function useAsync() {
     }
   }, [])
 
-  const isLoading = useMemo(() => loadingStates.default || false, [loadingStates.default])
+  const isLoading = useMemo(() => Object.values(loadingStates).some(Boolean), [loadingStates])
 
   return {
     isLoading,
