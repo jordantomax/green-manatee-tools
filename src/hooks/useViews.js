@@ -9,6 +9,7 @@ export default function useViews(persistentStateKey, resourceType) {
   const [filters, setFilters] = usePersistentState(`${persistentStateKey}-filters`, [])
   const [sorts, setSorts] = usePersistentState(`${persistentStateKey}-sorts`, [])
   const [activeViewId, setActiveViewId] = usePersistentState(`${persistentStateKey}-activeViewId`, null)
+  const [newlyAddedFilterId, setNewlyAddedFilterId] = useState(null)
   const { run, isLoading, loadingStates } = useAsync()
 
   const getViewById = useCallback((viewId) => {
@@ -60,6 +61,9 @@ export default function useViews(persistentStateKey, resourceType) {
     add: useCallback((column) => {
       const filter = Filter.create(column)
       setFilters([...filters, filter])
+      setNewlyAddedFilterId(filter.id)
+      // Clear the signal after component re-renders
+      setTimeout(() => setNewlyAddedFilterId(null), 0)
     }, [filters, setFilters]),
 
     remove: useCallback((filterId) => {
@@ -133,6 +137,7 @@ export default function useViews(persistentStateKey, resourceType) {
     viewHandlers,
     filterHandlers,
     sortHandlers,
+    newlyAddedFilterId,
     isLoading,
     loadingStates,
   }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Button, Group, Select, NumberInput, Box, Pill, Popover, Stack, TextInput, Text } from '@mantine/core'
 import { DateInput } from '@mantine/dates'
 import isEmpty from 'lodash-es/isEmpty'
@@ -115,14 +115,7 @@ const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange, isNewlyA
   )
 }
 
-const ActiveFilters = ({ filters, handleFilterRemove, handleFilterChange }) => {
-  const prevFilterCount = useRef(filters.length)
-  const isNewlyAdded = filters.length > prevFilterCount.current
-  
-  useEffect(() => {
-    prevFilterCount.current = filters.length
-  }, [filters.length])
-
+const ActiveFilters = ({ filters, handleFilterRemove, handleFilterChange, newlyAddedFilterId }) => {
   if (isEmpty(filters)) return null
 
   return (
@@ -135,7 +128,7 @@ const ActiveFilters = ({ filters, handleFilterRemove, handleFilterChange }) => {
           filter={filter} 
           handleFilterRemove={handleFilterRemove} 
           handleFilterChange={handleFilterChange}
-          isNewlyAdded={isNewlyAdded && index === filters.length - 1}
+          isNewlyAdded={filter.id === newlyAddedFilterId}
         />
       ))}
     </Group>

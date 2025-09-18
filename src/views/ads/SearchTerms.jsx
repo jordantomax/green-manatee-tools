@@ -62,14 +62,15 @@ function SearchTerms() {
     handlers: paginationHandlers
   } = usePagination('searchTerms-pagination')
 
-  const { 
-    views, 
+  const {
+    views,
     filters,
     sorts,
     activeViewId,
     viewHandlers,
     filterHandlers,
     sortHandlers,
+    newlyAddedFilterId,
     isLoading: viewsLoading
   } = useViews(
     'searchTerms-views',
@@ -170,6 +171,7 @@ function SearchTerms() {
             filters={filters} 
             handleFilterRemove={filterHandlers.remove}
             handleFilterChange={filterHandlers.update}
+            newlyAddedFilterId={newlyAddedFilterId}
           />
 
           <ActiveSorts
