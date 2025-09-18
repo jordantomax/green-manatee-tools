@@ -36,7 +36,9 @@ export default function useViews(persistentStateKey, resourceType) {
       }, 'createView')
     }, [resourceType, filters, sorts, run]),
 
-    update: useCallback((viewId, updates) => {
+    update: useCallback((viewId, {filters, sorts, ...updates}) => {
+      updates.filter = Filter.toAPI(filters)
+      updates.sort = Sort.toAPI(sorts)
       return run(async () => {
         await api.updateView(viewId, updates)
         setViews(prev => prev.map(view => 
@@ -107,7 +109,7 @@ export default function useViews(persistentStateKey, resourceType) {
     if (views.length > 0 && !activeViewId) {
       setActiveViewId(String(views[0].id))
     }
-  }, [views, activeViewId])
+  }, [views])
   
   useEffect(() => {
     const activeView = getViewById(activeViewId)
@@ -122,10 +124,7 @@ export default function useViews(persistentStateKey, resourceType) {
     const activeView = getViewById(activeViewId)
 
     if (activeView) {
-      viewHandlers.update(activeView.id, {
-        filter: Filter.toAPI(filters),
-        sort: Sort.toAPI(sorts)
-      })
+      viewHandlers.update(activeView.id, { filters, sorts })
     }
   }, [filters, sorts])
 

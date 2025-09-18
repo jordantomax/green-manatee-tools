@@ -103,12 +103,12 @@ function SearchTerms() {
     })
     form.resetDirty()
   }
-  
+
   const refresh = (e) => {
     e?.preventDefault && e.preventDefault()
     form.onSubmit(handleSubmit)()
   }
-
+  
   useEffect(() => { 
     refresh()
   }, [pagination])
