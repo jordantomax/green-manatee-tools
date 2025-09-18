@@ -1,34 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { Button, Group, Select, NumberInput, Box, Pill, Popover, Stack, TextInput, Text } from '@mantine/core'
 import { DateInput } from '@mantine/dates'
-import { IconFilter2 } from '@tabler/icons-react'
 import isEmpty from 'lodash-es/isEmpty'
-import startCase from 'lodash-es/startCase'
 
 import { conditionLabels } from '@/utils/table'
-import SearchableSelect from '@/components/SearchableSelect'
 import styles from '@/styles/TableFilter.module.css'
-
-export const AddFilter = ({ columns, handleFilterAdd }) => {
-  if (!columns) return null
-
-  return (
-    <Group>
-      <SearchableSelect
-        label={<IconFilter2 size={21} />}
-        options={columns.map(column => ({
-          value: column,
-          label: startCase(column),
-        }))}
-        onSelect={handleFilterAdd}
-        placeholder="Filter columns..."
-        buttonProps={{
-          p: 'xs',
-        }}
-      />
-    </Group>
-  )
-}
 
 const FilterInputComponents = {
   string: TextInput,
@@ -139,7 +115,7 @@ const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange, isNewlyA
   )
 }
 
-export const ActiveFilters = ({ filters, handleFilterRemove, handleFilterChange }) => {
+const ActiveFilters = ({ filters, handleFilterRemove, handleFilterChange }) => {
   const prevFilterCount = useRef(filters.length)
   const isNewlyAdded = filters.length > prevFilterCount.current
   
@@ -165,3 +141,5 @@ export const ActiveFilters = ({ filters, handleFilterRemove, handleFilterChange 
     </Group>
   )
 }
+
+export default ActiveFilters

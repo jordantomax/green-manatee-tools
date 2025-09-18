@@ -11,8 +11,10 @@ import useSearchTermsData from '@/hooks/useSearchTermsData'
 import useSearchTermsNavigation from '@/hooks/useSearchTermsNavigation'
 import RecordTable from "@/components/RecordTable"
 import TablePagination from "@/components/TablePagination"
-import { AddFilter, ActiveFilters } from "@/components/TableFilter"
-import { AddSort, ActiveSorts } from "@/components/TableSort"
+import AddFilter from "@/components/AddFilter"
+import ActiveFilters from "@/components/ActiveFilters"
+import AddSort from "@/components/AddSort"
+import ActiveSorts from "@/components/ActiveSorts"
 import DateRangeInputPicker from "@/components/DateRangeInputPicker"
 import ViewManager from "@/components/ViewManager"
 import { columnTypes, getSortableColumns } from '@/utils/table'

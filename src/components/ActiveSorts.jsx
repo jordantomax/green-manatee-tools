@@ -1,32 +1,9 @@
 import { useState } from 'react'
 import { Button, Group, Select, Box, Pill, Popover, Stack, Text } from '@mantine/core'
-import { IconArrowsSort } from '@tabler/icons-react'
 import startCase from 'lodash-es/startCase'
 
 import { sortDirections, columnTypes } from '@/utils/table'
-import SearchableSelect from '@/components/SearchableSelect'
 import styles from '@/styles/TableFilter.module.css'
-
-export const AddSort = ({ columns, handleSortAdd }) => {
-  if (!columns) return null
-
-  return (
-    <Group>
-      <SearchableSelect
-        label={<IconArrowsSort size={21} />}
-        options={columns.map(column => ({
-          value: column,
-          label: startCase(column),
-        }))}
-        onSelect={handleSortAdd}
-        placeholder="Sort columns..."
-        buttonProps={{
-          p: 'xs',
-        }}
-      />
-    </Group>
-  )
-}
 
 const ActiveSort = ({ sort, handleSortRemove, handleSortChange }) => {
   const [isEditing, setIsEditing] = useState(false)
@@ -102,7 +79,7 @@ const ActiveSort = ({ sort, handleSortRemove, handleSortChange }) => {
   )
 }
 
-export const ActiveSorts = ({ sorts, handleSortRemove, handleSortChange }) => {
+const ActiveSorts = ({ sorts, handleSortRemove, handleSortChange }) => {
   if (!sorts || sorts.length === 0) return null
 
   return (
@@ -120,3 +97,5 @@ export const ActiveSorts = ({ sorts, handleSortRemove, handleSortChange }) => {
     </Group>
   )
 }
+
+export default ActiveSorts
