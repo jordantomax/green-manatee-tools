@@ -46,10 +46,15 @@ vi.mock('@/hooks/usePersistentState', () => ({
 
 vi.mock('@/hooks/usePagination', () => ({
   default: () => ({
-    page: 1,
-    limit: 10,
-    handlePageChange: vi.fn(),
-    handleLimitChange: vi.fn()
+    pagination: {
+      page: 1,
+      limit: 10,
+      totalPages: 1
+    },
+    handlers: {
+      pageChange: vi.fn(),
+      limitChange: vi.fn()
+    }
   })
 }))
 
