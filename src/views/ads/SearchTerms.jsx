@@ -72,10 +72,7 @@ function SearchTerms() {
     sortHandlers,
     newlyAddedFilterId,
     isLoading: viewsLoading
-  } = useViews(
-    'searchTerms-views',
-    RECORD_TYPES.SEARCH_TERMS,
-  )
+  } = useViews('searchTerms-views', RECORD_TYPES.SEARCH_TERMS)
 
   const form = useForm({
     initialValues: { 
@@ -106,9 +103,14 @@ function SearchTerms() {
     })
     form.resetDirty()
   }
+  
+  const refresh = (e) => {
+    e?.preventDefault && e.preventDefault()
+    form.onSubmit(handleSubmit)()
+  }
 
   useEffect(() => { 
-    form.onSubmit(handleSubmit)()
+    refresh()
   }, [pagination])
   
   useEffect(() => {
@@ -121,7 +123,7 @@ function SearchTerms() {
   }, [dateRange, filters, sorts, pagination])
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)}>
+    <form onSubmit={refresh}>
       <Stack>
         <Group justify="space-between" align="flex-start">
           <Group gap="sm">
