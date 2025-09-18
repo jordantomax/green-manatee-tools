@@ -39,11 +39,10 @@ describe('useViews', () => {
 
       it('Does not update view', async () => {
         const result = await setup()
-        const updateSpy = vi.spyOn(result.current.viewHandlers, 'update')
 
         await act(async () => result.current.filterHandlers.add('test'))
 
-        expect(updateSpy).not.toHaveBeenCalled()
+        expect(api.updateView).not.toHaveBeenCalled()
       })
     })
 
