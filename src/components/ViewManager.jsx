@@ -7,8 +7,8 @@ import styles from '@/styles/ViewManager.module.css'
 export default function ViewManager({ 
   views = [],
   activeViewId,
-  currentFilters = [], 
-  currentSorts = [], 
+  filters = [], 
+  sorts = [], 
   onViewLoad,
   viewHandlers,
   isLoading = false
@@ -118,7 +118,7 @@ export default function ViewManager({
           onClick={handleCreateView}
           radius="50%"
           disabled={
-            currentFilters.length === 0 && currentSorts.length === 0 ||
+            filters.length === 0 && sorts.length === 0 ||
             isLoading
           }
           classNames={{ root: styles.createButton }}

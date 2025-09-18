@@ -155,8 +155,8 @@ function SearchTerms() {
           <ViewManager
             views={views}
             activeViewId={activeViewId}
-            currentFilters={filters}
-            currentSorts={sorts}
+            filters={filters}
+            sorts={sorts}
             onViewLoad={(view) => {
               // TODO: Parse and load view filters/sorts
             }}
