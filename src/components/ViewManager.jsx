@@ -9,7 +9,6 @@ export default function ViewManager({
   activeViewId,
   filters = [], 
   sorts = [], 
-  onViewLoad,
   viewHandlers,
   isLoading = false
 }) {
@@ -19,7 +18,6 @@ export default function ViewManager({
   
   const handleTabChange = (value) => {
     viewHandlers.setActive(value)
-    onViewLoad?.(views.find(view => view.id === value))
   }
 
   const handleCreateView = () => {

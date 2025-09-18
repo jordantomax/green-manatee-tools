@@ -160,9 +160,6 @@ function SearchTerms() {
             activeViewId={activeViewId}
             filters={filters}
             sorts={sorts}
-            onViewLoad={(view) => {
-              // TODO: Parse and load view filters/sorts
-            }}
             viewHandlers={viewHandlers}
             isLoading={viewsLoading}
           />
