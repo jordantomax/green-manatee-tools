@@ -1,9 +1,8 @@
 import { useEffect, useMemo } from "react"
 import { Stack, Title, Group, Loader, Button } from "@mantine/core"
-import { useForm } from '@mantine/form'
 import { subDays, format } from 'date-fns'
+import isEqual from 'lodash-es/isEqual'
 
-import { validators } from '@/utils/validation'
 import usePagination from '@/hooks/usePagination'
 import usePersistentState from '@/hooks/usePersistentState'
 import useViews from '@/hooks/useViews'
@@ -18,7 +17,6 @@ import ActiveSorts from "@/components/ActiveSorts"
 import DateRangeInputPicker from "@/components/DateRangeInputPicker"
 import ViewManager from "@/components/ViewManager"
 import { columnTypes, getSortableColumns } from '@/utils/table'
-import { Filter, Sort } from '@/utils/filter-sort'
 import { SEARCH_TERMS_HIDDEN_COLUMNS, RECORD_TYPES } from '@/utils/constants'
 import { KeywordColumn, SearchTermColumn } from '@/components/amazon-ads/search-terms'
 
@@ -33,6 +31,7 @@ function SearchTerms() {
     entities,
     negativeEntities,
     getSearchTermsData,
+    lastCallParams,
     isLoading: searchTermsLoading
   } = useSearchTermsData()
   
@@ -52,6 +51,15 @@ function SearchTerms() {
     )
   }), [entities, negativeEntities])
 
+  const refresh = async (view) => {
+    await getSearchTermsData({
+      dateRange,
+      filters: view?.filters || filters,
+      sorts: view?.sorts || sorts,
+      ...pagination,
+    })
+  }
+  
   const [dateRange, setDateRange] = usePersistentState('searchTerms-dateRange', {
     startDate: formatDate(subDays(new Date(), 31)),
     endDate: formatDate(subDays(new Date(), 1)),
@@ -72,133 +80,94 @@ function SearchTerms() {
     sortHandlers,
     newlyAddedFilterId,
     isLoading: viewsLoading
-  } = useViews('searchTerms-views', RECORD_TYPES.SEARCH_TERMS)
+  } = useViews('searchTerms-views', RECORD_TYPES.SEARCH_TERMS, { onActiveViewChange: refresh })
 
-  const form = useForm({
-    initialValues: { 
-      dateRange,
-      filters,
-      sorts,
-      ...pagination
-    },
-    validate: {
-      'dateRange.startDate': validators.required('Start date'),
-      'dateRange.endDate': validators.required('End date'),
-    },
-    transformValues: ({ dateRange, filters, sorts, ...values }) => {
-      return {
-        ...values,
-        dateRange,
-        filter: Filter.toAPI(filters),
-        sort: Sort.toAPI(sorts)
-      }
-    },
-  })
-
-  const handleSubmit = async ({ dateRange, ...transformedValues }) => {
-    await getSearchTermsData({
-      dateRange,
-      ...transformedValues,
-      ...pagination,
-    })
-    form.resetDirty()
-  }
-
-  const refresh = (e) => {
-    e?.preventDefault && e.preventDefault()
-    form.onSubmit(handleSubmit)()
-  }
-  
   useEffect(() => { 
     refresh()
   }, [pagination])
   
-  useEffect(() => {
-    form.setValues({
-      dateRange,
-      filters,
-      sorts,
-      ...pagination
-    })
-  }, [dateRange, filters, sorts, pagination])
+  const currentParams = useMemo(() => ({ dateRange, filters, sorts }), [dateRange, filters, sorts])
+  
+  const formIsDirty = useMemo(() => {
+    return !isEqual(lastCallParams, currentParams)
+  }, [lastCallParams, currentParams])
 
   return (
-    <form onSubmit={refresh}>
-      <Stack>
-        <Group justify="space-between" align="flex-start">
-          <Group gap="sm">
-            <Title order={2}>Search Terms</Title>
-            {searchTermsLoading && <Loader size="sm" />}
-          </Group>
-
-          <Group gap="xs" align="flex-end">
-            <DateRangeInputPicker 
-              value={dateRange}
-              onChange={setDateRange}
-            />
-
-            <AddFilter 
-              columns={Object.keys(columnTypes)}
-              handleFilterAdd={filterHandlers.add}
-            />
-
-            <AddSort
-              columns={getSortableColumns()}
-              handleSortAdd={sortHandlers.add}
-            />
-
-            <Button 
-              variant="light" 
-              type="submit" 
-              disabled={!form.isDirty()}
-              children="Refresh"
-            />
-          </Group>
+    <Stack>
+      <Group justify="space-between" align="flex-start">
+        <Group gap="sm">
+          <Title order={2}>Search Terms</Title>
+          {searchTermsLoading && <Loader size="sm" />}
         </Group>
 
-        <Stack>
-          <ViewManager
-            views={views}
-            activeViewId={activeViewId}
-            filters={filters}
-            sorts={sorts}
-            viewHandlers={viewHandlers}
-            isLoading={viewsLoading}
-          />
-          
-          <ActiveFilters 
-            filters={filters} 
-            handleFilterRemove={filterHandlers.remove}
-            handleFilterChange={filterHandlers.update}
-            newlyAddedFilterId={newlyAddedFilterId}
+        <Group gap="xs" align="flex-end">
+          <DateRangeInputPicker 
+            value={dateRange}
+            onChange={setDateRange}
           />
 
-          <ActiveSorts
-            sorts={sorts}
-            handleSortRemove={sortHandlers.remove}
-            handleSortChange={sortHandlers.update}
+          <AddFilter 
+            columns={Object.keys(columnTypes)}
+            handleFilterAdd={filterHandlers.add}
           />
-        </Stack>
 
-        <RecordTable 
-          {...useMemo(() => ({
-            data: searchTerms,
-            columnComponents,
-            columnOrder: ['keyword', 'searchTerm', 'matchType', 'acosClicks7d'],
-            hiddenColumns: SEARCH_TERMS_HIDDEN_COLUMNS,
-            handleRowClick,
-          }), [searchTerms, columnComponents, handleRowClick])}
+          <AddSort
+            columns={getSortableColumns()}
+            handleSortAdd={sortHandlers.add}
+          />
+
+          <Button 
+            variant="light" 
+            type="submit" 
+            disabled={!formIsDirty}
+            children="Refresh"
+            onClick={refresh}
+          />
+        </Group>
+      </Group>
+
+      <Stack>
+        <ViewManager
+          views={views}
+          activeViewId={activeViewId}
+          filters={filters}
+          sorts={sorts}
+          viewHandlers={viewHandlers}
+          isLoading={viewsLoading}
         />
         
-        <TablePagination
-          page={pagination.page}
-          limit={pagination.limit}
-          totalPages={pagination.totalPages}
-          handlePageChange={paginationHandlers.pageChange}
-          handleLimitChange={paginationHandlers.limitChange}
+        <ActiveFilters 
+          filters={filters} 
+          handleFilterRemove={filterHandlers.remove}
+          handleFilterChange={filterHandlers.update}
+          newlyAddedFilterId={newlyAddedFilterId}
+        />
+
+        <ActiveSorts
+          sorts={sorts}
+          handleSortRemove={sortHandlers.remove}
+          handleSortChange={sortHandlers.update}
         />
       </Stack>
-    </form>
+
+      <RecordTable 
+        {...useMemo(() => ({
+          data: searchTerms,
+          columnComponents,
+          columnOrder: ['keyword', 'searchTerm', 'matchType', 'acosClicks7d'],
+          hiddenColumns: SEARCH_TERMS_HIDDEN_COLUMNS,
+          handleRowClick,
+        }), [searchTerms, columnComponents, handleRowClick])}
+      />
+      
+      <TablePagination
+        page={pagination.page}
+        limit={pagination.limit}
+        totalPages={pagination.totalPages}
+        handlePageChange={paginationHandlers.pageChange}
+        handleLimitChange={paginationHandlers.limitChange}
+      />
+    </Stack>
   )
 }
 

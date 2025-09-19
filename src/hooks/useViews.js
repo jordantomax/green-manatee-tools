@@ -22,7 +22,7 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
     load: useCallback(() => {
       return run(async () => {
         const viewsData = await api.listViews(resourceType)
-        setViews(viewsData.map(view => ({ ...view, id: String(view.id) })))
+        setViews(viewsData)
       }, 'loadViews')
     }, [resourceType, run]),
 
@@ -31,16 +31,14 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
         const newView = await api.createView({
           name: 'New View',
           resourceType,
-          filter: Filter.toAPI(filters),
-          sort: Sort.toAPI(sorts)
+          filters,
+          sorts
         })
-        setViews(prev => [...prev, { ...newView, id: String(newView.id) }])
+        setViews(prev => [...prev, newView])
       }, 'createView')
     }, [resourceType, filters, sorts, run]),
 
-    update: useCallback((viewId, {filters, sorts, ...updates}) => {
-      updates.filter = Filter.toAPI(filters)
-      updates.sort = Sort.toAPI(sorts)
+    update: useCallback((viewId, updates) => {
       return run(async () => {
         await api.updateView(viewId, updates)
         setViews(prev => prev.map(view => 
@@ -64,7 +62,8 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
   const filterHandlers = {
     add: useCallback((column) => {
       const filter = Filter.create(column)
-      setFilters([...filters, filter])
+      const newFilters = filters ? [...filters, filter] : [filter]
+      setFilters(newFilters)
       setNewlyAddedFilterId(filter.id)
       // Clear the signal after component re-renders
       setTimeout(() => setNewlyAddedFilterId(null), 0)
@@ -117,11 +116,9 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
     const activeView = getViewById(activeViewId)
 
     if (activeView) {
-      const filter = Filter.fromAPI(activeView.filter)
-      const sort = Sort.fromAPI(activeView.sort)
-      setFilters(filter)
-      setSorts(sort)
-      onActiveViewChange?.(activeView, filter, sort)
+      setFilters(activeView.filters)
+      setSorts(activeView.sorts)
+      onActiveViewChange?.(activeView)
     }
   }, [activeViewId])
 

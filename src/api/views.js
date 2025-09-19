@@ -1,30 +1,56 @@
 import { call } from './core'
+import { Filter, Sort } from '@/utils/filter-sort'
 
-export async function createView ({ name, resourceType, filter, sort }) {
-  return call('views', {
+const viewFromAPI = (view) => ({
+  ...view,
+  id: String(view.id),
+  filters: Filter.fromAPI(view.filter),
+  sorts: Sort.fromAPI(view.sort)
+})
+
+export async function createView ({ name, resourceType, filters, sorts }) {
+  const view = await call('views', {
     method: 'POST',
-    body: { name, resourceType, filter, sort }
+    body: { 
+      name, 
+      resourceType, 
+      filter: Filter.toAPI(filters), 
+      sort: Sort.toAPI(sorts) 
+    }
   })
+  
+  return viewFromAPI(view)
 }
 
 export async function listViews (resourceType) {
-  return call('views', {
+  const views = await call('views', {
     method: 'GET',
     params: { resourceType }
   })
+  
+  return views.map(viewFromAPI)
 }
 
 export async function getView (viewId) {
-  return call(`views/${viewId}`, {
+  const view = await call(`views/${viewId}`, {
     method: 'GET'
   })
+  
+  return viewFromAPI(view)
 }
 
-export async function updateView (viewId, { name, resourceType, filter, sort }) {
-  return call(`views/${viewId}`, {
+export async function updateView (viewId, { name, resourceType, filters, sorts }) {
+  const view = await call(`views/${viewId}`, {
     method: 'PUT',
-    body: { name, resourceType, filter, sort }
+    body: { 
+      name, 
+      resourceType, 
+      filter: Filter.toAPI(filters), 
+      sort: Sort.toAPI(sorts) 
+    }
   })
+  
+  return viewFromAPI(view)
 }
 
 export async function deleteView (viewId) {

@@ -13,9 +13,9 @@ export const viewFactory = Factory.define(({ sequence, transientParams }) => {
     resourceType: faker.helpers.objectValue(RECORD_TYPES),
     filter: withFilters
       ? { and: [filterFactory.build({}, { transient: { format: 'api' } })] }
-      : null,
+      : [],
     sort: withSorts
       ? [sortFactory.build({}, { transient: { format: 'api' } })]
-      : null,
+      : [],
   }
 })

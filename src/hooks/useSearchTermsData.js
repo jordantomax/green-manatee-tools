@@ -38,20 +38,21 @@ function useSearchTermsData() {
   const [searchTerms, setSearchTerms] = useState([])
   const [entities, setEntities] = useState({ keywords: {}, targets: {} })
   const [negativeEntities, setNegativeEntities] = useState({ keywords: [], targets: [] })
+  const [lastCallParams, setLastCallParams] = useState(null)
   const { run, isLoading } = useAsync()
 
   const getSearchTermsData = useCallback(async ({
     dateRange,
-    filter,
-    sort,
+    filters,
+    sorts,
     limit,
     page
   }) => {
     const { startDate, endDate } = dateRange
     
     const { data, pagination } = await run(() => api.getAdsSearchTerms({
-      filter,
-      sort,
+      filters,
+      sorts,
       startDate,
       endDate,
       limit,
@@ -59,6 +60,7 @@ function useSearchTermsData() {
     }))
     
     setSearchTerms(data)
+    setLastCallParams({ dateRange, filters, sorts })
     
     run(async () => {
       const entitiesData = await getEntities(data)
@@ -70,7 +72,6 @@ function useSearchTermsData() {
       setNegativeEntities(negativeEntitiesData)
     })
     
-    
     return { data, pagination }
   }, [])
 
@@ -79,7 +80,8 @@ function useSearchTermsData() {
     entities,
     negativeEntities,
     getSearchTermsData,
-    isLoading
+    isLoading,
+    lastCallParams
   }
 }
 
