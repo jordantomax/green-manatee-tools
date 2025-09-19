@@ -108,9 +108,6 @@ export default function ViewManager({
                       variant="unstyled"
                       autoFocus
                       classNames={{input: styles.editInput}}
-                      rightSection={
-                        isLoading ? <Loader size="xs" /> : null
-                      }
                     />
                   ) : (
                     <>
@@ -119,7 +116,7 @@ export default function ViewManager({
                   )}
 
                   {isActive && (
-                    <Menu position="bottom">
+                    <Menu position="bottom" disabled={isLoading}>
                       <Menu.Target>
                         <Box
                           className={styles.menuButton}
