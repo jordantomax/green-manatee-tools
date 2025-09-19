@@ -152,10 +152,7 @@ export default function ViewManager({
           p="xs"
           onClick={handleCreateView}
           radius="50%"
-          disabled={
-            filters.length === 0 && sorts.length === 0 ||
-            isLoading
-          }
+          disabled={isLoading}
           classNames={{ root: styles.createButton }}
         >
           <IconPlus size={21} />
