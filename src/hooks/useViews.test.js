@@ -2,8 +2,8 @@ import { viewFactory, filterFactory, sortFactory } from '@tests/factories'
 
 vi.mock('@/api', () => ({
   default: {
-    listViews: vi.fn().mockResolvedValue([]),
-    createView: vi.fn().mockResolvedValue(viewFactory.build()),
+    listViews: vi.fn(),
+    createView: vi.fn(),
     updateView: vi.fn(),
     deleteView: vi.fn()
   }
@@ -17,7 +17,9 @@ import api from '@/api'
 
 describe('useViews', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
+    api.listViews.mockResolvedValue([])
+    api.createView.mockResolvedValue(viewFactory.build())
   })
 
   const render = async (callbacks) => {
@@ -104,6 +106,51 @@ describe('useViews', () => {
       await act(async () => ref.current.viewHandlers.setActive(view2.id))
 
       expect(callback.mock.calls[0][0].sort).toEqual(view2.sort)
+    })
+  })
+
+  describe('Create', () => {
+
+    describe('No existing views', () => {
+      
+       it('Creates with current filters and sorts', async () => {
+         const ref = await render()
+
+         await act(async () => ref.current.filterHandlers.add('testColumn'))
+         await act(async () => ref.current.sortHandlers.add('testColumn'))
+         
+         const currentFilters = ref.current.filters
+         const currentSorts = ref.current.sorts
+         
+         await act(async () => ref.current.viewHandlers.create())
+
+         expect(api.createView).toHaveBeenCalledWith(
+           expect.objectContaining({
+             filters: currentFilters,
+             sorts: currentSorts
+           })
+         )
+       })
+    })
+
+    describe('With existing views', () => {
+
+      it('does not pass filters and sorts to createView', async () => {
+        api.listViews.mockResolvedValue([viewFactory.build()])
+
+        const ref = await render()
+        
+        await act(async () => ref.current.filterHandlers.add('testColumn'))
+        await act(async () => ref.current.sortHandlers.add('testColumn'))
+        await act(async () => ref.current.viewHandlers.create())
+        
+         expect(api.createView).toHaveBeenCalledWith(
+           expect.objectContaining({
+             filters: null,
+             sorts: null
+           })
+         )
+      })
     })
   })
 })

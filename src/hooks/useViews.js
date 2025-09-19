@@ -30,12 +30,14 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
       return run(async () => {
         const newView = await api.createView({
           name: 'New View',
-          resourceType
+          resourceType,
+          filters: views.length === 0 ? filters : null,
+          sorts: views.length === 0 ? sorts : null
         })
         setViews(prev => [...prev, newView])
         setActiveViewId(newView.id)
       }, 'createView')
-    }, [resourceType, filters, sorts, run, setActiveViewId]),
+    }, [resourceType, filters, sorts, run, setActiveViewId, views.length]),
 
     update: useCallback((viewId, updates) => {
       return run(async () => {
