@@ -50,9 +50,11 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
     delete: useCallback((viewId) => {
       return run(async () => {
         await api.deleteView(viewId)
-        const remainingViews = views.filter(view => view.id !== viewId)
-        setViews(remainingViews)
-        setActiveViewId(remainingViews[0].id)
+        setViews(prevViews => {
+          const remainingViews = prevViews.filter(view => view.id !== viewId)
+          setActiveViewId(remainingViews[0]?.id ?? null)
+          return remainingViews
+        })
       }, 'deleteView')
     }, [run]),
 
