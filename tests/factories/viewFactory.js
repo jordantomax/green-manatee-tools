@@ -12,10 +12,10 @@ export const viewFactory = Factory.define(({ sequence, transientParams }) => {
     name: faker.commerce.productName(),
     resourceType: faker.helpers.objectValue(RECORD_TYPES),
     filter: withFilters
-      ? [filterFactory.build()]
+      ? { and: [filterFactory.build({}, { transient: { format: 'api' } })] }
       : null,
     sort: withSorts
-      ? [sortFactory.build()]
+      ? [sortFactory.build({}, { transient: { format: 'api' } })]
       : null,
   }
 })

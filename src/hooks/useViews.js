@@ -4,7 +4,9 @@ import { Filter, Sort } from '@/utils/filter-sort'
 import usePersistentState from '@/hooks/usePersistentState'
 import useAsync from '@/hooks/useAsync'
 
-export default function useViews(persistentStateKey, resourceType) {
+export default function useViews(persistentStateKey, resourceType, callbacks = {}) {
+  const { onActiveViewChange } = callbacks
+
   const [views, setViews] = useState([])
   const [filters, setFilters] = usePersistentState(`${persistentStateKey}-filters`, [])
   const [sorts, setSorts] = usePersistentState(`${persistentStateKey}-sorts`, [])
@@ -115,8 +117,11 @@ export default function useViews(persistentStateKey, resourceType) {
     const activeView = getViewById(activeViewId)
 
     if (activeView) {
-      setFilters(Filter.fromAPI(activeView.filter))
-      setSorts(Sort.fromAPI(activeView.sort))
+      const filter = Filter.fromAPI(activeView.filter)
+      const sort = Sort.fromAPI(activeView.sort)
+      setFilters(filter)
+      setSorts(sort)
+      onActiveViewChange?.(activeView, filter, sort)
     }
   }, [activeViewId])
 
@@ -130,13 +135,16 @@ export default function useViews(persistentStateKey, resourceType) {
 
   return {
     views,
-    filters,
-    sorts,
-    activeViewId,
     viewHandlers,
+    activeViewId,
+
+    filters,
     filterHandlers,
-    sortHandlers,
     newlyAddedFilterId,
+
+    sorts,
+    sortHandlers,
+
     isLoading,
     loadingStates,
   }

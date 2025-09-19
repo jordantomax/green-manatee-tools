@@ -64,10 +64,10 @@ const Sort = {
     })
   },
 
-  fromAPI(apiSorts) {
-    if (!apiSorts || !Array.isArray(apiSorts)) return []
+  fromAPI(apiSort) {
+    if (!apiSort || !Array.isArray(apiSort)) return []
     
-    return apiSorts.map(sortObj => {
+    return apiSort.map(sortObj => {
       const column = Object.keys(sortObj)[0]
       const direction = sortObj[column]
       
