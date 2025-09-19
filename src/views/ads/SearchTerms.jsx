@@ -1,260 +1,173 @@
-import { useState, useEffect, useMemo, useCallback } from "react"
+import { useEffect, useMemo } from "react"
 import { Stack, Title, Group, Loader, Button } from "@mantine/core"
-import { useForm } from '@mantine/form'
 import { subDays, format } from 'date-fns'
-import { useNavigate } from 'react-router-dom'
+import isEqual from 'lodash-es/isEqual'
 
-import api from "@/api"
-import { validators } from '@/utils/validation'
-import { useAsync } from '@/hooks/useAsync'
-import { usePagination } from '@/hooks/usePagination'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
+import usePagination from '@/hooks/usePagination'
+import usePersistentState from '@/hooks/usePersistentState'
+import useViews from '@/hooks/useViews'
+import useSearchTermsData from '@/hooks/useSearchTermsData'
+import useSearchTermsNavigation from '@/hooks/useSearchTermsNavigation'
 import RecordTable from "@/components/RecordTable"
 import TablePagination from "@/components/TablePagination"
-import { AddFilter, ActiveFilters } from "@/components/TableFilter"
-import { AddSort, ActiveSorts } from "@/components/TableSort"
+import AddFilter from "@/components/AddFilter"
+import ActiveFilters from "@/components/ActiveFilters"
+import AddSort from "@/components/AddSort"
+import ActiveSorts from "@/components/ActiveSorts"
 import DateRangeInputPicker from "@/components/DateRangeInputPicker"
-import { columnTypes, createDefaultSort, createDefaultFilter, getSortableColumns } from '@/utils/table'
-import { SEARCH_TERMS_HIDDEN_COLUMNS, TARGET_STATES } from '@/utils/constants'
-import { getEntityType } from '@/utils/amazon-ads'
+import ViewManager from "@/components/ViewManager"
+import { columnTypes, getSortableColumns } from '@/utils/table'
+import { SEARCH_TERMS_HIDDEN_COLUMNS, RECORD_TYPES } from '@/utils/constants'
 import { KeywordColumn, SearchTermColumn } from '@/components/amazon-ads/search-terms'
 
 
 const formatDate = (date) => format(date, 'yyyy-MM-dd')
 
 function SearchTerms() {
-  const navigate = useNavigate()
-  const { run, isLoading } = useAsync()
-  const [searchTerms, setSearchTerms] = useState([])
-  const [keywords, setKeywords] = useState({})
-  const [targets, setTargets] = useState({})
-  const [negativeKeywords, setNegativeKeywords] = useState([])
-  const [negativeTargets, setNegativeTargets] = useState([])
+  const { handleRowClick } = useSearchTermsNavigation()
 
-  const [settings, setSettings] = useLocalStorage('adsSearchTermSettings', {
-    dateRange: {
-      startDate: formatDate(subDays(new Date(), 31)),
-      endDate: formatDate(subDays(new Date(), 1)),
-    },
-    page: 1,
-    limit: 10,
-    totalPages: 1,
-    filters: [],
-    sorts: [],
-  })
+  const {
+    searchTerms,
+    entities,
+    negativeEntities,
+    getSearchTermsData,
+    lastCallParams,
+    isLoading: searchTermsLoading
+  } = useSearchTermsData()
   
-  const { 
-    page,
-    limit,
-    handlePageChange,
-    handleLimitChange,
-  } = usePagination(settings.page, settings.limit)
-
-  const form = useForm({
-    initialValues: settings,
-    validate: {
-      'dateRange.startDate': validators.required('Start date'),
-      'dateRange.endDate': validators.required('End date'),
-    },
-    transformValues: ({ filters, sorts, dateRange, ...values }) => {
-      const filter = filters?.length > 0 ? {
-        and: filters.map(f => ({
-          [f.column]: {
-            [f.condition]: f.value
-          }
-        }))
-      } : null
-      
-      const sort = sorts?.length > 0 ? sorts.map(s => (
-        { [s.column]: s.direction }
-      )) : null
-      
-      return {
-        ...values,
-        dateRange,
-        filter,
-        sort
-      }
-    },
-    onValuesChange: (values) => {
-      setSettings({ ...settings, ...values })
-    },
-  })
-  
-  const getState = async (data) => {
-    const [keywordsData, targetsData] = await Promise.all([
-      run(() => api.listKeywords({ filters: { keywordIds: data.map(d => d.keywordId) } })),
-      run(() => api.listTargets({ filters: { targetIds: data.map(d => d.keywordId) } }))
-    ])
-    
-    const keywordsMap = keywordsData?.reduce(
-      (map, keyword) => ({ ...map, [keyword.keywordId]: keyword }), {}
-    ) || {}
-
-    const targetsMap = targetsData?.reduce(
-      (map, target) => ({ ...map, [target.targetId]: target }), {}
-    ) || {}
-
-    setKeywords(keywordsMap)
-    setTargets(targetsMap)
-  }
-  
-  const getNegatives = async (data) => {
-    const keywordTexts = data.filter(d => getEntityType(d.matchType) === 'keyword').map(d => d.searchTerm)
-    const asins = data.filter(d => getEntityType(d.matchType) === 'target').map(d => d.searchTerm)
-
-    const [negativeKeywords, negativeTargets] = await Promise.all([
-      api.listNegativeKeywords({ filters: { keywordTexts } }),
-      api.listNegativeTargets({ filters: { asins } })
-    ])
-    setNegativeKeywords(negativeKeywords)
-    setNegativeTargets(negativeTargets)
-  }
-
-  const handleSubmit = async ({ dateRange, ...transformedValues }) => {
-    const { startDate, endDate } = dateRange
-    const { data, pagination } = await run(async () => await api.getAdsSearchTerms({
-      ...transformedValues,
-      startDate,
-      endDate,
-      limit,
-      page,
-    }))
-    setSettings({
-      ...form.values,
-      ...pagination,
-    })
-    setSearchTerms(data)
-    getState(data)
-    getNegatives(data)
-    
-    form.resetDirty()
-  }
-
-  useEffect(() => { 
-    form.onSubmit(handleSubmit)()
-  }, [page, limit])
-
-  const handleFilterAdd = (column) => {
-    const filter = createDefaultFilter(column)
-    form.setFieldValue('filters', [...settings.filters, filter])
-  }
-
-  const handleFilterRemove = (filterId) => {
-    const filters = form.values.filters.filter(f => f.id !== filterId)
-    form.setFieldValue('filters', filters)
-  }
-
-  const handleFilterChange = (filterId, condition, value) => {
-    const filters = form.values.filters.map(f => f.id === filterId ? { ...f, condition, value } : f)
-    form.setFieldValue('filters', filters)
-  }
-
-  const handleSortAdd = (column) => {
-    const newSort = createDefaultSort(column)
-    const currentSorts = form.values.sorts || []
-    form.setFieldValue('sorts', [...currentSorts, newSort])
-  }
-
-  const handleSortRemove = (sortId) => {
-    const sorts = form.values.sorts.filter(s => s.id !== sortId)
-    form.setFieldValue('sorts', sorts)
-  }
-
-  const handleSortChange = (sortId, column, direction) => {
-    const sorts = form.values.sorts.map(s => 
-      s.id === sortId ? { ...s, column, direction } : s
-    )
-    form.setFieldValue('sorts', sorts)
-  }
-  
-  const handleRowClick = useCallback((row) => {
-    const entityType = getEntityType(row.matchType)
-    const entityId = row.keywordId
-    const paramMap = { target: 'targetId', keyword: 'keywordId' }
-    const param = paramMap[entityType]
-    navigate(`/ads/search-terms/${encodeURIComponent(row.searchTerm)}?${param}=${entityId}`)
-  }, [navigate])
-
   const columnComponents = useMemo(() => ({
     keyword: (row) => (
       <KeywordColumn 
         row={row}
-        state={keywords[row.keywordId]?.state || targets[row.keywordId]?.state}
+        state={entities.keywords[row.keywordId]?.state || entities.targets[row.keywordId]?.state}
       />
     ),
     searchTerm: (row) => (
       <SearchTermColumn 
         row={row}
-        negativeKeywords={negativeKeywords}
-        negativeTargets={negativeTargets}
+        negativeKeywords={negativeEntities.keywords}
+        negativeTargets={negativeEntities.targets}
       />
     )
-  }), [keywords, targets, negativeKeywords, negativeTargets])
+  }), [entities, negativeEntities])
+
+  const refresh = async (view) => {
+    await getSearchTermsData({
+      dateRange,
+      filters: view?.filters || filters,
+      sorts: view?.sorts || sorts,
+      ...pagination,
+    })
+  }
+  
+  const [dateRange, setDateRange] = usePersistentState('searchTerms-dateRange', {
+    startDate: formatDate(subDays(new Date(), 31)),
+    endDate: formatDate(subDays(new Date(), 1)),
+  })
+  
+  const { 
+    pagination,
+    handlers: paginationHandlers
+  } = usePagination('searchTerms-pagination')
+
+  const {
+    views,
+    filters,
+    sorts,
+    activeViewId,
+    viewHandlers,
+    filterHandlers,
+    sortHandlers,
+    newlyAddedFilterId,
+    isLoading: viewsLoading
+  } = useViews('searchTerms-views', RECORD_TYPES.SEARCH_TERMS, { onActiveViewChange: refresh })
+
+  useEffect(() => { 
+    refresh()
+  }, [pagination])
+  
+  const currentParams = useMemo(() => ({ dateRange, filters, sorts }), [dateRange, filters, sorts])
+  
+  const formIsDirty = useMemo(() => {
+    return !isEqual(lastCallParams, currentParams)
+  }, [lastCallParams, currentParams])
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)}>
-      <Stack>
+    <Stack>
+      <Group justify="space-between" align="flex-start">
         <Group gap="sm">
           <Title order={2}>Search Terms</Title>
-          {isLoading && <Loader size="sm" />}
+          {searchTermsLoading && <Loader size="sm" />}
         </Group>
 
         <Group gap="xs" align="flex-end">
           <DateRangeInputPicker 
-            value={form.values.dateRange}
-            onChange={(dateRange) => form.setFieldValue('dateRange', dateRange)}
+            value={dateRange}
+            onChange={setDateRange}
           />
 
           <AddFilter 
             columns={Object.keys(columnTypes)}
-            handleFilterAdd={handleFilterAdd}
+            handleFilterAdd={filterHandlers.add}
           />
 
           <AddSort
             columns={getSortableColumns()}
-            handleSortAdd={handleSortAdd}
+            handleSortAdd={sortHandlers.add}
           />
 
           <Button 
             variant="light" 
             type="submit" 
-            disabled={!form.isDirty()}
+            disabled={!formIsDirty}
             children="Refresh"
+            onClick={refresh}
           />
         </Group>
+      </Group>
 
+      <Stack>
+        <ViewManager
+          views={views}
+          activeViewId={activeViewId}
+          filters={filters}
+          sorts={sorts}
+          viewHandlers={viewHandlers}
+          isLoading={viewsLoading}
+        />
+        
         <ActiveFilters 
-          filters={form.values.filters} 
-          handleFilterRemove={handleFilterRemove}
-          handleFilterChange={handleFilterChange}
+          filters={filters} 
+          handleFilterRemove={filterHandlers.remove}
+          handleFilterChange={filterHandlers.update}
+          newlyAddedFilterId={newlyAddedFilterId}
         />
 
         <ActiveSorts
-          sorts={form.values.sorts}
-          handleSortRemove={handleSortRemove}
-          handleSortChange={handleSortChange}
-        />
-
-        <RecordTable 
-          {...useMemo(() => ({
-            data: searchTerms,
-            columnComponents,
-            columnOrder: ['keyword', 'searchTerm', 'matchType', 'acosClicks7d'],
-            hiddenColumns: SEARCH_TERMS_HIDDEN_COLUMNS,
-            handleRowClick,
-          }), [searchTerms, columnComponents, handleRowClick])}
-        />
-        
-        <TablePagination
-          page={page}
-          limit={limit}
-          totalPages={settings.totalPages}
-          handlePageChange={handlePageChange}
-          handleLimitChange={handleLimitChange}
+          sorts={sorts}
+          handleSortRemove={sortHandlers.remove}
+          handleSortChange={sortHandlers.update}
         />
       </Stack>
-    </form>
+
+      <RecordTable 
+        {...useMemo(() => ({
+          data: searchTerms,
+          columnComponents,
+          columnOrder: ['keyword', 'searchTerm', 'matchType', 'acosClicks7d'],
+          hiddenColumns: SEARCH_TERMS_HIDDEN_COLUMNS,
+          handleRowClick,
+        }), [searchTerms, columnComponents, handleRowClick])}
+      />
+      
+      <TablePagination
+        page={pagination.page}
+        limit={pagination.limit}
+        totalPages={pagination.totalPages}
+        handlePageChange={paginationHandlers.pageChange}
+        handleLimitChange={paginationHandlers.limitChange}
+      />
+    </Stack>
   )
 }
 

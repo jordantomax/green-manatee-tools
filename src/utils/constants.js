@@ -30,3 +30,7 @@ export const NEGATIVE_TARGET_EXPRESSION_TYPES = {
   ASIN_SAME_AS: 'ASIN_SAME_AS',
   ASIN_BRAND_SAME_AS: 'ASIN_BRAND_SAME_AS'
 }
+
+export const RECORD_TYPES = {
+  SEARCH_TERMS: 'search_terms'
+}

@@ -15,7 +15,7 @@ import {
 import { useForm } from '@mantine/form'
 import { AuthContext } from '@/contexts/Auth'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAsync } from '@/hooks/useAsync'
+import useAsync from '@/hooks/useAsync'
 
 function Signup () {
   const auth = React.useContext(AuthContext)

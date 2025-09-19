@@ -91,6 +91,15 @@ export const theme = createTheme({
           marginBottom: 0
         }
       }
+    },
+    Tooltip: {
+      styles: {
+        tooltip: {
+          padding: 10,
+          fontSize: 'var(--mantine-font-size-xs)',
+          lineHeight: '0.4rem'
+        }
+      }
     }
   }
 }); 

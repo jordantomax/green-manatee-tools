@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react'
 
-export function useAsync() {
+export default function useAsync() {
   const [loadingStates, setLoadingStates] = useState({})
 
   const run = useCallback(async (asyncFunction, operationName = 'default') => {
@@ -14,7 +14,7 @@ export function useAsync() {
     }
   }, [])
 
-  const isLoading = useMemo(() => loadingStates.default || false, [loadingStates.default])
+  const isLoading = useMemo(() => Object.values(loadingStates).some(Boolean), [loadingStates])
 
   return {
     isLoading,

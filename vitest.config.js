@@ -8,6 +8,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/setupTests.js'],
     globals: true,
+    silent: 'passed-only',
     css: true,
     include: ['src/**/*.{test,spec}.{js,jsx}'],
     exclude: [
@@ -19,7 +20,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src'),
+      '@tests': path.resolve(__dirname, './tests')
     }
   }
 })

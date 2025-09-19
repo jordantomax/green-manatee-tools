@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import { ModalContext } from '@/contexts/ModalContext'
 import ConfirmModal from '@/components/ConfirmModal'
 
-export function useConfirm() {
+export default function useConfirm() {
   const { showModal, hideModal } = useContext(ModalContext)
   if (!showModal) {
     throw new Error('useConfirm must be used within a ModalProvider')

@@ -4,8 +4,8 @@ import { IconRefresh, IconDotsVertical, IconTrash, IconPlus } from '@tabler/icon
 import { Title, Button, Stack, Group, Table, Menu, Modal, Loader } from '@mantine/core'
 
 import api from '@/api'
-import { useAsync } from '@/hooks/useAsync'
-import { useConfirm } from '@/hooks/useConfirm'
+import useAsync from '@/hooks/useAsync'
+import useConfirm from '@/hooks/useConfirm'
 import classes from '@/styles/Ads.module.css'
 import CreateReport from '@/components/amazon-ads/CreateReport'
 

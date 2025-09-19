@@ -10,7 +10,7 @@ import {
   Text,
 } from '@mantine/core'
 
-import { useLocalStorage } from '@/hooks/useLocalStorage'
+import usePersistentState from '@/hooks/usePersistentState'
 
 const generatePricingScenarios = ({
   costOfGoods,
@@ -49,7 +49,7 @@ const generatePricingScenarios = ({
 }
 
 function Pricing() {
-  const [settings, setSetting] = useLocalStorage('pricingCalculator', {
+  const [settings, setSetting] = usePersistentState('pricingCalculator', {
     costOfGoods: 0,
     lowSalePrice: 0,
     highSalePrice: 0,
@@ -70,7 +70,7 @@ function Pricing() {
             <NumberInput
               label="Low Sale Price"
               value={settings.lowSalePrice}
-              onChange={(value) => setSetting('lowSalePrice', value)}
+              onChange={(value) => setSetting({ ...settings, lowSalePrice: value })}
               prefix="$"
               decimalScale={2}
               style={{ maxWidth: 150 }}
@@ -78,7 +78,7 @@ function Pricing() {
             <NumberInput
               label="High Sale Price"
               value={settings.highSalePrice}
-              onChange={(value) => setSetting('highSalePrice', value)}
+              onChange={(value) => setSetting({ ...settings, highSalePrice: value })}
               prefix="$"
               decimalScale={2}
               style={{ maxWidth: 150 }}
@@ -86,7 +86,7 @@ function Pricing() {
             <NumberInput
               label="Cost of Goods"
               value={settings.costOfGoods}
-              onChange={(value) => setSetting('costOfGoods', value)}
+              onChange={(value) => setSetting({ ...settings, costOfGoods: value })}
               prefix="$"
               decimalScale={2}
               style={{ maxWidth: 150 }}
@@ -94,7 +94,7 @@ function Pricing() {
             <NumberInput
               label="Referral Fee (%)"
               value={settings.referralFee}
-              onChange={(value) => setSetting('referralFee', value)}
+              onChange={(value) => setSetting({ ...settings, referralFee: value })}
               suffix="%"
               decimalScale={1}
               style={{ maxWidth: 150 }}
@@ -102,7 +102,7 @@ function Pricing() {
             <NumberInput
               label="FBA Fee"
               value={settings.fbaFee}
-              onChange={(value) => setSetting('fbaFee', value)}
+              onChange={(value) => setSetting({ ...settings, fbaFee: value })}
               prefix="$"
               decimalScale={2}
               style={{ maxWidth: 150 }}
@@ -110,7 +110,7 @@ function Pricing() {
             <NumberInput
               label="steps"
               value={settings.steps}
-              onChange={(value) => setSetting('steps', value)}
+              onChange={(value) => setSetting({ ...settings, steps: value })}
               min={2}
               max={50}
               style={{ maxWidth: 150 }}

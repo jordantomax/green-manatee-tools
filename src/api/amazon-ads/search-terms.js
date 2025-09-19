@@ -1,9 +1,17 @@
 import { call } from '../core'
+import { Filter, Sort } from '@/utils/filter-sort'
 
-export async function getAdsSearchTerms(body) {
+export async function getAdsSearchTerms({ filters, sorts, startDate, endDate, limit, page }) {
   return call('amazon/ads/search-terms', {
     method: 'POST',
-    body
+    body: {
+      filter: Filter.toAPI(filters),
+      sort: Sort.toAPI(sorts),
+      startDate,
+      endDate,
+      limit,
+      page
+    }
   })
 }
 

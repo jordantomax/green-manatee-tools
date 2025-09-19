@@ -25,6 +25,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': '/src',
+        '@tests': '/tests',
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs'
       },
     },

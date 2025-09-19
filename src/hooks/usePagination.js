@@ -1,22 +1,21 @@
-import { useState, useCallback } from 'react'
+import { useCallback } from 'react'
+import usePersistentState from './usePersistentState'
 
-export function usePagination(initialPage = 1, initialLimit = 10) {
-  const [page, setPage] = useState(initialPage)
-  const [limit, setLimit] = useState(initialLimit)
+export default function usePagination(key, defaultPagination = { page: 1, limit: 10, totalPages: 1 }) {
+  const [pagination, setPagination] = usePersistentState(key, defaultPagination)
 
-  const handlePageChange = useCallback((newPage) => {
-    setPage(newPage)
-  }, [])
+  const handlers = {
+    pageChange: useCallback((newPage) => {
+      setPagination(prev => ({ ...prev, page: newPage }))
+    }, [setPagination]),
 
-  const handleLimitChange = useCallback((newLimit) => {
-    setLimit(newLimit)
-    setPage(1)
-  }, [])
+    limitChange: useCallback((newLimit) => {
+      setPagination(prev => ({ ...prev, limit: newLimit, page: 1 }))
+    }, [setPagination])
+  }
 
   return {
-    page,
-    limit,
-    handlePageChange,
-    handleLimitChange
+    pagination,
+    handlers
   }
 } 

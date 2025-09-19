@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { Title, Stack, SimpleGrid, Loader } from '@mantine/core'
 
 import api from '@/api'
-import { useAsync } from '@/hooks/useAsync'
+import useAsync from '@/hooks/useAsync'
 import { KeywordRows } from '@/components/amazon-ads/Keyword'
 
 function AdGroup() {

@@ -4,7 +4,7 @@ import { Container, Title, Paper, Stack, Group, Text, Loader, Breadcrumbs, Ancho
 import { IconChevronRight } from '@tabler/icons-react'
 import api from '@/api'
 import DataTable from '@/components/DataTable'
-import { useAsync } from '@/hooks/useAsync'
+import useAsync from '@/hooks/useAsync'
 import classes from '@/styles/AdsReport.module.css'
 
 function Report() {

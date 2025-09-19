@@ -3,7 +3,7 @@ import { Text, Table } from '@mantine/core'
 import isFunction from 'lodash-es/isFunction'
 
 import api from '@/api'
-import { useAsync } from '@/hooks/useAsync'
+import useAsync from '@/hooks/useAsync'
 import StateSelect from '@/components/amazon-ads/StateSelect'
 import { TARGET_STATES } from '@/utils/constants'
 
