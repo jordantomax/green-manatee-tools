@@ -16,7 +16,7 @@ const FilterInputComponents = {
   boolean: Select,
 }
 
-const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange, isNewlyAdded }) => {
+const ActiveFilter = ({ filter, handleFilterDelete, handleFilterChange, isNewlyAdded }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [condition, setCondition] = useState(filter.condition)
   const [value, setValue] = useState(filter.value)
@@ -54,7 +54,7 @@ const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange, isNewlyA
           <Pill 
             size="sm"
             withRemoveButton 
-            onRemove={() => handleFilterRemove(filter.id)}
+            onRemove={() => handleFilterDelete(filter.id)}
             classNames={{
               root: styles.tableFilterPill,
               remove: styles.removeButton,
@@ -115,7 +115,7 @@ const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange, isNewlyA
   )
 }
 
-const ActiveFilters = ({ filters, handleFilterRemove, handleFilterChange, newlyAddedFilterId }) => {
+const ActiveFilters = ({ filters, handleFilterDelete, handleFilterChange, newlyAddedFilterId }) => {
   if (isEmpty(filters)) return null
 
   return (
@@ -126,7 +126,7 @@ const ActiveFilters = ({ filters, handleFilterRemove, handleFilterChange, newlyA
         <ActiveFilter 
           key={index} 
           filter={filter} 
-          handleFilterRemove={handleFilterRemove} 
+          handleFilterDelete={handleFilterDelete} 
           handleFilterChange={handleFilterChange}
           isNewlyAdded={filter.id === newlyAddedFilterId}
         />

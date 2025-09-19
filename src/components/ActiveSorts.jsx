@@ -5,7 +5,7 @@ import startCase from 'lodash-es/startCase'
 import { sortDirections, columnTypes } from '@/utils/table'
 import styles from '@/styles/TableFilter.module.css'
 
-const ActiveSort = ({ sort, handleSortRemove, handleSortChange }) => {
+const ActiveSort = ({ sort, handleSortDelete, handleSortChange }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [column, setColumn] = useState(sort.column)
   const [direction, setDirection] = useState(sort.direction)
@@ -22,7 +22,7 @@ const ActiveSort = ({ sort, handleSortRemove, handleSortChange }) => {
           <Pill 
             size="sm"
             withRemoveButton 
-            onRemove={() => handleSortRemove(sort.id)}
+            onRemove={() => handleSortDelete(sort.id)}
             classNames={{
               root: styles.tableFilterPill,
               remove: styles.removeButton,
@@ -79,7 +79,7 @@ const ActiveSort = ({ sort, handleSortRemove, handleSortChange }) => {
   )
 }
 
-const ActiveSorts = ({ sorts, handleSortRemove, handleSortChange }) => {
+const ActiveSorts = ({ sorts, handleSortDelete, handleSortChange }) => {
   if (!sorts || sorts.length === 0) return null
 
   return (
@@ -90,7 +90,7 @@ const ActiveSorts = ({ sorts, handleSortRemove, handleSortChange }) => {
         <ActiveSort 
           key={sort.id} 
           sort={sort} 
-          handleSortRemove={handleSortRemove} 
+          handleSortDelete={handleSortDelete} 
           handleSortChange={handleSortChange} 
         />
       ))}
