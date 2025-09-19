@@ -5,6 +5,31 @@
     max-height: 45px;
 }
 
+.tabLabel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menuButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.5em;
+    margin-right: -0.5em;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--mantine-radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--mantine-color-gray-6);
+}
+
+.menuButton:hover {
+    background-color: var(--mantine-color-gray-1);
+    color: var(--mantine-color-gray-8);
+}
+
 .editInput {
     field-sizing: content;
     border-image-width: 0;

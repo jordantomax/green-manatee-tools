@@ -59,11 +59,17 @@ export async function call (path, _options = {}) {
   try {
     let response = await fetch(url, options)
     
+    // Unauthorized
     if (response.status === 401 && tokens.access && autoRefresh) {
       const data = await refreshToken()
       if (tokensHandler) await tokensHandler(data)
       options.headers['Authorization'] = `Bearer ${data.accessToken}`
       response = await fetch(url, options)
+    }
+    
+    // No Content
+    if (response.status === 204 && response.ok) {
+      return null
     }
 
     const data = await response.json()

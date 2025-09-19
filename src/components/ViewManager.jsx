@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Button, Group, Tabs, Tooltip, TextInput, Loader } from '@mantine/core'
-import { IconPlus } from '@tabler/icons-react'
+import { Button, Group, Tabs, Tooltip, TextInput, Loader, Menu, Box } from '@mantine/core'
+import { IconPlus, IconDotsVertical } from '@tabler/icons-react'
 
 import styles from '@/styles/ViewManager.module.css'
+import useConfirm from '@/hooks/useConfirm'
 
 export default function ViewManager({ 
   views = [],
@@ -15,6 +16,7 @@ export default function ViewManager({
   const [isEditing, setIsEditing] = useState(false)
   const [editingName, setEditingName] = useState('')
   const inputRef = useRef(null)
+  const confirm = useConfirm()
   
   const handleTabChange = (value) => {
     viewHandlers.setActive(value)
@@ -24,9 +26,9 @@ export default function ViewManager({
     viewHandlers.create()
   }
 
-  const handleStartEdit = (currentName) => {
+  const handleStartEdit = (view) => {
     setIsEditing(true)
-    setEditingName(currentName)
+    setEditingName(view.name)
   }
 
   useEffect(() => {
@@ -61,6 +63,18 @@ export default function ViewManager({
       handleCancelEdit()
     }
   }
+
+  const handleDelete = async (view) => {
+    const confirmed = await confirm({
+      title: `Delete "${view.name}"?`,
+      message: null,
+      confirmText: 'Delete',
+      confirmColor: 'red'
+    })
+    if (!confirmed) return
+    
+    viewHandlers.delete(view.id)
+  }
   
   return (
     <Group gap="xs">
@@ -68,20 +82,23 @@ export default function ViewManager({
         <Tabs 
           value={activeViewId} 
           onChange={handleTabChange}
+          variant="outline"
         >
           <Tabs.List>
             {views.map((view) => {
+              const isActive = activeViewId === view.id
               const id = String(view.id)
               const name = view.name
 
               return (
                 <Tabs.Tab 
+                  size="xs"
                   key={id} 
                   value={id}
-                  onDoubleClick={() => activeViewId === id && handleStartEdit(name)}
-                  classNames={{ tab: styles.tab }}
+                  onDoubleClick={() => isActive && handleStartEdit(view)}
+                  classNames={{ tab: styles.tab, tabLabel: styles.tabLabel }}
                 >
-                  {isEditing && activeViewId === id ? (
+                  {isEditing && isActive ? (
                     <TextInput
                       ref={inputRef}
                       value={editingName}
@@ -99,6 +116,29 @@ export default function ViewManager({
                     <>
                       {name}
                     </>
+                  )}
+
+                  {isActive && (
+                    <Menu position="bottom">
+                      <Menu.Target>
+                        <Box
+                          className={styles.menuButton}
+                          onClick={e => e.stopPropagation()}
+                        >
+                          <IconDotsVertical size={16} />
+                        </Box>
+                      </Menu.Target>
+
+                      <Menu.Dropdown>
+                        <Menu.Item onClick={() => handleStartEdit(view)}>
+                          Rename
+                        </Menu.Item>
+
+                        <Menu.Item onClick={() => handleDelete(view)} >
+                          Delete
+                        </Menu.Item>
+                      </Menu.Dropdown>
+                    </Menu>
                   )}
                 </Tabs.Tab>
               )
