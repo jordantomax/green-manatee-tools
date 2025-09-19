@@ -138,14 +138,14 @@ function SearchTerms() {
         
         <ActiveFilters 
           filters={filters} 
-          handleFilterDelete={filterHandlers.delete}
+          handleFilterRemove={filterHandlers.remove}
           handleFilterChange={filterHandlers.update}
           newlyAddedFilterId={newlyAddedFilterId}
         />
 
         <ActiveSorts
           sorts={sorts}
-          handleSortDelete={sortHandlers.delete}
+          handleSortRemove={sortHandlers.remove}
           handleSortChange={sortHandlers.update}
         />
       </Stack>

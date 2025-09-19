@@ -71,7 +71,7 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
       setTimeout(() => setNewlyAddedFilterId(null), 0)
     }, [filters, setFilters]),
 
-    delete: useCallback((filterId) => {
+    remove: useCallback((filterId) => {
       const newFilters = filters.filter(f => f.id !== filterId)
       setFilters(newFilters)
     }, [filters, setFilters]),
@@ -91,7 +91,7 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
       setSorts([...currentSorts, newSort])
     }, [sorts, setSorts]),
 
-    delete: useCallback((sortId) => {
+    remove: useCallback((sortId) => {
       const newSorts = sorts.filter(s => s.id !== sortId)
       setSorts(newSorts)
     }, [sorts, setSorts]),
