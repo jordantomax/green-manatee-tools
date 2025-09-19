@@ -30,9 +30,7 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
       return run(async () => {
         const newView = await api.createView({
           name: 'New View',
-          resourceType,
-          filters,
-          sorts
+          resourceType
         })
         setViews(prev => [...prev, newView])
         setActiveViewId(newView.id)
