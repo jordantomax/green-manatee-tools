@@ -35,8 +35,9 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
           sorts
         })
         setViews(prev => [...prev, newView])
+        setActiveViewId(newView.id)
       }, 'createView')
-    }, [resourceType, filters, sorts, run]),
+    }, [resourceType, filters, sorts, run, setActiveViewId]),
 
     update: useCallback((viewId, updates) => {
       return run(async () => {
