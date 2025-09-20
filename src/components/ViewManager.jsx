@@ -8,8 +8,6 @@ import useConfirm from '@/hooks/useConfirm'
 export default function ViewManager({ 
   views = [],
   activeViewId,
-  filters = [], 
-  sorts = [], 
   viewHandlers,
   isLoading = false
 }) {
