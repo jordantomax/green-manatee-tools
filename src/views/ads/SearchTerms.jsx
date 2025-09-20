@@ -130,8 +130,6 @@ function SearchTerms() {
         <ViewManager
           views={views}
           activeViewId={activeViewId}
-          filters={filters}
-          sorts={sorts}
           viewHandlers={viewHandlers}
           isLoading={viewsLoading}
         />
