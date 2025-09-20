@@ -26,6 +26,11 @@ const formatDate = (date) => format(date, 'yyyy-MM-dd')
 function SearchTerms() {
   const { handleRowClick } = useSearchTermsNavigation()
 
+  const { 
+    pagination,
+    handlers: paginationHandlers
+  } = usePagination('searchTerms-pagination')
+
   const {
     searchTerms,
     entities,
@@ -52,12 +57,13 @@ function SearchTerms() {
   }), [entities, negativeEntities])
 
   const refresh = async (view) => {
-    await getSearchTermsData({
+    const { pagination: { totalPages } } = await getSearchTermsData({
       dateRange,
       filters: view?.filters || filters,
       sorts: view?.sorts || sorts,
       ...pagination,
     })
+    paginationHandlers.totalPagesChange(totalPages)
   }
   
   const [dateRange, setDateRange] = usePersistentState('searchTerms-dateRange', {
@@ -65,11 +71,6 @@ function SearchTerms() {
     endDate: formatDate(subDays(new Date(), 1)),
   })
   
-  const { 
-    pagination,
-    handlers: paginationHandlers
-  } = usePagination('searchTerms-pagination')
-
   const {
     views,
     filters,
@@ -84,7 +85,7 @@ function SearchTerms() {
 
   useEffect(() => { 
     refresh()
-  }, [pagination])
+  }, [pagination.page, pagination.limit])
   
   const currentParams = useMemo(() => ({ dateRange, filters, sorts }), [dateRange, filters, sorts])
   

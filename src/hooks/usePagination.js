@@ -5,6 +5,10 @@ export default function usePagination(key, defaultPagination = { page: 1, limit:
   const [pagination, setPagination] = usePersistentState(key, defaultPagination)
 
   const handlers = {
+    totalPagesChange: useCallback((newTotalPages) => {
+      setPagination(prev => ({ ...prev, totalPages: newTotalPages }))
+    }, [setPagination]),
+
     pageChange: useCallback((newPage) => {
       setPagination(prev => ({ ...prev, page: newPage }))
     }, [setPagination]),
