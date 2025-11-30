@@ -6,9 +6,11 @@ import {
   Button,
   Title,
   Table,
-  Box
+  Box,
+  ActionIcon,
+  Group
 } from '@mantine/core'
-import { IconChevronRight } from '@tabler/icons-react'
+import { IconChevronRight, IconX } from '@tabler/icons-react'
 
 import api from '@/api'
 import { useError } from '@/contexts/Error'
@@ -22,7 +24,7 @@ function Sales ({ sales }) {
   })
 }
 
-function InventoryProductCard ({ product }) {
+function InventoryProductCard ({ product, onRemove }) {
   const [isLoading, setIsLoading] = useState(false)
   const { showError } = useError()
 
@@ -43,7 +45,20 @@ function InventoryProductCard ({ product }) {
   return (
     <Card p="0">
       <Box p="md">
-        <Title order={4}>{product.sku}</Title>
+        <Group justify="space-between" align="flex-start" gap="xs">
+          <Title order={4} style={{ flex: 1 }}>{product.sku}</Title>
+
+          {onRemove && (
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              onClick={onRemove}
+              size="sm"
+            >
+              <IconX size={16} />
+            </ActionIcon>
+          )}
+        </Group>
         <Text size="sm" color="dimmed" mb="xs">{product.name}</Text>
         <Button
           onClick={createFbaShipment}
