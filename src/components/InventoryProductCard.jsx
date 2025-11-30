@@ -36,6 +36,9 @@ function InventoryProductCard ({ product }) {
       setIsLoading(false)
     }
   }
+  
+  const fbaRestock = product.restock.fba > 0
+  const warehouseRestock = product.restock.warehouse > 0
 
   return (
     <Card p="0">
@@ -43,7 +46,6 @@ function InventoryProductCard ({ product }) {
         <Title order={4}>{product.sku}</Title>
         <Text size="sm" color="dimmed" mb="xs">{product.name}</Text>
         <Button
-          disabled={!product.restock.needFbaRestock}
           onClick={createFbaShipment}
           loading={isLoading}
           size="xs"
@@ -56,13 +58,13 @@ function InventoryProductCard ({ product }) {
       <Table verticalSpacing="xs">
         <Table.Tbody>
           {/* Restock */}
-          <Table.Tr bg={product.restock.needFbaRestock ? "green.1" : "gray.1"} style={{ border: 'none' }}>
-            <Table.Td px="md"><Text size="sm" c={product.restock.needFbaRestock ? undefined : "gray.5"}>FBA restock:</Text></Table.Td>
-            <Table.Td px="md"><Text size="sm" fw={500} c={product.restock.needFbaRestock ? undefined : "gray.5"}>{product.restock.fba}</Text></Table.Td>
+          <Table.Tr bg={fbaRestock ? "green.1" : "gray.1"} style={{ border: 'none' }}>
+            <Table.Td px="md"><Text size="sm" c={fbaRestock ? undefined : "gray.5"}>FBA restock:</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm" fw={500} c={fbaRestock ? undefined : "gray.5"}>{product.restock.fba}</Text></Table.Td>
           </Table.Tr>
-          <Table.Tr bg={product.restock.needWarehouseRestock ? "green.1" : "gray.1"} style={{ border: 'none' }}>
-            <Table.Td px="md"><Text size="sm" c={product.restock.needWarehouseRestock ? undefined : "gray.5"}>Warehouse restock:</Text></Table.Td>
-            <Table.Td px="md"><Text size="sm" fw={500} c={product.restock.needWarehouseRestock ? undefined : "gray.5"}>{product.restock.warehouse}</Text></Table.Td>
+          <Table.Tr bg={warehouseRestock ? "green.1" : "gray.1"} style={{ border: 'none' }}>
+            <Table.Td px="md"><Text size="sm" c={warehouseRestock ? undefined : "gray.5"}>Warehouse restock:</Text></Table.Td>
+            <Table.Td px="md"><Text size="sm" fw={500} c={warehouseRestock ? undefined : "gray.5"}>{product.restock.warehouse}</Text></Table.Td>
           </Table.Tr>
           
           {/* Sales */}
