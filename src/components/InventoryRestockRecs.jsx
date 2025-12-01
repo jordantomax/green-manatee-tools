@@ -4,7 +4,7 @@ import { SimpleGrid, Title } from '@mantine/core'
 import { setLocalData, getLocalData, removeLocalData } from '@/utils/storage'
 import InventoryProductCard from './InventoryProductCard'
 
-function InventoryRestockRecs ({ products, location }) {
+function InventoryRestockRecs ({ products, location, onCreateShipment }) {
   const storageKey = `inventoryRecsDone${location || 'None'}`
   const [doneSkus, setDoneSkus] = useState(getLocalData(storageKey) || [])
   const prevDatetimeRef = useRef(getLocalData('inventoryRecsDatetime'))
@@ -51,6 +51,7 @@ function InventoryRestockRecs ({ products, location }) {
             locationLabel={locationLabel}
             isDone={doneSkus.includes(product.sku)}
             onDone={() => handleDone(product)}
+            onCreateShipment={onCreateShipment}
           />
         ))}
       </SimpleGrid>

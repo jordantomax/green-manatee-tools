@@ -12,7 +12,6 @@ import {
 } from '@mantine/core'
 import { IconChevronRight, IconCheck } from '@tabler/icons-react'
 
-import api from '@/api'
 import { useError } from '@/contexts/Error'
 
 function Sales ({ sales }) {
@@ -24,15 +23,17 @@ function Sales ({ sales }) {
   })
 }
 
-function InventoryProductCard ({ product, location, locationLabel, isDone, onDone }) {
+function InventoryProductCard ({ product, location, locationLabel, isDone, onDone, onCreateShipment }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const { showError } = useError()
   
-  async function createFbaShipment () {
+  async function handleCreateShipment () {
+    if (!onCreateShipment) return
+    
     setIsLoading(true)
     try {
-      await api.createFbaShipment(product)
+      await onCreateShipment(product)
     } catch (error) {
       showError(error)
     } finally {
@@ -60,14 +61,16 @@ function InventoryProductCard ({ product, location, locationLabel, isDone, onDon
         {!isDone && (
           <>
             <Text size="sm" color="dimmed" mb="xs">{product.name}</Text>
-            <Button
-              onClick={createFbaShipment}
-              loading={isLoading}
-              size="xs"
-              variant="light"
-            >
-              Create FBA Shipment
-            </Button>
+            {onCreateShipment && (
+              <Button
+                onClick={handleCreateShipment}
+                loading={isLoading}
+                size="xs"
+                variant="light"
+              >
+                {`Create ${locationLabel} Shipment`}
+              </Button>
+            )}
           </>
         )}
       </Box>

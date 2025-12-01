@@ -57,9 +57,19 @@ function Inventory () {
               Synced on {datetime.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", dateStyle: "long" })} at {datetime.toLocaleString("en-US", { timeZone: "America/Los_Angeles", timeStyle: "long" })}
             </Badge>
 
-            <InventoryRestockRecs products={fbaRecs} location="fba" />
-            <InventoryRestockRecs products={awdRecs} location="awd" />
-            <InventoryRestockRecs products={warehouseRecs} location="warehouse" />
+            <InventoryRestockRecs 
+              products={fbaRecs} 
+              location="fba" 
+              onCreateShipment={api.createFbaShipment}
+            />
+            <InventoryRestockRecs 
+              products={awdRecs} 
+              location="awd" 
+            />
+            <InventoryRestockRecs 
+              products={warehouseRecs} 
+              location="warehouse" 
+            />
             <InventoryRestockRecs products={noneRecs} />
           </Stack>
         ) : null}
