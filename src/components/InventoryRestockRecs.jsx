@@ -9,7 +9,10 @@ function InventoryRestockRecs ({ products, location }) {
   const [doneSkus, setDoneSkus] = useState(getLocalData(storageKey) || [])
 
   function handleDone (product) {
-    const updated = [...doneSkus, product.sku]
+    const isDone = doneSkus.includes(product.sku)
+    const updated = isDone
+      ? doneSkus.filter(sku => sku !== product.sku)
+      : [...doneSkus, product.sku]
     setDoneSkus(updated)
     setLocalData(storageKey, updated)
   }

@@ -10,7 +10,7 @@ import {
   ActionIcon,
   Group
 } from '@mantine/core'
-import { IconChevronRight, IconX } from '@tabler/icons-react'
+import { IconChevronRight, IconCheck } from '@tabler/icons-react'
 
 import api from '@/api'
 import { useError } from '@/contexts/Error'
@@ -49,104 +49,110 @@ function InventoryProductCard ({ product, location, isDone, onDone }) {
   }
   
   return (
-    <Card p="0" style={{ opacity: isDone ? 0.5 : 1 }}>
+    <Card p="0">
       <Box p="md">
         <Group justify="space-between" align="flex-start" gap="xs">
           <Title order={4} style={{ flex: 1 }}>{product.sku}</Title>
 
           {onDone && (
             <ActionIcon
-              variant="subtle"
-              color="gray"
+              variant={isDone ? "filled" : "subtle"}
+              color={isDone ? "green" : "gray"}
               onClick={onDone}
               size="sm"
             >
-              <IconX size={16} />
+              <IconCheck size={18} />
             </ActionIcon>
           )}
         </Group>
-        <Text size="sm" color="dimmed" mb="xs">{product.name}</Text>
-        <Button
-          onClick={createFbaShipment}
-          loading={isLoading}
-          size="xs"
-          variant="light"
-        >
-          Create FBA Shipment
-        </Button>
+        {!isDone && (
+          <>
+            <Text size="sm" color="dimmed" mb="xs">{product.name}</Text>
+            <Button
+              onClick={createFbaShipment}
+              loading={isLoading}
+              size="xs"
+              variant="light"
+            >
+              Create FBA Shipment
+            </Button>
+          </>
+        )}
       </Box>
 
-      <Table verticalSpacing="xs">
-        <Table.Tbody>
-          {/* Restock */}
-          {location && (
-            <Table.Tr bg={"green.1"} style={{ border: 'none' }}>
-              <Table.Td px="md"><Text size="sm">{locationLabel} restock:</Text></Table.Td>
-              <Table.Td px="md"><Text size="sm" fw={500}>{product.restock[location].restockQty}</Text></Table.Td>
-            </Table.Tr>
-          )}
-          
-          {/* Sales */}
+      {!isDone && (
+        <Table verticalSpacing="xs">
+          <Table.Tbody>
+            {/* Restock */}
+            {location && (
+              <Table.Tr bg={"green.1"} style={{ border: 'none' }}>
+                <Table.Td px="md"><Text size="sm">{locationLabel} restock:</Text></Table.Td>
+                <Table.Td px="md"><Text size="sm" fw={500}>{product.restock[location].restockQty}</Text></Table.Td>
+              </Table.Tr>
+            )}
+            
+            {/* Sales */}
 
-          <Table.Tr>
-            <Table.Td px="md"><Text size="sm">90 day sales:</Text></Table.Td>
-            <Table.Td px="md"><Text size="sm"><Sales sales={product.sales.amzUnitSalesBy30DayPeriods} /></Text></Table.Td>
-          </Table.Tr>
-
-          {!isExpanded ? (
             <Table.Tr>
-              <Table.Td 
-                colSpan={2} 
-                px="md"
-                onClick={() => setIsExpanded(!isExpanded)}
-                style={{ cursor: 'pointer' }}
-              >
-                <Button
-                  fullWidth
-                  variant="white"
-                  color="gray"
-                  style={{ padding: 0, height: 'auto' }}
-                >
-                  Details
-                </Button>
-              </Table.Td>
+              <Table.Td px="md"><Text size="sm">90 day sales:</Text></Table.Td>
+              <Table.Td px="md"><Text size="sm"><Sales sales={product.sales.amzUnitSalesBy30DayPeriods} /></Text></Table.Td>
             </Table.Tr>
-          ) : (
-            <>
+
+            {!isExpanded ? (
               <Table.Tr>
-                <Table.Td px="md"><Text size="sm">Monthly change:</Text></Table.Td>
-                <Table.Td px="md"><Text size="sm">{product.sales.amzWeightedMonthlyGrowthRate}</Text></Table.Td>
+                <Table.Td 
+                  colSpan={2} 
+                  px="md"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <Button
+                    fullWidth
+                    variant="white"
+                    color="gray"
+                    style={{ padding: 0, height: 'auto' }}
+                  >
+                    Details
+                  </Button>
+                </Table.Td>
               </Table.Tr>
-              <Table.Tr>
-                <Table.Td px="md"><Text size="sm">Forecast sales:</Text></Table.Td>
-                <Table.Td px="md"><Text size="sm">{product.sales.amzProjectedMonthlyUnitSales}</Text></Table.Td>
-              </Table.Tr>
-              
-              {/* Inventory */}
-              <Table.Tr>
-                <Table.Td px="md"><Text size="sm">FBA stock:</Text></Table.Td>
-                <Table.Td px="md"><Text size="sm">{product.fba.stock}</Text></Table.Td>
-              </Table.Tr>
-              <Table.Tr>
-                <Table.Td px="md"><Text size="sm">FBA inbound:</Text></Table.Td>
-                <Table.Td px="md"><Text size="sm">{product.fba.inbound}</Text></Table.Td>
-              </Table.Tr>
-              <Table.Tr>
-                <Table.Td px="md"><Text size="sm">AWD stock:</Text></Table.Td>
-                <Table.Td px="md"><Text size="sm">{product.awd.stock || 0}</Text></Table.Td>
-              </Table.Tr>
-              <Table.Tr>
-                <Table.Td px="md"><Text size="sm">AWD inbound:</Text></Table.Td>
-                <Table.Td px="md"><Text size="sm">{product.awd.inbound || 0}</Text></Table.Td>
-              </Table.Tr>
-              <Table.Tr>
-                <Table.Td px="md"><Text size="sm">Warehouse stock:</Text></Table.Td>
-                <Table.Td px="md"><Text size="sm">{product.warehouse.stock}</Text></Table.Td>
-              </Table.Tr>
-            </>
-          )}
-        </Table.Tbody>
-      </Table>
+            ) : (
+              <>
+                <Table.Tr>
+                  <Table.Td px="md"><Text size="sm">Monthly change:</Text></Table.Td>
+                  <Table.Td px="md"><Text size="sm">{product.sales.amzWeightedMonthlyGrowthRate}</Text></Table.Td>
+                </Table.Tr>
+                <Table.Tr>
+                  <Table.Td px="md"><Text size="sm">Forecast sales:</Text></Table.Td>
+                  <Table.Td px="md"><Text size="sm">{product.sales.amzProjectedMonthlyUnitSales}</Text></Table.Td>
+                </Table.Tr>
+                
+                {/* Inventory */}
+                <Table.Tr>
+                  <Table.Td px="md"><Text size="sm">FBA stock:</Text></Table.Td>
+                  <Table.Td px="md"><Text size="sm">{product.fba.stock}</Text></Table.Td>
+                </Table.Tr>
+                <Table.Tr>
+                  <Table.Td px="md"><Text size="sm">FBA inbound:</Text></Table.Td>
+                  <Table.Td px="md"><Text size="sm">{product.fba.inbound}</Text></Table.Td>
+                </Table.Tr>
+                <Table.Tr>
+                  <Table.Td px="md"><Text size="sm">AWD stock:</Text></Table.Td>
+                  <Table.Td px="md"><Text size="sm">{product.awd.stock || 0}</Text></Table.Td>
+                </Table.Tr>
+                <Table.Tr>
+                  <Table.Td px="md"><Text size="sm">AWD inbound:</Text></Table.Td>
+                  <Table.Td px="md"><Text size="sm">{product.awd.inbound || 0}</Text></Table.Td>
+                </Table.Tr>
+                <Table.Tr>
+                  <Table.Td px="md"><Text size="sm">Warehouse stock:</Text></Table.Td>
+                  <Table.Td px="md"><Text size="sm">{product.warehouse.stock}</Text></Table.Td>
+                </Table.Tr>
+              </>
+            )}
+          </Table.Tbody>
+        </Table>
+      )}
     </Card>
   )
 }
