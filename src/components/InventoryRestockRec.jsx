@@ -23,7 +23,7 @@ function Sales ({ sales }) {
   })
 }
 
-function InventoryProductCard ({ product, location, locationLabel, isDone, onDone, onCreateShipment }) {
+function InventoryRestockRec ({ recommendation, location, locationLabel, isDone, onDone, onCreateShipment }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const { showError } = useError()
@@ -33,7 +33,7 @@ function InventoryProductCard ({ product, location, locationLabel, isDone, onDon
     
     setIsLoading(true)
     try {
-      await onCreateShipment(product)
+      await onCreateShipment(recommendation)
     } catch (error) {
       showError(error)
     } finally {
@@ -45,7 +45,7 @@ function InventoryProductCard ({ product, location, locationLabel, isDone, onDon
     <Card p="0">
       <Box p="md">
         <Group justify="space-between" align="flex-start" gap="xs">
-          <Title order={4} style={{ flex: 1 }}>{product.sku}</Title>
+          <Title order={4} style={{ flex: 1 }}>{recommendation.product.sku}</Title>
 
           {onDone && (
             <ActionIcon
@@ -60,7 +60,7 @@ function InventoryProductCard ({ product, location, locationLabel, isDone, onDon
         </Group>
         {!isDone && (
           <>
-            <Text size="sm" color="dimmed" mb="xs">{product.name}</Text>
+            <Text size="sm" color="dimmed" mb="xs">{recommendation.product.name}</Text>
             {onCreateShipment && (
               <Button
                 onClick={handleCreateShipment}
@@ -82,7 +82,7 @@ function InventoryProductCard ({ product, location, locationLabel, isDone, onDon
             {location && (
               <Table.Tr bg={"green.1"} style={{ border: 'none' }}>
                 <Table.Td px="md"><Text size="sm">{locationLabel} restock:</Text></Table.Td>
-                <Table.Td px="md"><Text size="sm" fw={500}>{product.restock[location].restockQty}</Text></Table.Td>
+                <Table.Td px="md"><Text size="sm" fw={500}>{recommendation.restock[location].restockQty}</Text></Table.Td>
               </Table.Tr>
             )}
             
@@ -90,7 +90,7 @@ function InventoryProductCard ({ product, location, locationLabel, isDone, onDon
 
             <Table.Tr>
               <Table.Td px="md"><Text size="sm">90 day sales:</Text></Table.Td>
-              <Table.Td px="md"><Text size="sm"><Sales sales={product.sales.amzUnitSalesBy30DayPeriods} /></Text></Table.Td>
+              <Table.Td px="md"><Text size="sm"><Sales sales={recommendation.sales.amzUnitSalesBy30DayPeriods} /></Text></Table.Td>
             </Table.Tr>
 
             {!isExpanded ? (
@@ -115,33 +115,33 @@ function InventoryProductCard ({ product, location, locationLabel, isDone, onDon
               <>
                 <Table.Tr>
                   <Table.Td px="md"><Text size="sm">Monthly change:</Text></Table.Td>
-                  <Table.Td px="md"><Text size="sm">{product.sales.amzWeightedMonthlyGrowthRate}</Text></Table.Td>
+                  <Table.Td px="md"><Text size="sm">{recommendation.sales.amzWeightedMonthlyGrowthRate}</Text></Table.Td>
                 </Table.Tr>
                 <Table.Tr>
                   <Table.Td px="md"><Text size="sm">Forecast sales:</Text></Table.Td>
-                  <Table.Td px="md"><Text size="sm">{product.sales.amzProjectedMonthlyUnitSales}</Text></Table.Td>
+                  <Table.Td px="md"><Text size="sm">{recommendation.sales.amzProjectedMonthlyUnitSales}</Text></Table.Td>
                 </Table.Tr>
                 
                 {/* Inventory */}
                 <Table.Tr>
                   <Table.Td px="md"><Text size="sm">FBA stock:</Text></Table.Td>
-                  <Table.Td px="md"><Text size="sm">{product.fba.stock}</Text></Table.Td>
+                  <Table.Td px="md"><Text size="sm">{recommendation.fba.stock}</Text></Table.Td>
                 </Table.Tr>
                 <Table.Tr>
                   <Table.Td px="md"><Text size="sm">FBA inbound:</Text></Table.Td>
-                  <Table.Td px="md"><Text size="sm">{product.fba.inbound}</Text></Table.Td>
+                  <Table.Td px="md"><Text size="sm">{recommendation.fba.inbound}</Text></Table.Td>
                 </Table.Tr>
                 <Table.Tr>
                   <Table.Td px="md"><Text size="sm">AWD stock:</Text></Table.Td>
-                  <Table.Td px="md"><Text size="sm">{product.awd.stock || 0}</Text></Table.Td>
+                  <Table.Td px="md"><Text size="sm">{recommendation.awd.stock || 0}</Text></Table.Td>
                 </Table.Tr>
                 <Table.Tr>
                   <Table.Td px="md"><Text size="sm">AWD inbound:</Text></Table.Td>
-                  <Table.Td px="md"><Text size="sm">{product.awd.inbound || 0}</Text></Table.Td>
+                  <Table.Td px="md"><Text size="sm">{recommendation.awd.inbound || 0}</Text></Table.Td>
                 </Table.Tr>
                 <Table.Tr>
                   <Table.Td px="md"><Text size="sm">Warehouse stock:</Text></Table.Td>
-                  <Table.Td px="md"><Text size="sm">{product.warehouse.stock}</Text></Table.Td>
+                  <Table.Td px="md"><Text size="sm">{recommendation.warehouse.stock}</Text></Table.Td>
                 </Table.Tr>
               </>
             )}
@@ -152,4 +152,4 @@ function InventoryProductCard ({ product, location, locationLabel, isDone, onDon
   )
 }
 
-export default InventoryProductCard
+export default InventoryRestockRec

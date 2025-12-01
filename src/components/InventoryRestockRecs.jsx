@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { SimpleGrid, Title } from '@mantine/core'
 
 import { setLocalData, getLocalData, removeLocalData } from '@/utils/storage'
-import InventoryProductCard from './InventoryProductCard'
+import InventoryRestockRec from './InventoryRestockRec'
 
-function InventoryRestockRecs ({ products, location, onCreateShipment }) {
+function InventoryRestockRecs ({ recommendations, location, onCreateShipment }) {
   const storageKey = `inventoryRecsDone${location || 'None'}`
   const [doneSkus, setDoneSkus] = useState(getLocalData(storageKey) || [])
   const prevDatetimeRef = useRef(getLocalData('inventoryRecsDatetime'))
@@ -19,15 +19,15 @@ function InventoryRestockRecs ({ products, location, onCreateShipment }) {
     }
     
     prevDatetimeRef.current = currentDatetime
-  }, [products, storageKey])
+  }, [recommendations, storageKey])
 
-  function handleDone (product) {
-    const isDone = doneSkus.includes(product.sku)
-    const updated = isDone
-      ? doneSkus.filter(sku => sku !== product.sku)
-      : [...doneSkus, product.sku]
-    setDoneSkus(updated)
-    setLocalData(storageKey, updated)
+  function handleDone (sku) {
+    const isDone = doneSkus.includes(sku)
+    const newDoneSkus = isDone
+      ? doneSkus.filter(s => s !== sku)
+      : [...doneSkus, sku]
+    setDoneSkus(newDoneSkus)
+    setLocalData(storageKey, newDoneSkus)
   }
 
   const locationLabel = (
@@ -40,17 +40,17 @@ function InventoryRestockRecs ({ products, location, onCreateShipment }) {
 
   return (
     <>
-      <Title order={3}>{locationLabel} — restock {products?.length || 0} SKUs</Title>
+      <Title order={3}>{locationLabel} — restock {recommendations?.length || 0} SKUs</Title>
 
       <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
-        {products.map((product, i) => (
-          <InventoryProductCard 
+        {recommendations.map((recommendation, i) => (
+          <InventoryRestockRec 
             key={i} 
-            product={product} 
+            recommendation={recommendation} 
             location={location}
             locationLabel={locationLabel}
-            isDone={doneSkus.includes(product.sku)}
-            onDone={() => handleDone(product)}
+            isDone={doneSkus.includes(recommendation.product.sku)}
+            onDone={() => handleDone(recommendation.product.sku)}
             onCreateShipment={onCreateShipment}
           />
         ))}

@@ -6,15 +6,11 @@ export async function getRecs () {
   })
 }
 
-export async function createFbaShipment (product) {
-  if (!product.restock?.needFbaRestock || !product.warehouse?.notionProductId) {
-    return null
-  }
-
+export async function createFbaShipment (recommendation) {
   const shipment = {
-    notionProductId: product.warehouse.notionProductId,
-    notionCartonTemplateId: product.warehouse.notionCartonTemplateId,
-    cartonQty: Math.ceil(product.restock.fba/product.warehouse.cartonUnitQty) + 1
+    productId: recommendation.product.id,
+    cartonTemplateId: recommendation.cartonTemplateId,
+    cartonQty: Math.ceil(recommendation.restock.fba.restockQty/recommendation.cartonUnitQty) + 1
   }
 
   return call(`shipments/fba`, {

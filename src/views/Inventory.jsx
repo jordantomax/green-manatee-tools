@@ -58,19 +58,19 @@ function Inventory () {
             </Badge>
 
             <InventoryRestockRecs 
-              products={fbaRecs} 
+              recommendations={fbaRecs} 
               location="fba" 
               onCreateShipment={api.createFbaShipment}
             />
             <InventoryRestockRecs 
-              products={awdRecs} 
+              recommendations={awdRecs} 
               location="awd" 
             />
             <InventoryRestockRecs 
-              products={warehouseRecs} 
+              recommendations={warehouseRecs} 
               location="warehouse" 
             />
-            <InventoryRestockRecs products={noneRecs} />
+            <InventoryRestockRecs recommendations={noneRecs} />
           </Stack>
         ) : null}
       </Stack>
