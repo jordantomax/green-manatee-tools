@@ -57,16 +57,9 @@ function Inventory () {
               Synced on {datetime.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", dateStyle: "long" })} at {datetime.toLocaleString("en-US", { timeZone: "America/Los_Angeles", timeStyle: "long" })}
             </Badge>
 
-            <Title order={3}>FBA — restock {fbaRecs.length} SKUs</Title>
             <InventoryRestockRecs products={fbaRecs} location="fba" />
-
-            <Title order={3}>AWD — restock {awdRecs.length} SKUs</Title>
             <InventoryRestockRecs products={awdRecs} location="awd" />
-
-            <Title order={3}>Warehouse — restock {warehouseRecs.length} SKUs</Title>
             <InventoryRestockRecs products={warehouseRecs} location="warehouse" />
-
-            <Title order={3}>No restock needed — {noneRecs.length} SKUs</Title>
             <InventoryRestockRecs products={noneRecs} />
           </Stack>
         ) : null}

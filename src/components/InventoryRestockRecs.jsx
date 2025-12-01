@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { SimpleGrid } from '@mantine/core'
+import { SimpleGrid, Title } from '@mantine/core'
 
 import { setLocalData, getLocalData, removeLocalData } from '@/utils/storage'
 import InventoryProductCard from './InventoryProductCard'
@@ -30,18 +30,31 @@ function InventoryRestockRecs ({ products, location }) {
     setLocalData(storageKey, updated)
   }
 
+  const locationLabel = (
+    {
+      fba: 'FBA',
+      awd: 'AWD',
+      warehouse: 'Warehouse'
+    }[location]
+  ) || 'Unknown'
+
   return (
-    <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
-      {products.map((product, i) => (
-        <InventoryProductCard 
-          key={i} 
-          product={product} 
-          location={location}
-          isDone={doneSkus.includes(product.sku)}
-          onDone={() => handleDone(product)}
-        />
-      ))}
-    </SimpleGrid>
+    <>
+      <Title order={3}>{locationLabel} — restock {products?.length || 0} SKUs</Title>
+
+      <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
+        {products.map((product, i) => (
+          <InventoryProductCard 
+            key={i} 
+            product={product} 
+            location={location}
+            locationLabel={locationLabel}
+            isDone={doneSkus.includes(product.sku)}
+            onDone={() => handleDone(product)}
+          />
+        ))}
+      </SimpleGrid>
+    </>
   )
 }
 

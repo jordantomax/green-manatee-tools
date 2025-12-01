@@ -24,19 +24,11 @@ function Sales ({ sales }) {
   })
 }
 
-function InventoryProductCard ({ product, location, isDone, onDone }) {
+function InventoryProductCard ({ product, location, locationLabel, isDone, onDone }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const { showError } = useError()
   
-  const locationLabel = (
-    {
-      fba: 'FBA',
-      awd: 'AWD',
-      warehouse: 'Warehouse'
-    }[location]
-  ) || 'Unknown'
-
   async function createFbaShipment () {
     setIsLoading(true)
     try {
