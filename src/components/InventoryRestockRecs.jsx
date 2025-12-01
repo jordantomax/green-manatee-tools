@@ -1,15 +1,28 @@
+import { useState } from 'react'
 import { SimpleGrid } from '@mantine/core'
 
+import { setLocalData, getLocalData } from '@/utils/storage'
 import InventoryProductCard from './InventoryProductCard'
 
-function InventoryRestockRecs ({ products, onRemove }) {
+function InventoryRestockRecs ({ products, location }) {
+  const storageKey = `inventoryRecsDone${location || 'None'}`
+  const [doneSkus, setDoneSkus] = useState(getLocalData(storageKey) || [])
+
+  function handleDone (product) {
+    const updated = [...doneSkus, product.sku]
+    setDoneSkus(updated)
+    setLocalData(storageKey, updated)
+  }
+
   return (
     <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
       {products.map((product, i) => (
         <InventoryProductCard 
           key={i} 
           product={product} 
-          onRemove={onRemove ? () => onRemove(product) : undefined}
+          location={location}
+          isDone={doneSkus.includes(product.sku)}
+          onDone={() => handleDone(product)}
         />
       ))}
     </SimpleGrid>

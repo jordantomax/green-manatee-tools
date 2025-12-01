@@ -32,15 +32,10 @@ function Inventory () {
     }
   }
 
-  function handleRemove (productToRemove) {
-    const updatedData = data.filter(product => product !== productToRemove)
-    setLocalData('inventoryRecs', updatedData)
-    setData(updatedData)
-  }
-  
-  const fbaRecs = data?.filter(product => product.restock.fba > 0)
-  const warehouseRecs = data?.filter(product => product.restock.warehouse > 0)
-  const noneRecs = data?.filter(product => !Object.values(product.restock).some(value => value > 0))
+  const fbaRecs = data?.filter(product => product.restock.fba?.needsRestock) || []
+  const awdRecs = data?.filter(product => product.restock.awd?.needsRestock) || []
+  const warehouseRecs = data?.filter(product => product.restock.warehouse?.needsRestock) || []
+  const noneRecs = data?.filter(product => !Object.values(product.restock).some(value => value?.needsRestock)) || []
 
   return (
     <Container size="md" py="xl">
@@ -56,20 +51,23 @@ function Inventory () {
           </Button>
         </Group>
 
-        {data ? (
+        {data.length > 0 ? (
           <Stack spacing="xl">
             <Badge size="sm" color="gray" variant="light">
               Synced on {datetime.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", dateStyle: "long" })} at {datetime.toLocaleString("en-US", { timeZone: "America/Los_Angeles", timeStyle: "long" })}
             </Badge>
 
             <Title order={3}>FBA — restock {fbaRecs.length} SKUs</Title>
-            <InventoryRestockRecs products={fbaRecs} onRemove={handleRemove} />
+            <InventoryRestockRecs products={fbaRecs} location="fba" />
+
+            <Title order={3}>AWD — restock {awdRecs.length} SKUs</Title>
+            <InventoryRestockRecs products={awdRecs} location="awd" />
 
             <Title order={3}>Warehouse — restock {warehouseRecs.length} SKUs</Title>
-            <InventoryRestockRecs products={warehouseRecs} onRemove={handleRemove} />
+            <InventoryRestockRecs products={warehouseRecs} location="warehouse" />
 
             <Title order={3}>No restock needed — {noneRecs.length} SKUs</Title>
-            <InventoryRestockRecs products={noneRecs} onRemove={handleRemove} />
+            <InventoryRestockRecs products={noneRecs} />
           </Stack>
         ) : null}
       </Stack>

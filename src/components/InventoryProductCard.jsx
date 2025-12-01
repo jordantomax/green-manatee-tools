@@ -24,9 +24,18 @@ function Sales ({ sales }) {
   })
 }
 
-function InventoryProductCard ({ product, onRemove }) {
+function InventoryProductCard ({ product, location, isDone, onDone }) {
   const [isLoading, setIsLoading] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
   const { showError } = useError()
+  
+  const locationLabel = (
+    {
+      fba: 'FBA',
+      awd: 'AWD',
+      warehouse: 'Warehouse'
+    }[location]
+  ) || 'Unknown'
 
   async function createFbaShipment () {
     setIsLoading(true)
@@ -39,20 +48,17 @@ function InventoryProductCard ({ product, onRemove }) {
     }
   }
   
-  const fbaRestock = product.restock.fba > 0
-  const warehouseRestock = product.restock.warehouse > 0
-
   return (
-    <Card p="0">
+    <Card p="0" style={{ opacity: isDone ? 0.5 : 1 }}>
       <Box p="md">
         <Group justify="space-between" align="flex-start" gap="xs">
           <Title order={4} style={{ flex: 1 }}>{product.sku}</Title>
 
-          {onRemove && (
+          {onDone && (
             <ActionIcon
               variant="subtle"
               color="gray"
-              onClick={onRemove}
+              onClick={onDone}
               size="sm"
             >
               <IconX size={16} />
@@ -73,50 +79,72 @@ function InventoryProductCard ({ product, onRemove }) {
       <Table verticalSpacing="xs">
         <Table.Tbody>
           {/* Restock */}
-          <Table.Tr bg={fbaRestock ? "green.1" : "gray.1"} style={{ border: 'none' }}>
-            <Table.Td px="md"><Text size="sm" c={fbaRestock ? undefined : "gray.5"}>FBA restock:</Text></Table.Td>
-            <Table.Td px="md"><Text size="sm" fw={500} c={fbaRestock ? undefined : "gray.5"}>{product.restock.fba}</Text></Table.Td>
-          </Table.Tr>
-          <Table.Tr bg={warehouseRestock ? "green.1" : "gray.1"} style={{ border: 'none' }}>
-            <Table.Td px="md"><Text size="sm" c={warehouseRestock ? undefined : "gray.5"}>Warehouse restock:</Text></Table.Td>
-            <Table.Td px="md"><Text size="sm" fw={500} c={warehouseRestock ? undefined : "gray.5"}>{product.restock.warehouse}</Text></Table.Td>
-          </Table.Tr>
+          {location && (
+            <Table.Tr bg={"green.1"} style={{ border: 'none' }}>
+              <Table.Td px="md"><Text size="sm">{locationLabel} restock:</Text></Table.Td>
+              <Table.Td px="md"><Text size="sm" fw={500}>{product.restock[location].restockQty}</Text></Table.Td>
+            </Table.Tr>
+          )}
           
           {/* Sales */}
+
           <Table.Tr>
             <Table.Td px="md"><Text size="sm">90 day sales:</Text></Table.Td>
             <Table.Td px="md"><Text size="sm"><Sales sales={product.sales.amzUnitSalesBy30DayPeriods} /></Text></Table.Td>
           </Table.Tr>
-          <Table.Tr>
-            <Table.Td px="md"><Text size="sm">Monthly change:</Text></Table.Td>
-            <Table.Td px="md"><Text size="sm">{product.sales.amzWeightedMonthlyGrowthRate}</Text></Table.Td>
-          </Table.Tr>
-          <Table.Tr>
-            <Table.Td px="md"><Text size="sm">Forecast sales:</Text></Table.Td>
-            <Table.Td px="md"><Text size="sm">{product.sales.amzProjectedMonthlyUnitSales}</Text></Table.Td>
-          </Table.Tr>
-          
-          {/* Inventory */}
-          <Table.Tr>
-            <Table.Td px="md"><Text size="sm">FBA stock:</Text></Table.Td>
-            <Table.Td px="md"><Text size="sm">{product.fba.stock}</Text></Table.Td>
-          </Table.Tr>
-          <Table.Tr>
-            <Table.Td px="md"><Text size="sm">FBA inbound:</Text></Table.Td>
-            <Table.Td px="md"><Text size="sm">{product.fba.inbound}</Text></Table.Td>
-          </Table.Tr>
-          <Table.Tr>
-            <Table.Td px="md"><Text size="sm">AWD stock:</Text></Table.Td>
-            <Table.Td px="md"><Text size="sm">{product.awd.stock || 0}</Text></Table.Td>
-          </Table.Tr>
-          <Table.Tr>
-            <Table.Td px="md"><Text size="sm">AWD inbound:</Text></Table.Td>
-            <Table.Td px="md"><Text size="sm">{product.awd.inbound || 0}</Text></Table.Td>
-          </Table.Tr>
-          <Table.Tr>
-            <Table.Td px="md"><Text size="sm">Warehouse stock:</Text></Table.Td>
-            <Table.Td px="md"><Text size="sm">{product.warehouse.stock}</Text></Table.Td>
-          </Table.Tr>
+
+          {!isExpanded ? (
+            <Table.Tr>
+              <Table.Td 
+                colSpan={2} 
+                px="md"
+                onClick={() => setIsExpanded(!isExpanded)}
+                style={{ cursor: 'pointer' }}
+              >
+                <Button
+                  fullWidth
+                  variant="white"
+                  color="gray"
+                  style={{ padding: 0, height: 'auto' }}
+                >
+                  Details
+                </Button>
+              </Table.Td>
+            </Table.Tr>
+          ) : (
+            <>
+              <Table.Tr>
+                <Table.Td px="md"><Text size="sm">Monthly change:</Text></Table.Td>
+                <Table.Td px="md"><Text size="sm">{product.sales.amzWeightedMonthlyGrowthRate}</Text></Table.Td>
+              </Table.Tr>
+              <Table.Tr>
+                <Table.Td px="md"><Text size="sm">Forecast sales:</Text></Table.Td>
+                <Table.Td px="md"><Text size="sm">{product.sales.amzProjectedMonthlyUnitSales}</Text></Table.Td>
+              </Table.Tr>
+              
+              {/* Inventory */}
+              <Table.Tr>
+                <Table.Td px="md"><Text size="sm">FBA stock:</Text></Table.Td>
+                <Table.Td px="md"><Text size="sm">{product.fba.stock}</Text></Table.Td>
+              </Table.Tr>
+              <Table.Tr>
+                <Table.Td px="md"><Text size="sm">FBA inbound:</Text></Table.Td>
+                <Table.Td px="md"><Text size="sm">{product.fba.inbound}</Text></Table.Td>
+              </Table.Tr>
+              <Table.Tr>
+                <Table.Td px="md"><Text size="sm">AWD stock:</Text></Table.Td>
+                <Table.Td px="md"><Text size="sm">{product.awd.stock || 0}</Text></Table.Td>
+              </Table.Tr>
+              <Table.Tr>
+                <Table.Td px="md"><Text size="sm">AWD inbound:</Text></Table.Td>
+                <Table.Td px="md"><Text size="sm">{product.awd.inbound || 0}</Text></Table.Td>
+              </Table.Tr>
+              <Table.Tr>
+                <Table.Td px="md"><Text size="sm">Warehouse stock:</Text></Table.Td>
+                <Table.Td px="md"><Text size="sm">{product.warehouse.stock}</Text></Table.Td>
+              </Table.Tr>
+            </>
+          )}
         </Table.Tbody>
       </Table>
     </Card>
