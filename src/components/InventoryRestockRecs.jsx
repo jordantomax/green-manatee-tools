@@ -1,12 +1,25 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { SimpleGrid } from '@mantine/core'
 
-import { setLocalData, getLocalData } from '@/utils/storage'
+import { setLocalData, getLocalData, removeLocalData } from '@/utils/storage'
 import InventoryProductCard from './InventoryProductCard'
 
 function InventoryRestockRecs ({ products, location }) {
   const storageKey = `inventoryRecsDone${location || 'None'}`
   const [doneSkus, setDoneSkus] = useState(getLocalData(storageKey) || [])
+  const prevDatetimeRef = useRef(getLocalData('inventoryRecsDatetime'))
+
+  useEffect(() => {
+    const currentDatetime = getLocalData('inventoryRecsDatetime')
+    const prevDatetime = prevDatetimeRef.current
+    
+    if (prevDatetime && currentDatetime !== prevDatetime) {
+      setDoneSkus([])
+      removeLocalData(storageKey)
+    }
+    
+    prevDatetimeRef.current = currentDatetime
+  }, [products, storageKey])
 
   function handleDone (product) {
     const isDone = doneSkus.includes(product.sku)
