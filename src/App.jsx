@@ -36,7 +36,10 @@ function AppContent() {
   }, [showError])
 
   const getMainBackgroundColor = () => {
-    if (location.pathname.startsWith('/ads')) {
+    if (
+      location.pathname.startsWith('/ads') || 
+      location.pathname.startsWith('/inventory')
+    ) {
       return 'white'
     }
     return 'var(--mantine-color-gray-0)'

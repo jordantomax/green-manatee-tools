@@ -47,7 +47,7 @@ function InventoryRestockRec ({ recommendation, location, locationLabel, isDone,
   }
   
   return (
-    <Card p="0">
+    <Card p="0" shadow="0">
       <Box p="md">
         <Group justify="space-between" align="flex-start" gap="xs">
           <Title order={4} style={{ flex: 1 }}>{recommendation.product.sku}</Title>
