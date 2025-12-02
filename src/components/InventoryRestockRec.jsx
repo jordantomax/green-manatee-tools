@@ -96,59 +96,36 @@ function InventoryRestockRec ({ recommendation, location, locationLabel, isDone,
               <Table.Td px="md"><Text size="sm">90 day sales:</Text></Table.Td>
               <Table.Td px="md"><Text size="sm"><Sales sales={recommendation.sales.amzUnitSalesBy30DayPeriods} /></Text></Table.Td>
             </Table.Tr>
-
-            {!isExpanded ? (
-              <Table.Tr>
-                <Table.Td 
-                  colSpan={2} 
-                  px="md"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <Button
-                    fullWidth
-                    variant="white"
-                    color="gray"
-                    style={{ padding: 0, height: 'auto' }}
-                  >
-                    Details
-                  </Button>
-                </Table.Td>
-              </Table.Tr>
-            ) : (
-              <>
-                <Table.Tr>
-                  <Table.Td px="md"><Text size="sm">Monthly change:</Text></Table.Td>
-                  <Table.Td px="md"><Text size="sm">{recommendation.sales.amzWeightedMonthlyGrowthRate}</Text></Table.Td>
-                </Table.Tr>
-                <Table.Tr>
-                  <Table.Td px="md"><Text size="sm">Forecast sales:</Text></Table.Td>
-                  <Table.Td px="md"><Text size="sm">{recommendation.sales.amzProjectedMonthlyUnitSales}</Text></Table.Td>
-                </Table.Tr>
-                
-                {/* Inventory */}
-                <Table.Tr>
-                  <Table.Td px="md"><Text size="sm">FBA stock:</Text></Table.Td>
-                  <Table.Td px="md"><Text size="sm">{recommendation.fba.stock}</Text></Table.Td>
-                </Table.Tr>
-                <Table.Tr>
-                  <Table.Td px="md"><Text size="sm">FBA inbound:</Text></Table.Td>
-                  <Table.Td px="md"><Text size="sm">{recommendation.fba.inbound}</Text></Table.Td>
-                </Table.Tr>
-                <Table.Tr>
-                  <Table.Td px="md"><Text size="sm">AWD stock:</Text></Table.Td>
-                  <Table.Td px="md"><Text size="sm">{recommendation.awd.stock || 0}</Text></Table.Td>
-                </Table.Tr>
-                <Table.Tr>
-                  <Table.Td px="md"><Text size="sm">AWD inbound:</Text></Table.Td>
-                  <Table.Td px="md"><Text size="sm">{recommendation.awd.inbound || 0}</Text></Table.Td>
-                </Table.Tr>
-                <Table.Tr>
-                  <Table.Td px="md"><Text size="sm">Warehouse stock:</Text></Table.Td>
-                  <Table.Td px="md"><Text size="sm">{recommendation.warehouse.stock}</Text></Table.Td>
-                </Table.Tr>
-              </>
-            )}
+            <Table.Tr>
+              <Table.Td px="md"><Text size="sm">Monthly change:</Text></Table.Td>
+              <Table.Td px="md"><Text size="sm">{recommendation.sales.amzWeightedMonthlyGrowthRate}</Text></Table.Td>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Td px="md"><Text size="sm">Forecast sales:</Text></Table.Td>
+              <Table.Td px="md"><Text size="sm">{recommendation.sales.amzProjectedMonthlyUnitSales}</Text></Table.Td>
+            </Table.Tr>
+            
+            {/* Inventory */}
+            <Table.Tr>
+              <Table.Td px="md"><Text size="sm">FBA stock:</Text></Table.Td>
+              <Table.Td px="md"><Text size="sm">{recommendation.fba.stock}</Text></Table.Td>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Td px="md"><Text size="sm">FBA inbound:</Text></Table.Td>
+              <Table.Td px="md"><Text size="sm">{recommendation.fba.inbound}</Text></Table.Td>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Td px="md"><Text size="sm">AWD stock:</Text></Table.Td>
+              <Table.Td px="md"><Text size="sm">{recommendation.awd.stock || 0}</Text></Table.Td>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Td px="md"><Text size="sm">AWD inbound:</Text></Table.Td>
+              <Table.Td px="md"><Text size="sm">{recommendation.awd.inbound || 0}</Text></Table.Td>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Td px="md"><Text size="sm">Warehouse stock:</Text></Table.Td>
+              <Table.Td px="md"><Text size="sm">{recommendation.warehouse.stock}</Text></Table.Td>
+            </Table.Tr>
           </Table.Tbody>
         </Table>
       )}
