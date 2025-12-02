@@ -12,6 +12,7 @@ import {
 } from '@mantine/core'
 import { IconChevronRight, IconCheck } from '@tabler/icons-react'
 
+import api from '@/api'
 import { useError } from '@/contexts/Error'
 
 function Sales ({ sales }) {
@@ -23,17 +24,21 @@ function Sales ({ sales }) {
   })
 }
 
-function InventoryRestockRec ({ recommendation, location, locationLabel, isDone, onDone, onCreateShipment }) {
+function InventoryRestockRec ({ recommendation, location, locationLabel, isDone, onDone }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const { showError } = useError()
   
   async function handleCreateShipment () {
-    if (!onCreateShipment) return
+    if (!location) {
+      showError(new Error("Location is required to create a shipment"))
+      return
+    }
     
     setIsLoading(true)
     try {
-      await onCreateShipment(recommendation)
+      await api.createOutShipment(recommendation, location)
+      onDone(recommendation.product.sku)
     } catch (error) {
       showError(error)
     } finally {
@@ -61,15 +66,16 @@ function InventoryRestockRec ({ recommendation, location, locationLabel, isDone,
         {!isDone && (
           <>
             <Text size="sm" color="dimmed" mb="xs">{recommendation.product.name}</Text>
-            {onCreateShipment && (
-              <Button
-                onClick={handleCreateShipment}
-                loading={isLoading}
-                size="xs"
-                variant="light"
-              >
-                {`Create ${locationLabel} Shipment`}
-              </Button>
+
+            {location == 'fba' || location == 'awd' && (
+            <Button
+              onClick={handleCreateShipment}
+              loading={isLoading}
+              size="xs"
+              variant="light"
+            >
+              {`Create ${locationLabel} Shipment`}
+            </Button>
             )}
           </>
         )}

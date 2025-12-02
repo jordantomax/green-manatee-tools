@@ -60,7 +60,6 @@ function Inventory () {
             <InventoryRestockRecs 
               recommendations={fbaRecs} 
               location="fba" 
-              onCreateShipment={api.createFbaShipment}
             />
             <InventoryRestockRecs 
               recommendations={awdRecs} 
