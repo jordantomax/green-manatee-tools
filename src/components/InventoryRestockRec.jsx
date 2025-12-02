@@ -54,7 +54,7 @@ function InventoryRestockRec ({ recommendation, location, locationLabel, isDone,
 
           {onDone && (
             <ActionIcon
-              variant={isDone ? "filled" : "subtle"}
+              variant={isDone ? "filled" : "light"}
               color={isDone ? "green" : "gray"}
               onClick={onDone}
               size="sm"
@@ -63,21 +63,19 @@ function InventoryRestockRec ({ recommendation, location, locationLabel, isDone,
             </ActionIcon>
           )}
         </Group>
-        {!isDone && (
-          <>
-            <Text size="sm" color="dimmed" mb="xs">{recommendation.product.name}</Text>
 
-            {location == 'fba' || location == 'awd' && (
-            <Button
-              onClick={handleCreateShipment}
-              loading={isLoading}
-              size="xs"
-              variant="light"
-            >
-              {`Create ${locationLabel} Shipment`}
-            </Button>
-            )}
-          </>
+        <Text size="sm" color="dimmed">{recommendation.product.name}</Text>
+
+        {!isDone && (location == 'fba' || location == 'awd') && (
+          <Button
+            onClick={handleCreateShipment}
+            loading={isLoading}
+            size="xs"
+            mt="xs"
+            variant="light"
+          >
+            {`Create ${locationLabel} Shipment`}
+          </Button>
         )}
       </Box>
 
