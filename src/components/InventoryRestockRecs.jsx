@@ -34,13 +34,13 @@ function InventoryRestockRecs ({ recommendations, location }) {
     {
       fba: 'FBA',
       awd: 'AWD',
-      warehouse: 'Warehouse'
+      warehouse: 'Warehouse',
     }[location]
-  ) || 'Unknown'
+  ) || 'No restock needed'
 
   return (
     <>
-      <Title order={3}>{locationLabel} — restock {recommendations?.length || 0} SKUs</Title>
+      <Title order={3}>{locationLabel} — {recommendations?.length || 0} SKUs</Title>
 
       <Paper bg="gray.0">
         <SimpleGrid 
