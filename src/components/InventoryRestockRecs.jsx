@@ -43,7 +43,11 @@ function InventoryRestockRecs ({ recommendations, location }) {
       <Title order={3}>{locationLabel} — restock {recommendations?.length || 0} SKUs</Title>
 
       <Paper bg="gray.0">
-        <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
+        <SimpleGrid 
+          cols={{ base: 1, sm: 2, md: 3 }} 
+          spacing="md"
+          styles={{ root: { alignItems: 'start' } }}
+        >
           {recommendations.map((recommendation, i) => (
             <InventoryRestockRec 
               key={i} 
