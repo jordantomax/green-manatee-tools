@@ -1,14 +1,66 @@
-import { SimpleGrid } from '@mantine/core'
+import { useState, useEffect, useRef } from 'react'
+import { SimpleGrid, Title, Paper } from '@mantine/core'
 
-import InventoryProductCard from './InventoryProductCard'
+import { setLocalData, getLocalData, removeLocalData } from '@/utils/storage'
+import InventoryRestockRec from './InventoryRestockRec'
 
-function InventoryRestockRecs ({ products }) {
+function InventoryRestockRecs ({ recommendations, location }) {
+  const storageKey = `inventoryRecsDone${location || 'None'}`
+  const [doneSkus, setDoneSkus] = useState(getLocalData(storageKey) || [])
+  const prevDatetimeRef = useRef(getLocalData('inventoryRecsDatetime'))
+
+  useEffect(() => {
+    const currentDatetime = getLocalData('inventoryRecsDatetime')
+    const prevDatetime = prevDatetimeRef.current
+    
+    if (prevDatetime && currentDatetime !== prevDatetime) {
+      setDoneSkus([])
+      removeLocalData(storageKey)
+    }
+    
+    prevDatetimeRef.current = currentDatetime
+  }, [recommendations, storageKey])
+
+  function handleDone (sku) {
+    const isDone = doneSkus.includes(sku)
+    const newDoneSkus = isDone
+      ? doneSkus.filter(s => s !== sku)
+      : [...doneSkus, sku]
+    setDoneSkus(newDoneSkus)
+    setLocalData(storageKey, newDoneSkus)
+  }
+
+  const locationLabel = (
+    {
+      fba: 'FBA',
+      awd: 'AWD',
+      warehouse: 'Warehouse',
+    }[location]
+  ) || 'No restock needed'
+
   return (
-    <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
-      {products.map((product, i) => (
-        <InventoryProductCard key={i} product={product} />
-      ))}
-    </SimpleGrid>
+    <>
+      <Title order={3}>{locationLabel} — {recommendations?.length || 0} SKUs</Title>
+
+      <Paper bg="gray.0">
+        <SimpleGrid 
+          cols={{ base: 1, sm: 2, md: 3 }} 
+          spacing="md"
+          styles={{ root: { alignItems: 'start' } }}
+        >
+          {recommendations.map((recommendation, i) => (
+            <InventoryRestockRec 
+              key={i} 
+              recommendation={recommendation} 
+              location={location}
+              locationLabel={locationLabel}
+              isDone={doneSkus.includes(recommendation.product.sku)}
+              onDone={() => handleDone(recommendation.product.sku)}
+            />
+          ))}
+        </SimpleGrid>
+      </Paper>
+    </>
   )
 }
 
