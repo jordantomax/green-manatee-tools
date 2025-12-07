@@ -70,7 +70,7 @@ function Pricing() {
             <NumberInput
               label="Low Sale Price"
               value={settings.lowSalePrice}
-              onChange={(value) => setSetting({ ...settings, lowSalePrice: value })}
+              onChange={(value) => setSetting({ ...settings, lowSalePrice: Number(value) })}
               prefix="$"
               decimalScale={2}
               style={{ maxWidth: 150 }}
@@ -78,7 +78,7 @@ function Pricing() {
             <NumberInput
               label="High Sale Price"
               value={settings.highSalePrice}
-              onChange={(value) => setSetting({ ...settings, highSalePrice: value })}
+              onChange={(value) => setSetting({ ...settings, highSalePrice: Number(value) })}
               prefix="$"
               decimalScale={2}
               style={{ maxWidth: 150 }}
@@ -86,7 +86,7 @@ function Pricing() {
             <NumberInput
               label="Cost of Goods"
               value={settings.costOfGoods}
-              onChange={(value) => setSetting({ ...settings, costOfGoods: value })}
+              onChange={(value) => setSetting({ ...settings, costOfGoods: Number(value) })}
               prefix="$"
               decimalScale={2}
               style={{ maxWidth: 150 }}
@@ -94,7 +94,7 @@ function Pricing() {
             <NumberInput
               label="Referral Fee (%)"
               value={settings.referralFee}
-              onChange={(value) => setSetting({ ...settings, referralFee: value })}
+              onChange={(value) => setSetting({ ...settings, referralFee: Number(value) })}
               suffix="%"
               decimalScale={1}
               style={{ maxWidth: 150 }}
@@ -102,7 +102,7 @@ function Pricing() {
             <NumberInput
               label="FBA Fee"
               value={settings.fbaFee}
-              onChange={(value) => setSetting({ ...settings, fbaFee: value })}
+              onChange={(value) => setSetting({ ...settings, fbaFee: Number(value) })}
               prefix="$"
               decimalScale={2}
               style={{ maxWidth: 150 }}
@@ -110,7 +110,7 @@ function Pricing() {
             <NumberInput
               label="steps"
               value={settings.steps}
-              onChange={(value) => setSetting({ ...settings, steps: value })}
+              onChange={(value) => setSetting({ ...settings, steps: Number(value) })}
               min={2}
               max={50}
               style={{ maxWidth: 150 }}
