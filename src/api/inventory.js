@@ -6,12 +6,12 @@ export async function getRecs () {
   })
 }
 
-export async function createOutShipment (recommendation, destinationName) {
+export async function createOutShipment (recommendation, destinationName, cartonQty) {
   const shipment = {
     productId: recommendation.product.id,
     cartonTemplateId: recommendation.cartonTemplateId,
-    cartonQty: Math.ceil(recommendation.restock.fba.restockQty/recommendation.cartonUnitQty) + 1,
-    destinationName: destinationName
+    destinationName,
+    cartonQty
   }
 
   return call(`shipments/out`, {

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { SimpleGrid, Title, Paper } from '@mantine/core'
 
 import { setLocalData, getLocalData, removeLocalData } from '@/utils/storage'
+import { toLocationLabel } from '@/utils/format'
 import InventoryRestockRec from './InventoryRestockRec'
 
 function InventoryRestockRecs ({ recommendations, location }) {
@@ -30,13 +31,7 @@ function InventoryRestockRecs ({ recommendations, location }) {
     setLocalData(storageKey, newDoneSkus)
   }
 
-  const locationLabel = (
-    {
-      fba: 'FBA',
-      awd: 'AWD',
-      warehouse: 'Warehouse',
-    }[location]
-  ) || 'No restock needed'
+  const locationLabel = toLocationLabel(location)
 
   return (
     <>
