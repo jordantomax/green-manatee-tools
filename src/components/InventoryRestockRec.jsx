@@ -37,7 +37,8 @@ function InventoryRestockRec ({ recommendation, location, locationLabel, isDone,
     
     setIsLoading(true)
     try {
-      await api.createOutShipment(recommendation, location)
+      const cartonQty = Math.ceil(recommendation.restock[location].restockQty/recommendation.cartonUnitQty) + 1
+      await api.createOutShipment(recommendation, location, cartonQty)
       onDone(recommendation.product.sku)
     } catch (error) {
       showError(error)
