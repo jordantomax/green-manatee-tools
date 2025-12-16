@@ -19,13 +19,13 @@ function resourceUrl(resource) {
   return RESOURCE_ENDPOINTS[resource] || `${resource}s`
 }
 
-let errorHandler = null
+let notificationHandler = null
 let isRefreshing = false
 let refreshPromise = null
 let tokensHandler = null
 
-export function setErrorHandler(handler) {
-  errorHandler = handler
+export function setNotificationHandler(handler) {
+  notificationHandler = handler
 }
 
 export function setTokensHandler(handler) {
@@ -76,12 +76,22 @@ export async function call (path, _options = {}) {
     if (!response.ok) {
       const error = new Error(data.detail || 'API request failed')
       error.status = response.status
+      error.data = data
       throw error
     }
     
     return data
   } catch (error) {
-    if (errorHandler) errorHandler(error)
+    if (notificationHandler) {
+      const metadata = []
+      if (error.status != null) {
+        metadata.push({ label: 'Status', value: error.status.toString() })
+      }
+      if (error.data != null) {
+        metadata.push({ label: 'Data', value: JSON.stringify(error.data) })
+      }
+      notificationHandler('error', error.message || 'API request failed', metadata)
+    }
     throw error // propagate error to the caller
   }
 }

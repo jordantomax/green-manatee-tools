@@ -13,7 +13,7 @@ import {
 import { IconChevronRight, IconCheck } from '@tabler/icons-react'
 
 import api from '@/api'
-import { useError } from '@/contexts/Error'
+import { useNotification } from '@/contexts/Notification'
 
 function Sales ({ sales }) {
   return sales.map((period, i) => {
@@ -27,21 +27,27 @@ function Sales ({ sales }) {
 function InventoryRestockRec ({ recommendation, location, locationLabel, isDone, onDone }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
-  const { showError } = useError()
+  const { showNotification } = useNotification()
   
   async function handleCreateShipment () {
     if (!location) {
-      showError(new Error("Location is required to create a shipment"))
+      showNotification('error', "Location is required to create a shipment")
       return
     }
     
     setIsLoading(true)
     try {
       const cartonQty = Math.ceil(recommendation.restock[location].restockQty/recommendation.cartonUnitQty) + 1
-      await api.createOutShipment(recommendation, location, cartonQty)
+      const res = await api.createOutShipment(recommendation, location, cartonQty)
+      
+      if (res?.metadata?.type === "insufficientStock") {
+        showNotification(
+          'warning',
+          `Insufficient stock, ${res.data.length} shipments created with ${res.metadata.availableUnits} available units`
+        )
+      }
+      
       onDone(recommendation.product.sku)
-    } catch (error) {
-      showError(error)
     } finally {
       setIsLoading(false)
     }
