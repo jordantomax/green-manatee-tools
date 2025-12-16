@@ -7,9 +7,9 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { MantineProvider, AppShell } from '@mantine/core'
 
 import { theme } from '@/utils/theme'
-import { ErrorProvider, useError } from '@/contexts/Error'
+import { NotificationProvider, useNotification } from '@/contexts/Notification'
 import { ModalProvider } from '@/contexts/ModalContext'
-import { setErrorHandler } from '@/api'
+import { setNotificationHandler } from '@/api'
 import Login from '@/views/Login'
 import Signup from '@/views/Signup'
 import Nav from '@/components/Nav'
@@ -28,12 +28,12 @@ import NotFound from '@/views/NotFound'
 
 function AppContent() {
   const auth = React.useContext(AuthContext)
-  const { showError } = useError()
+  const { showNotification } = useNotification()
   const location = useLocation()
 
   useEffect(() => {
-    setErrorHandler(showError)
-  }, [showError])
+    setNotificationHandler(showNotification)
+  }, [showNotification])
 
   const getMainBackgroundColor = () => {
     if (
@@ -89,11 +89,11 @@ export default function App () {
     <MantineProvider theme={theme}>
       <BrowserRouter>
         <AuthProvider>
-          <ErrorProvider>
+          <NotificationProvider>
             <ModalProvider>
               <AppContent />
             </ModalProvider>
-          </ErrorProvider>
+          </NotificationProvider>
         </AuthProvider>
       </BrowserRouter>
     </MantineProvider>

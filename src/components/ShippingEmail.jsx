@@ -4,7 +4,7 @@ import { IconCopy } from '@tabler/icons-react'
 import { startCase } from 'lodash'
 
 import api from '@/api'
-import { useError } from '@/contexts/Error'
+import { useNotification } from '@/contexts/Notification'
 
 function ShippingEmail ({ shipments }) {
     const [isWritingEmail, setIsWritingEmail] = useState(false)
@@ -15,7 +15,7 @@ function ShippingEmail ({ shipments }) {
     const [inboundOutbound, setInboundOutbound] = useState('outbound')
     const [isCopying, setIsCopying] = useState(false)
     const [isCopied, setIsCopied] = useState(false)
-    const { showError } = useError()
+    const { showNotification } = useNotification()
 
     useEffect(() => {
         setSubject(`${inboundOutbound.toUpperCase()}: ${shipmentDates.map(d => `PO-${d}`).join(', ')}`)
@@ -24,7 +24,7 @@ function ShippingEmail ({ shipments }) {
     useEffect(() => {
         if (inboundOutbound === 'outbound') {
             if (processedShipments.find(s => s.inStock < 0)) {
-                showError(new Error("Not enough inventory for some shipments"))
+                showNotification('error', "Not enough inventory for some shipments")
             }
         }
     }, [inboundOutbound, processedShipments])
@@ -40,7 +40,7 @@ function ShippingEmail ({ shipments }) {
                 reader.readAsDataURL(blob)
             })
         } catch (error) {
-            showError(new Error("Error converting image to base64: " + error))
+            showNotification('error', "Error converting image to base64: " + error)
             return null
         }
     }
@@ -70,7 +70,7 @@ function ShippingEmail ({ shipments }) {
             setIsCopied(true)
             setTimeout(() => setIsCopied(false), 1000)
         } catch (error) {
-            showError(new Error("Error copying to clipboard: " + error))
+            showNotification('error', "Error copying to clipboard: " + error)
         } finally {
             setIsCopying(false)
         }
@@ -122,7 +122,7 @@ function ShippingEmail ({ shipments }) {
                     })
                 }
             } catch (error) {
-                showError(new Error("Error processing shipment: " + error))
+                showNotification('error', "Error processing shipment: " + error)
             }
         }
         
@@ -130,7 +130,7 @@ function ShippingEmail ({ shipments }) {
             setProcessedShipments(sData)
             setShipmentDates(sDates)
         } else if (hasProcessedAnyShipment) {
-            showError(new Error("No valid shipments found to process"))
+            showNotification('error', "No valid shipments found to process")
         }
     }
 
@@ -146,7 +146,7 @@ function ShippingEmail ({ shipments }) {
                     await writeEmail(shipments)
                     setModalOpened(true)
                 } catch (error) {
-                    showError(new Error("Error writing email: " + error))
+                    showNotification('error', "Error writing email: " + error)
                 } finally {
                     setIsWritingEmail(false)
                 }

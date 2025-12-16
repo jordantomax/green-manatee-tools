@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { Button } from '@mantine/core'
 
 import api from '@/api'
-import { useError } from '@/contexts/Error'
+import { useNotification } from '@/contexts/Notification'
 
 function ShippingManifest({ shipments }) {
   const [ isCreatingManifest, setIsCreatingManifest ] = useState(false)
-  const { showError } = useError()
+  const { showNotification } = useNotification()
 
   async function createManifest (shipments) {
     const shipmentsMassaged = []
@@ -23,12 +23,12 @@ function ShippingManifest({ shipments }) {
         })
       )
       if (!cartonTemplate) {
-        showError(new Error("Shipment has no carton template. Carton templates are required to generate manifest weight and dimensions."))
+        showNotification('error', "Shipment has no carton template. Carton templates are required to generate manifest weight and dimensions.")
         return
       }
 
       if (!run) {
-        showError(new Error("Shipment has no production run. If this was intentional, disregard this message."))
+        showNotification('error', "Shipment has no production run. If this was intentional, disregard this message.")
       }
 
       const exp = run?.properties?.exp?.start
@@ -60,7 +60,7 @@ function ShippingManifest({ shipments }) {
         try {
           await createManifest(shipments)
         } catch (error) {
-          showError(error)
+          showNotification('error', error.message || 'Failed to create manifest')
         } finally {
           setIsCreatingManifest(false)
         }

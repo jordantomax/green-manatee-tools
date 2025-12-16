@@ -11,7 +11,7 @@ import {
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 
-import { useError } from '@/contexts/Error'
+import { useNotification } from '@/contexts/Notification'
 import api from '@/api'
 import { setLocalData, getLocalData } from '@/utils/storage'
 import { addressFactory, parcelFactory, customsFactory } from '@/factories'
@@ -31,7 +31,7 @@ function Postage () {
   const [isLoadingRates, setIsLoadingRates] = useState(false)
   const [isLoadingShipment, setIsLoadingShipment] = useState(false)
   const savedInput = getLocalData('input') || {}
-  const { showError } = useError()
+  const { showNotification } = useNotification()
 
   const form = useForm({
     initialValues: {
@@ -70,15 +70,15 @@ function Postage () {
       const shipment = shipments[0]
 
       if (!shipment.properties.origin) {
-        showError(new Error("No shipments found"))
+        showNotification('error', "No shipments found")
         return
       }
       if (!shipment.properties.destination) {
-        showError(new Error("No destination found"))
+        showNotification('error', "No destination found")
         return
       }
       if (!shipment.properties.cartonTemplate) {
-        showError(new Error("No carton template found"))
+        showNotification('error', "No carton template found")
         return
       }
 
