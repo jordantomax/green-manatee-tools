@@ -43,7 +43,7 @@ function InventoryRestockRec ({ recommendation, location, locationLabel, isDone,
       if (res?.metadata?.type === "insufficientStock") {
         showNotification(
           'warning',
-          `Insufficient stock, shipment created with ${res.metadata.availableUnits} available units`
+          `Insufficient stock, ${res.data.length} shipments created with ${res.metadata.availableUnits} available units`
         )
       }
       
