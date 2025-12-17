@@ -10,6 +10,7 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
   const [views, setViews] = useState([])
   const [filters, setFilters] = usePersistentState(`${persistentStateKey}-filters`, [])
   const [sorts, setSorts] = usePersistentState(`${persistentStateKey}-sorts`, [])
+  const [settings, setSettings] = usePersistentState(`${persistentStateKey}-settings`, {})
   const [activeViewId, setActiveViewId] = usePersistentState(`${persistentStateKey}-activeViewId`, null)
   const [newlyAddedFilterId, setNewlyAddedFilterId] = useState(null)
   const { run, isLoading, loadingStates } = useAsync()
@@ -32,12 +33,13 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
           name: 'New View',
           resourceType,
           filters: views.length === 0 ? filters : null,
-          sorts: views.length === 0 ? sorts : null
+          sorts: views.length === 0 ? sorts : null,
+          settings: views.length === 0 ? settings : null
         })
         setViews(prev => [...prev, newView])
         setActiveViewId(newView.id)
       }, 'createView')
-    }, [resourceType, filters, sorts, run, setActiveViewId, views.length]),
+    }, [resourceType, filters, sorts, settings, run, setActiveViewId, views.length]),
 
     update: useCallback((viewId, updates) => {
       return run(async () => {
@@ -107,6 +109,20 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
     }, [sorts, setSorts])
   }
 
+  const settingsHandlers = {
+    hideColumn: useCallback((column) => {
+      const currentHidden = settings?.hiddenColumns || []
+      if (!currentHidden.includes(column)) {
+        setSettings({ ...settings, hiddenColumns: [...currentHidden, column] })
+      }
+    }, [settings, setSettings]),
+
+    showColumn: useCallback((column) => {
+      const currentHidden = settings?.hiddenColumns || []
+      setSettings({ ...settings, hiddenColumns: currentHidden.filter(col => col !== column) })
+    }, [settings, setSettings])
+  }
+
   useEffect(() => {
     viewHandlers.load()
   }, [])
@@ -123,6 +139,7 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
     if (activeView) {
       setFilters(activeView.filters)
       setSorts(activeView.sorts)
+      setSettings(activeView.settings || {})
       onActiveViewChange?.(activeView)
     }
   }, [activeViewId])
@@ -131,9 +148,9 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
     const activeView = getViewById(activeViewId)
 
     if (activeView) {
-      viewHandlers.update(activeView.id, { filters, sorts })
+      viewHandlers.update(activeView.id, { filters, sorts, settings })
     }
-  }, [filters, sorts])
+  }, [filters, sorts, settings])
 
   return {
     views,
@@ -146,6 +163,9 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
 
     sorts,
     sortHandlers,
+
+    settings,
+    settingsHandlers,
 
     isLoading,
     loadingStates,

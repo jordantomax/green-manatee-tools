@@ -17,7 +17,7 @@ import ActiveSorts from "@/components/ActiveSorts"
 import DateRangeInputPicker from "@/components/DateRangeInputPicker"
 import ViewManager from "@/components/ViewManager"
 import { columnTypes, getSortableColumns } from '@/utils/table'
-import { SEARCH_TERMS_HIDDEN_COLUMNS, RECORD_TYPES } from '@/utils/constants'
+import { RECORD_TYPES } from '@/utils/constants'
 import { KeywordColumn, SearchTermColumn } from '@/components/amazon-ads/search-terms'
 
 
@@ -79,9 +79,13 @@ function SearchTerms() {
     viewHandlers,
     filterHandlers,
     sortHandlers,
+    settings,
+    settingsHandlers,
     newlyAddedFilterId,
     isLoading: viewsLoading
   } = useViews('searchTerms-views', RECORD_TYPES.SEARCH_TERMS, { onActiveViewChange: refresh })
+
+  const hiddenColumns = settings?.hiddenColumns || []
 
   useEffect(() => { 
     refresh()
@@ -154,9 +158,10 @@ function SearchTerms() {
           data: searchTerms,
           columnComponents,
           columnOrder: ['keyword', 'searchTerm', 'matchType', 'acosClicks7d'],
-          hiddenColumns: SEARCH_TERMS_HIDDEN_COLUMNS,
+          hiddenColumns,
+          onColumnHide: settingsHandlers.hideColumn,
           handleRowClick,
-        }), [searchTerms, columnComponents, handleRowClick])}
+        }), [searchTerms, columnComponents, hiddenColumns, settingsHandlers, handleRowClick])}
       />
       
       <TablePagination

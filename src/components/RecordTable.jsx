@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, memo } from 'react'
-import { Text, Table } from '@mantine/core'
+import { useMemo, useRef, memo } from 'react'
+import { Text, Table, Menu, Button, UnstyledButton } from '@mantine/core'
 import startCase from 'lodash-es/startCase'
 import isFunction from 'lodash-es/isFunction'
 
@@ -20,16 +20,15 @@ const RecordTable = memo(function RecordTable({
   columnOrder,
   handleRowClick,
   hiddenColumns = [],
+  onColumnHide,
   columnComponents = {},
 }) {
   const theadRef = useRef(null)
-  const [columns, setColumns] = useState([])
   
-  useEffect(() => {
-    let columns = Object.keys(data[0] || {})
-    columns = columns.filter(col => !hiddenColumns.includes(col))
-    columns = orderColumns(columns, columnOrder)
-    setColumns(columns)
+  const columns = useMemo(() => {
+    let cols = Object.keys(data[0] || {})
+    cols = cols.filter(col => !hiddenColumns.includes(col))
+    return orderColumns(cols, columnOrder)
   }, [data, columnOrder, hiddenColumns])
 
   if (data.length === 0) {
@@ -43,9 +42,23 @@ const RecordTable = memo(function RecordTable({
           <Table.Tr>
             {columns.map((column, colIdx) => (
               <Table.Th 
-                className={colIdx === 0 ? styles.stickyCol : styles.th}
+                className={colIdx === 0 ? `${styles.th} ${styles.stickyCol}` : styles.th}
                 key={column}>
-                {startCase(column)}
+                <Menu position="bottom-start" width={200}>
+                  <Menu.Target>
+                    <UnstyledButton 
+                      className={styles.colHeadButton}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {startCase(column)}
+                    </UnstyledButton>
+                  </Menu.Target>
+                  <Menu.Dropdown className={styles.thMenu}>
+                    <Menu.Item onClick={() => onColumnHide(column)}>
+                      Hide
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
               </Table.Th>
             ))}
           </Table.Tr>
