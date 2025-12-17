@@ -1,4 +1,4 @@
-import { IconColumns } from '@tabler/icons-react'
+import { IconEye } from '@tabler/icons-react'
 import startCase from 'lodash-es/startCase'
 import SearchableMultiSelect from '@/components/SearchableMultiSelect'
 
@@ -23,14 +23,13 @@ const ColumnVisibility = ({ columns, hiddenColumns = [], onColumnsChange }) => {
   }
 
   const handleSelectionChange = (selectedValues) => {
-    console.log('selectedValues', selectedValues)
     const newHiddenColumns = columns.filter(col => !selectedValues.includes(col))
     onColumnsChange(newHiddenColumns)
   }
 
   return (
     <SearchableMultiSelect
-      label={<IconColumns size={21} />}
+      label={<IconEye size={21} />}
       options={options}
       selectedValues={selectedValues}
       onSelectionChange={handleSelectionChange}
