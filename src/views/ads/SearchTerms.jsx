@@ -17,7 +17,7 @@ import ActiveSorts from "@/components/ActiveSorts"
 import ColumnVisibility from "@/components/ColumnVisibility"
 import DateRangeInputPicker from "@/components/DateRangeInputPicker"
 import ViewManager from "@/components/ViewManager"
-import { columnTypes, getSortableColumns, orderColumns } from '@/utils/table'
+import { columnTypes, filterSortableColumns, orderColumns } from '@/utils/table'
 import { RECORD_TYPES } from '@/utils/constants'
 import { KeywordColumn, SearchTermColumn } from '@/components/amazon-ads/search-terms'
 
@@ -115,7 +115,7 @@ function SearchTerms() {
           />
 
           <AddSort
-            columns={orderColumns(getSortableColumns(), columnOrder)}
+            columns={filterSortableColumns(columns)}
             handleSortAdd={sortHandlers.add}
           />
 

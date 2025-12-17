@@ -140,8 +140,8 @@ export const sortDirections = {
   desc: 'desc'
 }
 
-export const getSortableColumns = () => {
-  return Object.keys(columnTypes).filter(key => 
+export const filterSortableColumns = (columns) => {
+  return columns.filter(key => 
     !['id', 'boolean'].includes(columnTypes[key])
-  ).sort()
+  )
 }
