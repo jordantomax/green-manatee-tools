@@ -1,60 +1,77 @@
 .th {
     white-space: nowrap;
+    padding: 0;
 }
 
 .td {
     white-space: nowrap;
 }
 
+.colHeadButton {
+    width: 100%;
+    text-align: left;
+    font-size: inherit;
+    font-weight: inherit;
+    padding: var(--mantine-spacing-xs);
+}
+
+.colHeadButton:hover {
+    background-color: var(--mantine-color-gray-0);
+}
+
+.thMenu {
+    margin-left: var(--mantine-spacing-xs);
+}
+
 .stickyCol {
-  position: sticky;
-  background: #fff;
-  left: 0;
-  z-index: 2;
-  white-space: nowrap;
+    position: sticky;
+    background: #fff;
+    left: 0;
+    z-index: 2;
+    white-space: nowrap;
 }
 
 .stickyCol::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 2px;
-  height: 100%;
-  background: #f0f0f0;
-  z-index: 3;
-  pointer-events: none;
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 2px;
+    height: 100%;
+    background: #f0f0f0;
+    z-index: 3;
+    pointer-events: none;
 }
 
 /* Lighten table row hover color */
 .row {
-  transition: background-color 0.15s ease;
-  cursor: pointer;
+    transition: background-color 0.15s ease;
+    cursor: pointer;
 }
 
 .row:hover,
 .row:hover .stickyCol {
-  background: var(--mantine-color-gray-0);
+    background: var(--mantine-color-gray-0);
 }
 
 .state-circle {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: transparent;
-  transition: background-color 0.25s;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: transparent;
+    transition: background-color 0.25s;
 }
 
 .state-enabled {
-  background-color: var(--mantine-color-green-6);
+    background-color: var(--mantine-color-green-6);
 }
 
 .state-paused {
-  background-color: var(--mantine-color-yellow-6);
+    background-color: var(--mantine-color-yellow-6);
 }
 
 .state-archived {
-  background-color: var(--mantine-color-red-6);
+    background-color: var(--mantine-color-red-6);
 }
 
 .negative {
@@ -90,6 +107,7 @@
         padding: 0;
         margin-right: 0;
     }
+
     100% {
         opacity: 1;
         transform: scale(1);

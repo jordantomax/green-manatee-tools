@@ -102,7 +102,7 @@ function StickyHeaderTable({
       cloneElement(trChild, {
         children: Children.map(trChild.props.children, (thChild, colIdx) =>
           cloneElement(thChild, {
-            className: colIdx < numStickyColumns ? styles.stickyHeaderStickyCol : styles.th,
+            className: [thChild.props.className, colIdx < numStickyColumns && styles.stickyHeaderStickyCol].filter(Boolean).join(' '),
             key: thChild.key || colIdx
           })
         )

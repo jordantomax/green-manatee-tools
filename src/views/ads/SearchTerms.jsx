@@ -14,10 +14,11 @@ import AddFilter from "@/components/AddFilter"
 import ActiveFilters from "@/components/ActiveFilters"
 import AddSort from "@/components/AddSort"
 import ActiveSorts from "@/components/ActiveSorts"
+import ColumnVisibility from "@/components/ColumnVisibility"
 import DateRangeInputPicker from "@/components/DateRangeInputPicker"
 import ViewManager from "@/components/ViewManager"
-import { columnTypes, getSortableColumns } from '@/utils/table'
-import { SEARCH_TERMS_HIDDEN_COLUMNS, RECORD_TYPES } from '@/utils/constants'
+import { columnTypes, filterSortableColumns, orderColumns } from '@/utils/table'
+import { RECORD_TYPES } from '@/utils/constants'
 import { KeywordColumn, SearchTermColumn } from '@/components/amazon-ads/search-terms'
 
 
@@ -79,9 +80,15 @@ function SearchTerms() {
     viewHandlers,
     filterHandlers,
     sortHandlers,
+    settings,
+    settingsHandlers,
     newlyAddedFilterId,
     isLoading: viewsLoading
   } = useViews('searchTerms-views', RECORD_TYPES.SEARCH_TERMS, { onActiveViewChange: refresh })
+
+  const columnOrder = ['keyword', 'searchTerm', 'matchType', 'acosClicks7d']
+  const columns = useMemo(() => orderColumns(Object.keys(columnTypes), columnOrder), [])
+  const hiddenColumns = settings?.hiddenColumns || []
 
   useEffect(() => { 
     refresh()
@@ -92,7 +99,7 @@ function SearchTerms() {
   const formIsDirty = useMemo(() => {
     return !isEqual(lastCallParams, currentParams)
   }, [lastCallParams, currentParams])
-
+  
   return (
     <Stack>
       <Group justify="space-between" align="flex-start">
@@ -102,19 +109,25 @@ function SearchTerms() {
         </Group>
 
         <Group gap="xs" align="flex-end">
-          <DateRangeInputPicker 
-            value={dateRange}
-            onChange={setDateRange}
-          />
-
           <AddFilter 
-            columns={Object.keys(columnTypes)}
+            columns={columns}
             handleFilterAdd={filterHandlers.add}
           />
 
           <AddSort
-            columns={getSortableColumns()}
+            columns={filterSortableColumns(columns)}
             handleSortAdd={sortHandlers.add}
+          />
+
+          <ColumnVisibility
+            columns={columns}
+            hiddenColumns={hiddenColumns}
+            onColumnsChange={settingsHandlers.setHiddenColumns}
+          />
+
+          <DateRangeInputPicker 
+            value={dateRange}
+            onChange={setDateRange}
           />
 
           <Button 
@@ -153,10 +166,11 @@ function SearchTerms() {
         {...useMemo(() => ({
           data: searchTerms,
           columnComponents,
-          columnOrder: ['keyword', 'searchTerm', 'matchType', 'acosClicks7d'],
-          hiddenColumns: SEARCH_TERMS_HIDDEN_COLUMNS,
+          columnOrder,
+          hiddenColumns,
+          onColumnHide: settingsHandlers.hideColumn,
           handleRowClick,
-        }), [searchTerms, columnComponents, handleRowClick])}
+        }), [searchTerms, columnComponents, columnOrder, hiddenColumns, settingsHandlers, handleRowClick])}
       />
       
       <TablePagination

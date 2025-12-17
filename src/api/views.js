@@ -5,17 +5,19 @@ const viewFromAPI = (view) => ({
   ...view,
   id: String(view.id),
   filters: Filter.fromAPI(view.filter),
-  sorts: Sort.fromAPI(view.sort)
+  sorts: Sort.fromAPI(view.sort),
+  settings: view.settings || {}
 })
 
-export async function createView ({ name, resourceType, filters, sorts }) {
+export async function createView ({ name, resourceType, filters, sorts, settings }) {
   const view = await call('views', {
     method: 'POST',
     body: { 
       name, 
       resourceType, 
       filter: Filter.toAPI(filters), 
-      sort: Sort.toAPI(sorts) 
+      sort: Sort.toAPI(sorts),
+      settings: settings ?? null
     }
   })
   
@@ -39,14 +41,15 @@ export async function getView (viewId) {
   return viewFromAPI(view)
 }
 
-export async function updateView (viewId, { name, resourceType, filters, sorts }) {
+export async function updateView (viewId, { name, resourceType, filters, sorts, settings }) {
   const view = await call(`views/${viewId}`, {
     method: 'PUT',
     body: { 
       name, 
       resourceType, 
       filter: Filter.toAPI(filters), 
-      sort: Sort.toAPI(sorts) 
+      sort: Sort.toAPI(sorts),
+      settings: settings ?? null
     }
   })
   

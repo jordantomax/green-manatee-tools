@@ -37,11 +37,12 @@ function SearchableSelect({
       combobox.focusSearchInput()
     }
   })
-
+  
   return (
     <Combobox
       store={combobox}
       width={width}
+      withArrow={false}
       onOptionSubmit={value => {
         combobox.closeDropdown()
         onSelect(value)

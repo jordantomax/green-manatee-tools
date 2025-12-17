@@ -1,3 +1,12 @@
+export const orderColumns = (columns, order) => {
+  if (order && Array.isArray(order)) {
+    const orderedColumns = order.filter(col => columns.includes(col))
+    const remainingColumns = columns.filter(col => !order.includes(col))
+    return [...orderedColumns, ...remainingColumns]
+  }
+  return columns
+}
+
 export const conditionLabels = {
   eq: 'Equals',
   ne: 'Does not equal',
@@ -131,8 +140,8 @@ export const sortDirections = {
   desc: 'desc'
 }
 
-export const getSortableColumns = () => {
-  return Object.keys(columnTypes).filter(key => 
+export const filterSortableColumns = (columns) => {
+  return columns.filter(key => 
     !['id', 'boolean'].includes(columnTypes[key])
-  ).sort()
+  )
 }
