@@ -26,22 +26,36 @@ function SearchableMultiSelect({
     return null
   }, [filteredOptions, selectedValues, groupOptionsFn])
 
+  const allSelected = options.length > 0 && options.every(opt => selectedValues.includes(opt.value))
+
   const handleToggle = (value) => {
     const newSelection = selectedValues.includes(value)
       ? selectedValues.filter(v => v !== value)
       : [...selectedValues, value]
     onSelectionChange(newSelection)
   }
+  
+  const handleSelectAll = () => {
+    if (allSelected) {
+      onSelectionChange([])
+    } else {
+      onSelectionChange(options.map(opt => opt.value))
+    }
+  }
 
   const Option = ({ option }) => (
     <Combobox.Option 
       value={option.value} 
       key={option.value}
-      onClick={() => handleToggle(option.value)}
     >
       <Checkbox
         checked={selectedValues.includes(option.value)}
         label={option.label}
+        onChange={(e) => {
+          e.stopPropagation()
+          handleToggle(option.value)
+        }}
+
       />
     </Combobox.Option>
   )
@@ -83,19 +97,33 @@ function SearchableMultiSelect({
           {filteredOptions.length === 0 ? (
             <Combobox.Empty>Nothing found</Combobox.Empty>
           ) : (
-            groupedOptions?.length > 0 ? (
-              groupedOptions.map((group, groupIdx) => (
-                <Combobox.Group key={groupIdx} label={group.label}>
-                  {group.items.map(option => (
-                    <Option key={option.value} option={option} />
-                  ))}
-                </Combobox.Group>
-              ))
-            ) : (
-              filteredOptions.map(option => (
-                <Option key={option.value} option={option} />
-              ))
-            )
+            <>
+              <Combobox.Option 
+                value="__select_all__"
+              >
+                <Checkbox
+                  onChange={(e) => {
+                    e.stopPropagation()
+                    handleSelectAll()
+                  }}
+                  checked={allSelected}
+                  label={allSelected ? 'Deselect All' : 'Select All'}
+                />
+              </Combobox.Option>
+              {groupedOptions?.length > 0 ? (
+                groupedOptions.map((group, groupIdx) => (
+                  <Combobox.Group key={groupIdx} label={group.label}>
+                    {group.items.map(option => (
+                      <Option key={option.value} option={option} />
+                    ))}
+                  </Combobox.Group>
+                ))
+              ) : (
+                filteredOptions.map(option => (
+                  <Option key={option.value} option={option} />
+                ))
+              )}
+            </>
           )}
         </Combobox.Options>
       </Combobox.Dropdown>
