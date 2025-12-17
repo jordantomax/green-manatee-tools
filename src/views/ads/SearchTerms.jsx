@@ -96,7 +96,7 @@ function SearchTerms() {
   const formIsDirty = useMemo(() => {
     return !isEqual(lastCallParams, currentParams)
   }, [lastCallParams, currentParams])
-
+  
   return (
     <Stack>
       <Group justify="space-between" align="flex-start">
@@ -106,11 +106,6 @@ function SearchTerms() {
         </Group>
 
         <Group gap="xs" align="flex-end">
-          <DateRangeInputPicker 
-            value={dateRange}
-            onChange={setDateRange}
-          />
-
           <AddFilter 
             columns={Object.keys(columnTypes)}
             handleFilterAdd={filterHandlers.add}
@@ -119,6 +114,11 @@ function SearchTerms() {
           <AddSort
             columns={getSortableColumns()}
             handleSortAdd={sortHandlers.add}
+          />
+
+          <DateRangeInputPicker 
+            value={dateRange}
+            onChange={setDateRange}
           />
 
           <Button 
