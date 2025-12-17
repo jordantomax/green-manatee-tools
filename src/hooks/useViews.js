@@ -120,6 +120,10 @@ export default function useViews(persistentStateKey, resourceType, callbacks = {
     showColumn: useCallback((column) => {
       const currentHidden = settings?.hiddenColumns || []
       setSettings({ ...settings, hiddenColumns: currentHidden.filter(col => col !== column) })
+    }, [settings, setSettings]),
+
+    setHiddenColumns: useCallback((hiddenColumns) => {
+      setSettings({ ...settings, hiddenColumns })
     }, [settings, setSettings])
   }
 

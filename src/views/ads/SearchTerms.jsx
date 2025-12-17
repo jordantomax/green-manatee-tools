@@ -14,9 +14,10 @@ import AddFilter from "@/components/AddFilter"
 import ActiveFilters from "@/components/ActiveFilters"
 import AddSort from "@/components/AddSort"
 import ActiveSorts from "@/components/ActiveSorts"
+import ColumnVisibility from "@/components/ColumnVisibility"
 import DateRangeInputPicker from "@/components/DateRangeInputPicker"
 import ViewManager from "@/components/ViewManager"
-import { columnTypes, getSortableColumns } from '@/utils/table'
+import { columnTypes, getSortableColumns, orderColumns } from '@/utils/table'
 import { RECORD_TYPES } from '@/utils/constants'
 import { KeywordColumn, SearchTermColumn } from '@/components/amazon-ads/search-terms'
 
@@ -85,6 +86,8 @@ function SearchTerms() {
     isLoading: viewsLoading
   } = useViews('searchTerms-views', RECORD_TYPES.SEARCH_TERMS, { onActiveViewChange: refresh })
 
+  const columnOrder = ['keyword', 'searchTerm', 'matchType', 'acosClicks7d']
+  const columns = useMemo(() => orderColumns(Object.keys(columnTypes), columnOrder), [])
   const hiddenColumns = settings?.hiddenColumns || []
 
   useEffect(() => { 
@@ -107,13 +110,19 @@ function SearchTerms() {
 
         <Group gap="xs" align="flex-end">
           <AddFilter 
-            columns={Object.keys(columnTypes)}
+            columns={columns}
             handleFilterAdd={filterHandlers.add}
           />
 
           <AddSort
-            columns={getSortableColumns()}
+            columns={orderColumns(getSortableColumns(), columnOrder)}
             handleSortAdd={sortHandlers.add}
+          />
+
+          <ColumnVisibility
+            columns={columns}
+            hiddenColumns={hiddenColumns}
+            onColumnsChange={settingsHandlers.setHiddenColumns}
           />
 
           <DateRangeInputPicker 
@@ -157,11 +166,11 @@ function SearchTerms() {
         {...useMemo(() => ({
           data: searchTerms,
           columnComponents,
-          columnOrder: ['keyword', 'searchTerm', 'matchType', 'acosClicks7d'],
+          columnOrder,
           hiddenColumns,
           onColumnHide: settingsHandlers.hideColumn,
           handleRowClick,
-        }), [searchTerms, columnComponents, hiddenColumns, settingsHandlers, handleRowClick])}
+        }), [searchTerms, columnComponents, columnOrder, hiddenColumns, settingsHandlers, handleRowClick])}
       />
       
       <TablePagination

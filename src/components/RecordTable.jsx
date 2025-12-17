@@ -5,15 +5,7 @@ import isFunction from 'lodash-es/isFunction'
 
 import styles from '@/styles/RecordTable.module.css'
 import StickyHeaderTable from '@/components/StickyHeaderTable'
-
-const orderColumns = (columns, order) => {
-  if (order && Array.isArray(order)) {
-    const orderedColumns = order.filter(col => columns.includes(col))
-    const remainingColumns = columns.filter(col => !order.includes(col))
-    return [...orderedColumns, ...remainingColumns]
-  }
-  return columns
-}
+import { orderColumns } from '@/utils/table'
 
 const RecordTable = memo(function RecordTable({ 
   data,
