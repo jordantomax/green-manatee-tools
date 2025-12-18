@@ -117,14 +117,14 @@ const ActiveFilter = ({ filter, handleFilterRemove, handleFilterChange, isNewlyA
 
 const ActiveFilters = ({ filters, handleFilterRemove, handleFilterChange, newlyAddedFilterId }) => {
   if (isEmpty(filters)) return null
-
+  
   return (
     <Group gap="xs">
       <Text size="xs" fw={500}>Filters</Text>
 
-      {filters.map((filter, index) => (
+      {filters.map((filter) => (
         <ActiveFilter 
-          key={index} 
+          key={filter.id} 
           filter={filter} 
           handleFilterRemove={handleFilterRemove} 
           handleFilterChange={handleFilterChange}
