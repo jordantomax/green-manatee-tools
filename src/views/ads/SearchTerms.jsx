@@ -96,6 +96,10 @@ function SearchTerms() {
     return columns.filter(col => !hiddenColumns.includes(col))
   }, [columns, hiddenColumns])
 
+  const sortedColumns = useMemo(() => {
+    return [...columns].sort()
+  }, [columns])
+
   useEffect(() => { 
     refresh()
   }, [pagination.page, pagination.limit])
@@ -116,17 +120,17 @@ function SearchTerms() {
 
         <Group gap="xs" align="flex-end">
           <AddFilter 
-            columns={columns}
+            columns={sortedColumns}
             handleFilterAdd={filterHandlers.add}
           />
 
           <AddSort
-            columns={filterSortableColumns(columns)}
+            columns={filterSortableColumns(sortedColumns)}
             handleSortAdd={sortHandlers.add}
           />
 
           <ColumnVisibility
-            columns={columns}
+            columns={sortedColumns}
             hiddenColumns={hiddenColumns}
             onColumnsChange={settingsHandlers.setHiddenColumns}
           />
