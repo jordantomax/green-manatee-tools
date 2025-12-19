@@ -1,7 +1,7 @@
 export const orderColumns = (columns, order) => {
   if (order && Array.isArray(order)) {
     const orderedColumns = order.filter(col => columns.includes(col))
-    const remainingColumns = columns.filter(col => !order.includes(col))
+    const remainingColumns = columns.filter(col => !order.includes(col)).sort()
     return [...orderedColumns, ...remainingColumns]
   }
   return columns
