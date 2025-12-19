@@ -17,7 +17,7 @@ import ActiveSorts from "@/components/ActiveSorts"
 import ColumnVisibility from "@/components/ColumnVisibility"
 import DateRangeInputPicker from "@/components/DateRangeInputPicker"
 import ViewManager from "@/components/ViewManager"
-import { columnTypes, filterSortableColumns, orderColumns } from '@/utils/table'
+import { filterSortableColumns, orderColumns } from '@/utils/table'
 import { RECORD_TYPES } from '@/utils/constants'
 import { KeywordColumn, SearchTermColumn } from '@/components/amazon-ads/search-terms'
 
@@ -86,9 +86,19 @@ function SearchTerms() {
     isLoading: viewsLoading
   } = useViews('searchTerms-views', RECORD_TYPES.SEARCH_TERMS, { onActiveViewChange: refresh })
 
-  const columnOrder = ['keyword', 'searchTerm', 'matchType', 'acosClicks7d']
-  const columns = useMemo(() => orderColumns(Object.keys(columnTypes), columnOrder), [])
   const hiddenColumns = settings?.hiddenColumns || []
+  const columns = useMemo(() => {
+    let cols = Object.keys(searchTerms[0] || {})
+    return orderColumns(cols, ['keyword', 'searchTerm', 'matchType', 'acosClicks7d'])
+  }, [searchTerms])
+  
+  const visibleColumns = useMemo(() => {
+    return columns.filter(col => !hiddenColumns.includes(col))
+  }, [columns, hiddenColumns])
+
+  const sortedColumns = useMemo(() => {
+    return [...columns].sort()
+  }, [columns])
 
   useEffect(() => { 
     refresh()
@@ -110,17 +120,17 @@ function SearchTerms() {
 
         <Group gap="xs" align="flex-end">
           <AddFilter 
-            columns={columns}
+            columns={sortedColumns}
             handleFilterAdd={filterHandlers.add}
           />
 
           <AddSort
-            columns={filterSortableColumns(columns)}
+            columns={filterSortableColumns(sortedColumns)}
             handleSortAdd={sortHandlers.add}
           />
 
           <ColumnVisibility
-            columns={columns}
+            columns={sortedColumns}
             hiddenColumns={hiddenColumns}
             onColumnsChange={settingsHandlers.setHiddenColumns}
           />
@@ -165,12 +175,11 @@ function SearchTerms() {
       <RecordTable 
         {...useMemo(() => ({
           data: searchTerms,
+          columns: visibleColumns,
           columnComponents,
-          columnOrder,
-          hiddenColumns,
           onColumnHide: settingsHandlers.hideColumn,
           handleRowClick,
-        }), [searchTerms, columnComponents, columnOrder, hiddenColumns, settingsHandlers, handleRowClick])}
+        }), [searchTerms, visibleColumns, columnComponents, settingsHandlers, handleRowClick])}
       />
       
       <TablePagination

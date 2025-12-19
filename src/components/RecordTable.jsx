@@ -5,23 +5,15 @@ import isFunction from 'lodash-es/isFunction'
 
 import styles from '@/styles/RecordTable.module.css'
 import StickyHeaderTable from '@/components/StickyHeaderTable'
-import { orderColumns } from '@/utils/table'
 
 const RecordTable = memo(function RecordTable({ 
   data,
-  columnOrder,
+  columns,
   handleRowClick,
-  hiddenColumns = [],
   onColumnHide,
   columnComponents = {},
 }) {
   const theadRef = useRef(null)
-  
-  const columns = useMemo(() => {
-    let cols = Object.keys(data[0] || {})
-    cols = cols.filter(col => !hiddenColumns.includes(col))
-    return orderColumns(cols, columnOrder)
-  }, [data, columnOrder, hiddenColumns])
 
   if (data.length === 0) {
     return <Text>No records found</Text>
