@@ -98,18 +98,20 @@ function SearchableMultiSelect({
             <Combobox.Empty>Nothing found</Combobox.Empty>
           ) : (
             <>
-              <Combobox.Option 
-                value="__select_all__"
-              >
-                <Checkbox
-                  onChange={(e) => {
-                    e.stopPropagation()
-                    handleSelectAll()
-                  }}
-                  checked={allSelected}
-                  label={allSelected ? 'Deselect All' : 'Select All'}
-                />
-              </Combobox.Option>
+              {!search.trim() && (
+                <Combobox.Option 
+                  value="__select_all__"
+                >
+                  <Checkbox
+                    onChange={(e) => {
+                      e.stopPropagation()
+                      handleSelectAll()
+                    }}
+                    checked={allSelected}
+                    label={allSelected ? 'Deselect All' : 'Select All'}
+                  />
+                </Combobox.Option>
+              )}
               {groupedOptions?.length > 0 ? (
                 groupedOptions.map((group, groupIdx) => (
                   <Combobox.Group key={groupIdx} label={group.label}>
