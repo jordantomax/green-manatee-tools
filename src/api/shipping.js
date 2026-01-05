@@ -8,7 +8,7 @@ export async function createManifest (shipments) {
   const base64Txt = res.body
   const link = document.createElement('a')
   link.href = `data:application/pdf;base64,${base64Txt}`
-  link.download = 'manifest.txt'
+  link.download = 'manifest.xlsx'
   link.click()
 }
 
