@@ -1,9 +1,12 @@
 import { call } from './core'
 
-export async function createManifest (shipments) {
+export async function createManifest (shipments, manifestType) {
   const res = await call(`amazon/sp/manifest`, {
     method: 'POST',
-    body: shipments
+    body: {
+      shipments,
+      manifestType
+    }
   })
   const base64Txt = res.body
   const link = document.createElement('a')
