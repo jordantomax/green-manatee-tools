@@ -11,7 +11,7 @@ export async function createManifest (shipments, manifestType) {
   const base64Txt = res.body
   const link = document.createElement('a')
   link.href = `data:application/pdf;base64,${base64Txt}`
-  link.download = 'manifest.xlsx'
+  link.download = `manifest-${manifestType}.xlsx`
   link.click()
 }
 
