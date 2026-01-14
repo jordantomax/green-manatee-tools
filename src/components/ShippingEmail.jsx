@@ -118,7 +118,7 @@ function ShippingEmail ({ shipments }) {
                         productSku: product.properties.sku?.value,
                         productGtin12: product.properties.gtin12?.value,
                         destinationName: destination?.properties?.name?.value,
-                        inStock: run?.properties?.inStock?.value || -1
+                        inStock: run?.properties?.inStock?.value
                     })
                 }
             } catch (error) {
