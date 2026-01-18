@@ -39,7 +39,7 @@ function InventoryRestockRecs ({ recommendations, location }) {
 
       <Paper bg="gray.0">
         <SimpleGrid 
-          cols={{ base: 1, sm: 2, md: 3 }} 
+          cols={{ base: 1, sm: 2, lg: 3 }} 
           spacing="md"
           styles={{ root: { alignItems: 'start' } }}
         >
