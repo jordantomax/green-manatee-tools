@@ -133,6 +133,10 @@ function InventoryRestockRec ({ recommendation, location, locationLabel, isDone,
               <Table.Td px="md"><Text size="sm">Warehouse stock:</Text></Table.Td>
               <Table.Td px="md"><Text size="sm">{recommendation.warehouse.stock}</Text></Table.Td>
             </Table.Tr>
+            <Table.Tr>
+              <Table.Td px="md"><Text size="sm">Warehouse inbound:</Text></Table.Td>
+              <Table.Td px="md"><Text size="sm">{recommendation.warehouse.inbound}</Text></Table.Td>
+            </Table.Tr>
           </Table.Tbody>
         </Table>
       )}
