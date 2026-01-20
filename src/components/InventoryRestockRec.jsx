@@ -104,7 +104,7 @@ function InventoryRestockRec ({ recommendation, location, locationLabel, isDone,
               <Table.Td px="md"><Text size="sm"><Sales sales={recommendation.sales.amzUnitSalesBy30DayPeriods} /></Text></Table.Td>
             </Table.Tr>
             <Table.Tr>
-              <Table.Td px="md"><Text size="sm">Monthly change:</Text></Table.Td>
+              <Table.Td px="md"><Text size="sm">Weighted monthly change:</Text></Table.Td>
               <Table.Td px="md"><Text size="sm">{recommendation.sales.amzWeightedMonthlyGrowthRate}</Text></Table.Td>
             </Table.Tr>
             <Table.Tr>
