@@ -51,6 +51,5 @@ export function customsItemFactory () {
     massUnit: 'lb',
     valueAmount: '',
     valueCurrency: 'USD',
-    originCountry: 'US'
   }
 }
