@@ -38,11 +38,9 @@ function Rates ({ rates, setPurchasedRate }) {
         <Stack gap="sm">
           <Title order={3}>Available Rates</Title>
 
-          {rates.length === 0 && (
+          {!rates || rates.length === 0 ? (
             <Text c="dimmed">No rates</Text>
-          )}
-
-          {rates
+          ) : (rates
             .sort((a, b) => {
               const fa = parseFloat(a.amount)
               const fb = parseFloat(b.amount)
@@ -95,7 +93,7 @@ function Rates ({ rates, setPurchasedRate }) {
                 </Box>
               )
             })
-          }
+          )}
       </Stack>
     </form>
   )
