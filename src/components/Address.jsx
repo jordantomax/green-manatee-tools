@@ -53,7 +53,7 @@ function Address ({ address, name, handleChange, label }) {
     Object.keys(p)
       .filter(key => key !== 'id')
       .forEach(field => {
-        const value = p[field].value
+        const value = p[field]?.value
         if (value) {
           handleChange({ 
             target: { 
